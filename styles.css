@@ -1,0 +1,98 @@
+:root{
+  --color-guinda:#9d2449;
+  --font:'Roboto',sans-serif;
+}
+
+/* BASE */
+html,body{height:100%;margin:0;}
+body{
+  font-family:var(--font);
+  color:#54565a;
+  overflow:hidden;
+  background:#f3f4f6;
+}
+#root{height:100%;display:flex;flex-direction:column;}
+
+.leaflet-tooltip.custom-tooltip{
+  background:#111827;
+  color:#fff;
+  border:0;
+  border-radius:8px;
+  padding:6px 8px;
+  font: 12px/1.2 Roboto, sans-serif;
+  box-shadow:0 6px 18px rgba(0,0,0,.18);
+}
+
+.leaflet-tooltip.custom-tooltip::before{
+  border-top-color:#111827 !important;
+}
+.leaflet-tooltip-left.custom-tooltip::before{
+  border-left-color:#111827 !important;
+}
+.leaflet-tooltip-right.custom-tooltip::before{
+  border-right-color:#111827 !important;
+}
+.leaflet-tooltip-bottom.custom-tooltip::before{
+  border-bottom-color:#111827 !important;
+}
+
+
+/* Anim */
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.animate-in{animation:fadeIn .3s ease-out forwards}
+
+/* Transición suave reutilizable (GLOBAL) */
+.transition-soft{transition:all .2s ease}
+
+/* Marcador (GLOBAL) */
+@keyframes drop{0%{transform:translateY(-20px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.marker-pop{animation:drop .25s ease-out}
+
+/* iOS: evita auto-zoom texto */
+html{-webkit-text-size-adjust:100%}
+
+/* MOBILE */
+@media (max-width:768px){
+  .leaflet-control-zoom{display:none!important;}
+  .safe-area-bottom{padding-bottom:env(safe-area-inset-bottom);}
+
+  /* OJO: esto puede pelear con tu layout si usas bottomsheet.
+     Si ves cortes/renders raros, bórralo. */
+  #main-map{height:100vh!important;}
+
+  /* Sube legibilidad SOLO dentro del bottomsheet */
+  .mobile-upscale{font-size:14px;line-height:1.35;}
+  .mobile-upscale :is(p,span,div,li,button,summary,a,strong,em,label,td,th){
+    font-size:inherit!important;
+    line-height:inherit!important;
+  }
+  .mobile-upscale svg{width:18px!important;height:18px!important;}
+}
+
+/* Ajuste Leaflet top-left (si choca con buscador) */
+@media (max-width:767px){
+  .leaflet-top.leaflet-left{top:70px;}
+}
+
+/* ===== UI editorial: menos grito ===== */
+:root{
+  --ui-radius: 16px;
+}
+
+/* Menos “pesos” por defecto dentro del panel */
+#sidebar-desktop * {
+  letter-spacing: normal;
+}
+
+/* Tarjetas suaves */
+.ui-card {
+  border: 1px solid #e5e7eb;
+  border-radius: var(--ui-radius);
+  background: #fff;
+}
+
+/* Botones: consistencia */
+button, a {
+  -webkit-tap-highlight-color: transparent;
+}
+
