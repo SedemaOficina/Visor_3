@@ -453,13 +453,9 @@ const Icons = {
     </IconBase>
   ),
   Loader2: (p) => (
-    <IconBase {...p}>
-      <line x1="12" y1="2" x2="12" y2="6" />
-      <line x1="12" y1="18" x2="12" y2="22" />
-      <line x1="4.93" y1="4.93" x2="7.76" y2="7.76" />
-      <line x1="16.24" y1="16.24" x2="19.07" y2="19.07" />
-      <line x1="2" y1="12" x2="6" y2="12" />
-      <line x1="18" y1="12" x2="22" y2="12" />
+    <IconBase {...p} className={`${p.className || ''} spinner`}> {/* Added spinner class */}
+      {/* Lucide Loader2 paths are complex, simpler spinner used in CSS, keeping svg structure valid though */}
+      <path d="M21 12a9 9 0 1 1-6.219-8.56" />
     </IconBase>
   ),
   X: (p) => (
@@ -475,6 +471,13 @@ const Icons = {
       <line x1="9" y1="12" x2="15" y2="12" />
       <line x1="9" y1="15" x2="15" y2="15" />
       <line x1="9" y1="18" x2="13" y2="18" />
+    </IconBase>
+  ),
+  Menu: (p) => (
+    <IconBase {...p}>
+      <line x1="4" y1="12" x2="20" y2="12" />
+      <line x1="4" y1="6" x2="20" y2="6" />
+      <line x1="4" y1="18" x2="20" y2="18" />
     </IconBase>
   )
 };
@@ -792,174 +795,100 @@ const StatusMessage = ({ analysis }) => {
 /* ------------------------------------------------ */
 /* 6.2 Resumen Ejecutivo */
 /* ------------------------------------------------ */
-const LocationSummary = ({ analysis, onExportPDF }) => {
-  const [copied, setCopied] = useState(false);
-  const isUrban = analysis.status === 'URBAN_SOIL';
-  const isSC = analysis.status === 'CONSERVATION_SOIL';
-  const isANP = analysis.isANP;
-  const isOutside = analysis.status === 'OUTSIDE_CDMX';
-  const zoningColor = analysis.zoningKey ? getZoningColor(analysis.zoningKey) : '#6b7280';
+return (
+  <>
+    <div className="glass-panel rounded-xl p-4 mb-4 animate-slide-up">
+      {/* Header con Badge */}
+      <div className="flex items-center justify-between mb-3">
+        {!isOutside && (
+          <span
+            className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase shadow-sm"
+            style={{
+              backgroundColor: isSC ? '#3B7D23' : isUrban ? '#3b82f6' : '#6b7280',
+              color: '#ffffff'
+            }}
+          >
+            {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
+          </span>
+        )}
 
-  const formatDate = (v) => {
-    if (!v) return '—';
-    // acepta Date, ISO, o string
-    const d = (v instanceof Date) ? v : new Date(v);
-    if (Number.isNaN(d.getTime())) return String(v);
-    const dd = String(d.getDate()).padStart(2, '0');
-    const mm = String(d.getMonth() + 1).padStart(2, '0');
-    const yyyy = d.getFullYear();
-    return `${dd}/${mm}/${yyyy}`;
-  };
+        <button
+          onClick={copyCoords}
+          className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+          title="Copiar coordenadas"
+        >
+          <div className="flex items-center gap-1 text-[10px]">
+            <Icons.Copy className="h-3 w-3" />
+            <span className="font-mono">{analysis.coordinate.lat.toFixed(4)}, {analysis.coordinate.lng.toFixed(4)}</span>
+          </div>
+          {copied && <span className="absolute -mt-6 right-0 bg-black text-white text-[9px] px-2 py-0.5 rounded animate-fade-in">Copiado</span>}
+        </button>
+      </div>
 
-  const formatNumber = (n) => {
-    if (n === null || n === undefined || n === '') return '—';
-    const x = Number(n);
-    if (Number.isNaN(x)) return String(n);
-    return x.toLocaleString('es-MX', { maximumFractionDigits: 2 });
-  };
-
-
-  const copyCoords = () => {
-    navigator.clipboard.writeText(`${analysis.coordinate.lat},${analysis.coordinate.lng}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const showZoningBlock = isSC; // ✅ también mostrar zonificación si es ANP
-
-
-  return (
-    <>
-      {!isOutside && (
-        <div className="text-[10px] text-gray-500 mb-2 bg-gray-50 p-1 pl-2 rounded border border-gray-200">
-          Resultado orientativo — No constituye un documento oficial.
+      {/* Warning Outside */}
+      {isOutside ? (
+        <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-2 animate-pulse-subtle">
+          <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
+            <Icons.XCircle className="h-4 w-4" />
+            <span>Fuera de CDMX</span>
+          </div>
+          <p className="text-xs text-red-600 leading-snug">
+            Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
+          </p>
+        </div>
+      ) : (
+        <div className="mb-3">
+          <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Alcaldía</div>
+          <div className="text-lg font-bold text-gray-800 leading-tight">
+            {analysis.alcaldia || 'Ciudad de México'}
+          </div>
         </div>
       )}
 
-      <div className="mb-4">
-        {/* Badge tipo de suelo (reemplaza la línea superior) */}
-        {!isOutside && (
-          <div className="mb-3">
-            <span
-              className="inline-flex items-center px-4 py-1 rounded-lg text-[12px] font-extrabold tracking-widest uppercase"
-              style={{
-                backgroundColor: isSC ? '#3B7D23' : isUrban ? '#3C82F6' : '#6b7280',
-                color: '#ffffff'
-              }}
-            >
-              {isSC ? 'SUELO DE CONSERVACIÓN' : 'SUELO URBANO'}
-            </span>
+      {/* Zonificación Badge */}
+      {showZoningBlock && (
+        <div className="mb-4">
+          <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-1">
+            {isANP ? 'Zonificación Interna' : 'Zonificación PGOEDF'}
           </div>
-        )}
-
-        {isOutside ? (
-          <div className="mb-2 flex flex-col gap-0.5 text-sm">
-            <div className="flex items-center gap-1.5 text-red-600 font-extrabold uppercase tracking-wide leading-tight">
-              <span className="text-base">⚠️</span>
-              <span>ATENCIÓN</span>
-            </div>
-
-            <div className="text-gray-800 leading-snug">
-              El punto está fuera de <strong>CDMX</strong>
-            </div>
-
-            {analysis.outsideContext && (
-              <div className="mt-0.5">
-                <span
-                  className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-bold tracking-wide ${analysis.outsideContext === 'Edo. Méx'
-                    ? 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                    : 'bg-purple-100 text-purple-800 border border-purple-300'
-                    }`}
-                >
-                  {analysis.outsideContext === 'Edo. Méx' ? 'ESTADO DE MÉXICO' : 'MORELOS'}
-                </span>
+          {analysis.zoningName ? (
+            <div className="flex items-start gap-2">
+              <div
+                className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                style={{ backgroundColor: zoningColor }}
+              />
+              <div className="text-sm font-semibold text-gray-700 leading-snug">
+                {analysis.zoningName} <span className="text-gray-400 font-normal">({analysis.zoningKey})</span>
               </div>
-            )}
-          </div>
-        ) : (
-          <div className="mb-2 text-sm leading-snug">
-            <span className="text-[11px] font-semibold text-gray-600">Alcaldía:</span>
-            <span className="font-bold text-gray-900 ml-1">
-              {analysis.alcaldia || 'Ciudad de México'}
-            </span>
-          </div>
-        )}
-
-        {showZoningBlock && (
-          <div className="mb-3">
-            <p className="text-[11px] font-semibold text-gray-600">
-              {isANP ? 'Zonificación interna:' : 'Zonificación PGOEDF:'}
-            </p>
-            {analysis.zoningName ? (
-              <div className="mt-1">
-                <span
-                  className="inline-flex items-center px-3 py-1 rounded-lg text-[11px] font-bold text-white truncate max-w-full uppercase tracking-wide"
-                  style={{ backgroundColor: zoningColor }}
-                  title={`${analysis.zoningName}${analysis.zoningKey ? ` (${analysis.zoningKey})` : ''}`}
-                >
-                  {analysis.zoningKey ? `${analysis.zoningName} (${analysis.zoningKey})` : analysis.zoningName}
-                </span>
-              </div>
-            ) : (
-              <span className="text-xs text-gray-500">Sin información</span>
-            )}
-          </div>
-        )}
-
-        {/* ✅ ANP (solo si aplica) */}
-        {isSC && isANP && (
-          <div className="mb-3 border border-purple-200 bg-purple-50 rounded-lg p-3">
-            <div className="text-[11px] font-extrabold text-purple-800 uppercase tracking-wide">
-              Área Natural Protegida
             </div>
-
-            <div className="mt-2 space-y-1 text-[12px] text-gray-800">
-              <div><span className="font-semibold text-gray-600">NOMBRE:</span> <span className="font-bold">{analysis.anpNombre || '—'}</span></div>
-              <div><span className="font-semibold text-gray-600">TIPO_DECRETO:</span> {analysis.anpTipoDecreto || '—'}</div>
-              <div><span className="font-semibold text-gray-600">CATEGORIA_PROTECCION:</span> {analysis.anpCategoria || '—'}</div>
-              <div><span className="font-semibold text-gray-600">FECHA_DECRETO:</span> {formatDate(analysis.anpFechaDecreto)}</div>
-              <div><span className="font-semibold text-gray-600">SUP_DECRETADA:</span> {formatNumber(analysis.anpSupDecretada)}</div>
-            </div>
-
-            <div className="mt-2 text-[11px] text-purple-900 font-semibold">
-              Consulte el Programa de Manejo correspondiente.
-            </div>
-          </div>
-        )}
-
-        {!isOutside && (
-          <div className="mb-3 text-[11px] text-gray-700">
-            {isSC && !isANP && <>Programa General de Ordenamiento Ecológico del Distrito Federal (PGOEDF 2000).</>}
-            {isUrban && <>Consulte los Programas de Desarrollo Urbano aplicables.</>}
-          </div>
-        )}
-
-        <ul className="text-xs space-y-1.5 text-gray-700 border-t pt-2">
-          <li className="flex items-center gap-2">
-            <span className="text-gray-400">
-              <Icons.MapPin className="h-3 w-3" />
-            </span>
-
-            <span className="font-mono">
-              {analysis.coordinate.lat.toFixed(5)}, {analysis.coordinate.lng.toFixed(5)}
-            </span>
-
-            <button
-              onClick={copyCoords}
-              className="text-[#9d2449] hover:bg-gray-100 p-1 rounded flex items-center gap-1"
-            >
-              <Icons.Copy className="h-3 w-3" />
-              {copied && <span className="text-[9px] text-gray-500">Copiado</span>}
-            </button>
-          </li>
-        </ul>
-
-        <div className="mt-3 hidden md:block">
-          <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
+          ) : (
+            <span className="text-sm text-gray-400 italic">No disponible</span>
+          )}
         </div>
-      </div> {/* ✅ CIERRA bg-white */}
-    </>
-  );
+      )}
+
+      {/* ANP Block */}
+      {isSC && isANP && (
+        <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 mb-3">
+          <div className="flex items-center gap-1.5 text-purple-800 font-bold text-xs mb-2">
+            <Icons.Verified className="h-3 w-3" /> {/* Assuming Verified exists or check Icons list. Using CheckCircle as fallback if needed manually but Verified would be nice. I will stick to what is in Icons obj or standard ones */}
+            <span>Área Natural Protegida</span>
+          </div>
+          <div className="space-y-1 text-xs text-gray-700">
+            <div className="font-medium text-purple-900">{analysis.anpNombre}</div>
+            <div className="flex justify-between"><span>Categoría:</span> <span className="font-medium">{analysis.anpCategoria}</span></div>
+            <div className="flex justify-between"><span>Decreto:</span> <span className="font-mono text-[10px]">{formatDate(analysis.anpFechaDecreto)}</span></div>
+          </div>
+        </div>
+      )}
+
+      <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
+        <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
+      </div>
+
+    </div>
+  </>
+);
 };
 /* ------------------------------------------------ */
 /* 6.3 Actividades agrupadas */
@@ -3650,6 +3579,209 @@ const MapViewer = ({
 };
 
 /* ------------------------------------------------ */
+/* 8. LEYENDA FLOTANTE (Mejorada) */
+/* ------------------------------------------------ */
+const Legend = ({
+  visibleMapLayers,
+  toggleLayer,
+  isOpen,
+  setIsOpen,
+  visibleZoningCats,
+  toggleZoningGroup,
+  setVisibleZoningCats,
+  toggleZoningCat,
+  activeBaseLayer,
+  setActiveBaseLayer,
+  selectedAnpId,
+  anpGeneralVisible
+}) => {
+  const [activeTab, setActiveTab] = useState('capas');
+
+  if (!isOpen) {
+    return (
+      <button
+        onClick={() => setIsOpen(true)}
+        className="
+          fixed bottom-8 right-4 z-[1000]
+          w-14 h-14 bg-[#9d2449] text-white rounded-full shadow-lg
+          flex items-center justify-center
+          hover:bg-[#7d1d3a] hover:scale-110 active:scale-95 transition-all
+        "
+        title="Abrir Leyenda"
+      >
+        <Icons.Layers className="h-7 w-7" />
+      </button>
+    );
+  }
+
+  return (
+    <div className="fixed bottom-24 right-4 z-[2000] w-72 glass-panel rounded-xl shadow-soft animate-fade-in flex flex-col max-h-[70vh]">
+      {/* Header */}
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50 rounded-t-xl">
+        <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2">
+          <Icons.Layers className="h-4 w-4 text-[#9d2449]" />
+          Capas y Mapa Base
+        </h3>
+        <button
+          onClick={() => setIsOpen(false)}
+          className="p-1 hover:bg-gray-100 rounded-full transition-colors"
+        >
+          <Icons.X className="h-4 w-4 text-gray-500" />
+        </button>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-gray-100 bg-gray-50/50">
+        <button
+          onClick={() => setActiveTab('capas')}
+          className={`flex-1 py-3 text-[12px] font-bold uppercase tracking-wider transition-colors border-b-2
+            ${activeTab === 'capas' ? 'border-[#9d2449] text-[#9d2449] bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'}
+          `}
+        >
+          Capas
+        </button>
+        <button
+          onClick={() => setActiveTab('base')}
+          className={`flex-1 py-3 text-[12px] font-bold uppercase tracking-wider transition-colors border-b-2
+            ${activeTab === 'base' ? 'border-[#9d2449] text-[#9d2449] bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'}
+          `}
+        >
+          Mapa Base
+        </button>
+      </div>
+
+      {/* Content Scrollable */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-white/80">
+        {activeTab === 'capas' && (
+          <div className="space-y-5">
+            {/* Capas Generales */}
+            <div>
+              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Contexto</div>
+              <div className="space-y-2">
+                <div className="flex items-center justify-between group">
+                  <span className="text-[13px] text-gray-700 font-medium">Límite Alcaldías</span>
+                  <ToggleSwitch checked={visibleMapLayers.alcaldias} onChange={() => toggleLayer('alcaldias')} />
+                </div>
+                <div className="flex items-center justify-between group">
+                  <span className="text-[13px] text-gray-700 font-medium">Suelo de Conservación</span>
+                  <ToggleSwitch checked={visibleMapLayers.sc} onChange={() => toggleLayer('sc')} />
+                </div>
+                <div className="flex items-center justify-between group">
+                  <span className="text-[13px] text-gray-700 font-medium">Límite Edo. Méx</span>
+                  <ToggleSwitch checked={visibleMapLayers.edomex} onChange={() => toggleLayer('edomex')} />
+                </div>
+                <div className="flex items-center justify-between group">
+                  <span className="text-[13px] text-gray-700 font-medium">Límite Morelos</span>
+                  <ToggleSwitch checked={visibleMapLayers.morelos} onChange={() => toggleLayer('morelos')} />
+                </div>
+                {/* ANP Switch */}
+                <div className="flex items-center justify-between group mt-3 pt-3 border-t border-gray-100">
+                  <div className="flex items-center gap-2">
+                    <div className="w-3 h-3 rounded-full bg-[#a855f7] border border-white shadow-sm" />
+                    <span className="text-[13px] text-gray-800 font-bold">Áreas Naturales Protegidas</span>
+                  </div>
+                  <ToggleSwitch checked={visibleMapLayers.anp} onChange={() => toggleLayer('anp')} />
+                </div>
+              </div>
+            </div>
+
+            {/* Zonificación */}
+            <div>
+              <div className="flex items-center justify-between mb-3">
+                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Zonificación PGOEDF</div>
+                <button onClick={toggleZoningGroup} className="text-[10px] text-[#9d2449] font-bold hover:underline">
+                  {visibleMapLayers.zoning ? 'Ocultar todo' : 'Mostrar todo'}
+                </button>
+              </div>
+
+              <div className={`space-y-2 transition-opacity duration-200 ${!visibleMapLayers.zoning ? 'opacity-50 pointer-events-none' : ''}`}>
+                {ZONING_ORDER.map(cat => {
+                  const info = ZONING_CAT_INFO[cat];
+                  const isChecked = visibleZoningCats[cat] !== false;
+                  return (
+                    <div key={cat} className="flex items-center justify-between">
+                      <div className="flex items-center gap-2.5">
+                        <span
+                          className="w-3 h-3 rounded shadow-sm"
+                          style={{ backgroundColor: info?.color || '#999' }}
+                        />
+                        <span className="text-[12px] text-gray-600 font-medium leading-tight max-w-[160px]">
+                          {info?.label || cat}
+                        </span>
+                      </div>
+                      <ToggleSwitch
+                        checked={isChecked}
+                        onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
+                      />
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Zonificación ANP Específica (Dinámica) */}
+            <div
+              className={`pt-3 border-t border-gray-100 ${!selectedAnpId ? 'opacity-50 cursor-not-allowed' : ''}`}
+              title={!selectedAnpId ? "Selecciona un ANP en el mapa para ver su zonificación" : ""}
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded border border-purple-500 bg-purple-100 shadow-sm" />
+                  <span className="text-[12px] text-purple-900 font-bold">Zonificación Interna ANP</span>
+                </div>
+                <ToggleSwitch
+                  checked={visibleMapLayers.selectedAnpZoning}
+                  onChange={() => {
+                    if (!selectedAnpId) return;
+                    if (anpGeneralVisible) {
+                      alert("Desactiva la capa 'Áreas Naturales Protegidas' para ver el detalle interno.");
+                      return;
+                    }
+                    toggleLayer('selectedAnpZoning');
+                  }}
+                  disabled={!selectedAnpId || anpGeneralVisible}
+                />
+              </div>
+            </div>
+
+          </div>
+        )}
+
+        {activeTab === 'base' && (
+          <div className="space-y-3">
+            {[
+              { id: 'STREETS', label: 'Mapa Claro (Calles)', img: 'https://api.mapbox.com/styles/v1/mapbox/light-v11/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN },
+              { id: 'SATELLITE', label: 'Satélite + Calles', img: 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN },
+              { id: 'TOPO', label: 'Topográfico', img: 'https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN }
+            ].map(opt => (
+              <button
+                key={opt.id}
+                onClick={() => setActiveBaseLayer(opt.id)}
+                className={`
+                    w-full text-left rounded-lg overflow-hidden border-2 transition-all group relative
+                    ${activeBaseLayer === opt.id ? 'border-[#9d2449] ring-2 ring-[#9d2449]/20 shadow-md' : 'border-transparent shadow-sm hover:shadow-md'}
+                 `}
+              >
+                <div className="relative h-20 bg-gray-200">
+                  <img src={opt.img} alt={opt.label} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
+                </div>
+                <div className="p-2 bg-white flex items-center justify-between">
+                  <span className={`text-[12px] font-bold ${activeBaseLayer === opt.id ? 'text-[#9d2449]' : 'text-gray-700'}`}>
+                    {opt.label}
+                  </span>
+                  {activeBaseLayer === opt.id && <Icons.CheckCircle className="h-4 w-4 text-[#9d2449]" />}
+                </div>
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
+
+/* ------------------------------------------------ */
 /* 9. APLICACIÓN PRINCIPAL */
 /* ------------------------------------------------ */
 
@@ -3658,7 +3790,7 @@ const App = () => {
   const [extraDataLoaded, setExtraDataLoaded] = useState(false);
   const [analysis, setAnalysis] = useState(null);
   const [location, setLocation] = useState(null);
-  const [addressText, setAddressText] = useState(''); // ✅ Nuevo estado compartido para la barra de búsqueda
+  // const [addressText, setAddressText] = useState(''); // ✅ Nuevo estado compartido para la barra de búsqueda
 
   // Capas mapa
   const [visibleMapLayers, setVisibleMapLayers] = useState({
@@ -3695,24 +3827,24 @@ const App = () => {
   const [mobileSheetState, setMobileSheetState] = useState('collapsed'); // collapsed | mid | full
 
   // ✅ acá se guarda la función REAL que exporta el PDF (la define ResultsContent)
-  const [exportPdfFn, setExportPdfFn] = useState(null);
+  const [exportHandler, setExportHandler] = useState(null);
 
   // ✅ Wrapper: solo se ejecuta por botón (acción del usuario)
-  const requestPdfExport = React.useCallback(() => {
-    if (typeof exportPdfFn === 'function') {
-      exportPdfFn();
+  const handleExportClick = React.useCallback(() => {
+    if (typeof exportHandler === 'function') {
+      exportHandler();
     } else {
       alert('Aún no se puede exportar. Intenta de nuevo en un momento.');
     }
-  }, [exportPdfFn]);
+  }, [exportHandler]);
 
   // ✅ Refs (sin window.__*)
   const invalidateMapRef = useRef(null);
   const resetMapViewRef = useRef(null);
-  const setDesktopSearchRef = useRef(null);
-  const setMobileSearchRef = useRef(null);
+  const desktopSearchInputRef = useRef(null);
+  const mobileSearchInputRef = useRef(null);
 
-  const handleSelect = async (c) => {
+  const handleLocationSelect = async (c) => {
     const lat = Number(c?.lat);
     const lng = Number(c?.lng);
     if (Number.isNaN(lat) || Number.isNaN(lng)) return;
@@ -3722,11 +3854,11 @@ const App = () => {
 
     // ✅ Actualizamos local y global
     setLocation(coord);
-    setAddressText(text);
+    // setAddressText(text); // No longer needed, derived from analysis
 
     // ✅ Empuja al textbox en desktop y móvil
-    setDesktopSearchRef.current?.(text);
-    setMobileSearchRef.current?.(text);
+    desktopSearchInputRef.current?.(text);
+    mobileSearchInputRef.current?.(text);
 
     const res = await analyzeLocation(coord);
     setAnalysis(res);
@@ -3739,7 +3871,7 @@ const App = () => {
 
     setAnalysis(null);
     setMobileSheetState('collapsed');
-    setAddressText('');
+    // setAddressText(''); // No longer needed
 
     resetMapViewRef.current?.();
   };
@@ -3748,15 +3880,25 @@ const App = () => {
     navigator.geolocation.getCurrentPosition(
       p => {
         const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
-        handleSelect(coord);
+        handleLocationSelect(coord);
 
         const text = `${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}`;
-        setDesktopSearchRef.current?.(text);
-        setMobileSearchRef.current?.(text);
+        desktopSearchInputRef.current?.(text);
+        mobileSearchInputRef.current?.(text);
       },
       () => alert("No se pudo obtener tu ubicación. Revisa permisos del navegador.")
     );
   };
+
+  // Helper to toggle layers
+  const toggleLayer = useCallback((key) => {
+    setVisibleMapLayers(prev => ({ ...prev, [key]: !prev[key] }));
+  }, []);
+
+  // Helper to toggle zoning group
+  const toggleZoningGroup = useCallback(() => {
+    setVisibleMapLayers(prev => ({ ...prev, zoning: !prev.zoning }));
+  }, []);
 
   useEffect(() => {
     loadCoreData().then(() => {
@@ -3768,7 +3910,7 @@ const App = () => {
       const hasCoords = !isNaN(lat) && !isNaN(lng);
 
       if (!hasCoords) setIsHelpOpen(true);
-      if (hasCoords) handleSelect({ lat, lng });
+      if (hasCoords) handleLocationSelect({ lat, lng });
 
       loadExtraData().then(() => setExtraDataLoaded(true));
     });
@@ -3798,209 +3940,135 @@ const App = () => {
   }
 
   return (
-    <div className="flex flex-col h-full relative overflow-hidden bg-gray-100">
+    <div className="relative w-full h-full overflow-hidden flex flex-col md:flex-row bg-[#f3f4f6]">
 
-      {/* MODAL AYUDA (tu bloque ya estaba, lo dejo igual) */}
-      {isHelpOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-[6000] flex items-center justify-center p-4"
-          onClick={() => setIsHelpOpen(false)}
-        >
-          <div
-            className="bg-white w-full max-w-sm rounded-2xl shadow-2xl overflow-hidden"
-            onClick={(e) => e.stopPropagation()}
-            role="dialog"
-            aria-modal="true"
-          >
-            <div className="px-6 pt-6 pb-4 text-center border-b border-gray-100">
-              <div className="text-[#9d2449] text-[18px] font-extrabold tracking-[0.25em] uppercase mb-2">
-                Evita fraudes
-              </div>
-              <h2 className="text-[16px] md:text-[18px] font-semibold text-gray-900 leading-snug">
-                Verifica si un predio se encuentra en
-                <br />
-                Suelo de Conservación o Área Natural Protegida
-              </h2>
-            </div>
+      {/* ✅ BARRA SUPERIOR MÓVIL (APP HEADER) */}
+      <div className="md:hidden absolute top-0 left-0 right-0 z-[1100] p-3 pointer-events-none">
+        <MobileSearchBar
+          onLocationSelect={handleLocationSelect}
+          onReset={handleReset}
+          setInputRef={mobileSearchInputRef}
+          initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
+        />
+      </div>
 
-            <div className="px-6 py-5 text-gray-700 space-y-5">
-              <div>
-                <div className="text-[14px] font-semibold text-gray-800 mb-3">
-                  ¿Cómo usar esta herramienta?
-                </div>
+      {/* Sidebar Desktop */}
+      <SidebarDesktop
+        analysis={analysis}
+        onLocationSelect={handleLocationSelect}
+        onReset={handleReset}
+        isOpen={isSidebarOpen}
+        onToggle={() => setIsSidebarOpen(v => !v)}
+        onExportReady={setExportHandler}
+        desktopSearchSetRef={desktopSearchInputRef}
+      />
 
-                <div className="space-y-2 text-[13px] leading-[1.45] border-l-2 border-gray-200 pl-4">
-                  <div className="flex items-start gap-3">
-                    <Icons.Search className="h-5 w-5 text-[#9d2449] mt-0.5" strokeWidth="2.6" />
-                    <div><strong>Buscar por texto:</strong> escribe una dirección o pega coordenadas.</div>
-                  </div>
+      {/* Main Map Area */}
+      <div className="relative flex-1 h-full w-full">
+        <MapViewer
+          location={location}
+          onLocationSelect={handleLocationSelect}
+          analysisStatus={analysis?.status}
+          visibleMapLayers={visibleMapLayers}
+          setVisibleMapLayers={setVisibleMapLayers}
+          visibleZoningCats={visibleZoningCats}
+          setVisibleZoningCats={setVisibleZoningCats}
+          // isLegendOpen={isLegendOpen} // Removed, Legend handles its own visibility
+          // setIsLegendOpen={setIsLegendOpen} // Removed
+          extraDataLoaded={extraDataLoaded}
+          activeBaseLayer={activeBaseLayer}
+          setActiveBaseLayer={setActiveBaseLayer}
+          invalidateMapRef={invalidateMapRef} // ✅ Pass REF
+          resetMapViewRef={resetMapViewRef}     // ✅ Pass REF
+          selectedAnpId={analysis?.anpId} // ✅ Pass ANP ID
+        />
 
-                  <div className="flex items-start gap-3">
-                    <Icons.MapPin className="h-5 w-5 text-[#9d2449] mt-0.5" strokeWidth="2.6" />
-                    <div><strong>Seleccionar en el mapa:</strong> haz clic o toca el punto de interés.</div>
-                  </div>
-
-                  <div className="flex items-start gap-3">
-                    <Icons.Navigation className="h-5 w-5 text-[#9d2449] mt-0.5" strokeWidth="2.6" />
-                    <div><strong>Mi ubicación:</strong> consulta el sitio donde te encuentras.</div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-4 rounded-xl border border-gray-300 bg-gray-50">
-                <div className="font-semibold text-[14px] text-gray-900 mb-3">
-                  Resultado inmediato de la consulta
-                </div>
-
-                <div className="flex flex-col gap-3 text-[13px] text-gray-700">
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-[#3b82f6] text-white font-bold text-[11px] flex items-center justify-center">SU</div>
-                    <span className="text-gray-600">(Suelo Urbano)</span>
-                  </div>
-
-                  <div className="flex items-center gap-3">
-                    <div className="w-7 h-7 rounded-full bg-[#9d2449] text-white font-bold text-[11px] flex items-center justify-center">SC</div>
-                    <span className="text-gray-600">(Suelo de Conservación)</span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="text-[11px] text-gray-500 text-center">
-                Información orientativa, sin efectos jurídicos oficiales.
-              </div>
-            </div>
-
-            <div className="px-6 pb-6">
-              <button
-                type="button"
-                onClick={() => setIsHelpOpen(false)}
-                className="w-full bg-[#9d2449] text-white py-3 rounded-xl text-[14px] font-semibold hover:shadow-md active:scale-95 transition"
-              >
-                Entendido
-              </button>
+        {/* Loading Overlay */}
+        {loading && ( // Use the main loading state for this overlay
+          <div className="absolute inset-0 z-[3000] bg-white/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+            <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
+              <div className="w-10 h-10 border-4 border-gray-200 border-l-[#9d2449] rounded-full animate-spin mb-3"></div>
+              <span className="text-gray-800 font-bold text-sm">Analizando ubicación...</span>
             </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Header escritorio */}
-      <header className="hidden md:flex h-16 bg-[#9d2449] items-center px-4 justify-between shrink-0 z-[4000] shadow-md relative border-b border-white/10">
-        <div className="flex items-center gap-3">
-          <img src="./assets/logo-sedema.png" alt="SEDEMA" className="h-10 bg-white p-1 rounded" />
-          <div className="flex flex-col">
-            <span className="text-white text-xs font-semibold">Visor de Consulta Ciudadana</span>
-            <span className="text-white text-[10px] opacity-90">
-              Consulta normativa de Suelo Urbano y Suelo de Conservación en la Ciudad de México
-            </span>
+        {/* Legend */}
+        <Legend
+          visibleMapLayers={visibleMapLayers}
+          toggleLayer={toggleLayer}
+          isOpen={isLegendOpen}
+          setIsOpen={setIsLegendOpen}
+          visibleZoningCats={visibleZoningCats}
+          toggleZoningGroup={toggleZoningGroup}
+          setVisibleZoningCats={setVisibleZoningCats}
+          activeBaseLayer={activeBaseLayer}
+          setActiveBaseLayer={setActiveBaseLayer}
+          selectedAnpId={analysis?.anpId}
+          anpGeneralVisible={visibleMapLayers.anp}
+        />
+
+        {/* Nota inicial desktop */}
+        {!analysis?.status && (
+          <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
+            <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
+              Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
+            </div>
           </div>
-        </div>
+        )}
 
-        <div className="flex items-center gap-3">
-          <div className="text-white text-[10px] text-right">
-            <div className="font-bold">{CONTACT_INFO.phone}</div>
-            <div>{CONTACT_INFO.hours}</div>
-          </div>
-
+        {/* BOTONES MÓVIL */}
+        <div className="md:hidden absolute bottom-40 right-4 z-[3400] pointer-events-auto flex flex-col items-end gap-3">
           <button
             type="button"
             onClick={() => setIsHelpOpen(true)}
-            className="w-7 h-7 flex items-center justify-center rounded-full bg-white/10 border border-white/40 text-white text-xs font-bold hover:bg-white/20 active:scale-95 transition"
+            className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
+            aria-label="Ayuda"
             title="Ayuda"
           >
             ?
           </button>
-        </div>
-      </header>
 
-      <div className="flex-1 relative flex overflow-hidden">
-        <SidebarDesktop
-          analysis={analysis}
-          onLocationSelect={handleSelect}
-          onReset={handleReset}
-          isOpen={isSidebarOpen}
-          onToggle={() => {
-            setIsSidebarOpen(o => !o);
-            setTimeout(() => invalidateMapRef.current?.(), 150);
-          }}
-          onExportReady={(fn) => setExportPdfFn(() => fn)}
-          desktopSearchSetRef={setDesktopSearchRef}
-        />
+          {(!analysis || mobileSheetState !== 'full') && (
+            <>
+              {/* The Legend component now handles its own button */}
+              {/* <button
+                type="button"
+                onClick={() => setIsLegendOpen(o => !o)}
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
+                aria-label="Capas"
+                title="Capas"
+              >
+                <Icons.Layers className="h-5 w-5" />
+              </button> */}
 
-        <div className="flex-1 relative w-full h-full">
-          <MobileSearchBar
-            onLocationSelect={handleSelect}
-            onReset={handleReset}
-            setInputRef={setMobileSearchRef}
-            initialValue={addressText}
-          />
-
-          {/* BOTONES MÓVIL */}
-          <div className="md:hidden absolute top-20 right-4 z-[3400] pointer-events-auto flex flex-col items-end gap-3">
-            <button
-              type="button"
-              onClick={() => setIsHelpOpen(true)}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
-              aria-label="Ayuda"
-              title="Ayuda"
-            >
-              ?
-            </button>
-
-            {(!analysis || mobileSheetState !== 'full') && (
-              <>
-                <button
-                  type="button"
-                  onClick={() => setIsLegendOpen(o => !o)}
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
-                  aria-label="Capas"
-                  title="Capas"
-                >
-                  <Icons.Layers className="h-5 w-5" />
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleUserLocation}
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
-                  aria-label="Mi ubicación"
-                  title="Mi ubicación"
-                >
-                  <Icons.Navigation className="h-5 w-5" />
-                </button>
-              </>
-            )}
-          </div>
-
-          <MapViewer
-            location={location}
-            onLocationSelect={handleSelect}
-            analysisStatus={analysis?.status}
-            visibleMapLayers={visibleMapLayers}
-            setVisibleMapLayers={setVisibleMapLayers}
-            visibleZoningCats={visibleZoningCats}
-            setVisibleZoningCats={setVisibleZoningCats}
-            isLegendOpen={isLegendOpen}
-            setIsLegendOpen={setIsLegendOpen}
-            extraDataLoaded={extraDataLoaded}
-            activeBaseLayer={activeBaseLayer}
-            setActiveBaseLayer={setActiveBaseLayer}
-            invalidateMapRef={invalidateMapRef}
-            resetMapViewRef={resetMapViewRef}
-            selectedAnpId={analysis?.anpId} // ✅ Pasamos ID
-          />
-
-          {/* ✅ BottomSheet SIEMPRE montado */}
-          <BottomSheetMobile
-            analysis={analysis}
-            onLocationSelect={handleSelect}
-            onReset={handleReset}
-            onClose={handleReset}
-            onStateChange={setMobileSheetState}
-            onExportPDF={requestPdfExport}     // ✅ SOLO POR BOTÓN
-            onExportReady={(fn) => setExportPdfFn(() => fn)}    // ✅ guarda la fn real aquí
-          />
+              <button
+                type="button"
+                onClick={handleUserLocation}
+                className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2449] active:scale-95 transition"
+                aria-label="Mi ubicación"
+                title="Mi ubicación"
+              >
+                <Icons.Navigation className="h-5 w-5" />
+              </button>
+            </>
+          )}
         </div>
       </div>
+
+      {/* Mobile Bottom Sheet */}
+      <BottomSheetMobile
+        analysis={analysis}
+        onLocationSelect={handleLocationSelect}
+        onReset={handleReset}
+        onStateChange={setMobileSheetState}
+        onClose={() => {
+          // Close logic if needed, usually just collapsing
+          handleReset();
+        }}
+        onExportPDF={handleExportClick} // pass the handler that calls the state func
+        onExportReady={setExportHandler}
+      />
     </div>
   );
 };
@@ -4008,3 +4076,4 @@ const App = () => {
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);
+

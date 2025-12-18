@@ -1,98 +1,181 @@
-:root{
-  --color-guinda:#9d2449;
-  --font:'Roboto',sans-serif;
+:root {
+  /* --- PALETA INSTITUCIONAL PREMIUM --- */
+  /* Base */
+  --color-primary: #9d2449;       /* Guinda Oficial */
+  --color-primary-dark: #7e1c3a;
+  --color-accent: #BC955C;        /* Dorado Institucional */
+  
+  /* Modern UI / Glassmorphism */
+  --bg-app: #f0f2f5;              /* Fondo general suave */
+  --glass-bg: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
+  --glass-blur: blur(12px);
+
+  /* Texto */
+  --font-main: 'Outfit', sans-serif; /* Más moderna que Roboto */
+  --text-main: #1e293b;
+  --text-sub: #64748b;
+  --text-light: #94a3b8;
+
+  /* Bordes y Radios */
+  --radius-xl: 24px;
+  --radius-lg: 16px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+
+  /* Animaciones */
+  --trans-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --trans-spring: 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 /* BASE */
-html,body{height:100%;margin:0;}
-body{
-  font-family:var(--font);
-  color:#54565a;
-  overflow:hidden;
-  background:#f3f4f6;
-}
-#root{height:100%;display:flex;flex-direction:column;}
-
-.leaflet-tooltip.custom-tooltip{
-  background:#111827;
-  color:#fff;
-  border:0;
-  border-radius:8px;
-  padding:6px 8px;
-  font: 12px/1.2 Roboto, sans-serif;
-  box-shadow:0 6px 18px rgba(0,0,0,.18);
-}
-
-.leaflet-tooltip.custom-tooltip::before{
-  border-top-color:#111827 !important;
-}
-.leaflet-tooltip-left.custom-tooltip::before{
-  border-left-color:#111827 !important;
-}
-.leaflet-tooltip-right.custom-tooltip::before{
-  border-right-color:#111827 !important;
-}
-.leaflet-tooltip-bottom.custom-tooltip::before{
-  border-bottom-color:#111827 !important;
-}
-
-
-/* Anim */
-@keyframes fadeIn{from{opacity:0}to{opacity:1}}
-.animate-in{animation:fadeIn .3s ease-out forwards}
-
-/* Transición suave reutilizable (GLOBAL) */
-.transition-soft{transition:all .2s ease}
-
-/* Marcador (GLOBAL) */
-@keyframes drop{0%{transform:translateY(-20px);opacity:0}100%{transform:translateY(0);opacity:1}}
-.marker-pop{animation:drop .25s ease-out}
-
-/* iOS: evita auto-zoom texto */
-html{-webkit-text-size-adjust:100%}
-
-/* MOBILE */
-@media (max-width:768px){
-  .leaflet-control-zoom{display:none!important;}
-  .safe-area-bottom{padding-bottom:env(safe-area-inset-bottom);}
-
-  /* OJO: esto puede pelear con tu layout si usas bottomsheet.
-     Si ves cortes/renders raros, bórralo. */
-  #main-map{height:100vh!important;}
-
-  /* Sube legibilidad SOLO dentro del bottomsheet */
-  .mobile-upscale{font-size:14px;line-height:1.35;}
-  .mobile-upscale :is(p,span,div,li,button,summary,a,strong,em,label,td,th){
-    font-size:inherit!important;
-    line-height:inherit!important;
-  }
-  .mobile-upscale svg{width:18px!important;height:18px!important;}
-}
-
-/* Ajuste Leaflet top-left (si choca con buscador) */
-@media (max-width:767px){
-  .leaflet-top.leaflet-left{top:70px;}
-}
-
-/* ===== UI editorial: menos grito ===== */
-:root{
-  --ui-radius: 16px;
-}
-
-/* Menos “pesos” por defecto dentro del panel */
-#sidebar-desktop * {
-  letter-spacing: normal;
-}
-
-/* Tarjetas suaves */
-.ui-card {
-  border: 1px solid #e5e7eb;
-  border-radius: var(--ui-radius);
-  background: #fff;
-}
-
-/* Botones: consistencia */
-button, a {
+*, *::before, *::after {
+  box-sizing: border-box;
   -webkit-tap-highlight-color: transparent;
 }
 
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* App-like feel */
+}
+
+body {
+  font-family: var(--font-main);
+  color: var(--text-main);
+  background: var(--bg-app);
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* --- UTILS --- */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+}
+
+.shadow-soft {
+  box-shadow: 0 10px 40px -10px rgba(0,0,0,0.08);
+}
+
+/* Scrollbar fina */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* --- LEAFLET OVERRIDES (Modernizados) --- */
+.leaflet-container {
+  font-family: var(--font-main) !important;
+}
+
+/* Tooltips */
+.leaflet-tooltip.custom-tooltip {
+  background: rgba(15, 23, 42, 0.95);
+  color: #fff;
+  border: 0;
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 500;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+}
+.leaflet-tooltip.custom-tooltip::before {
+  border-top-color: rgba(15, 23, 42, 0.95) !important;
+}
+
+/* Controles de Zoom más elegantes */
+.leaflet-bar {
+  border: none !important;
+  box-shadow: var(--glass-shadow) !important;
+}
+.leaflet-bar a {
+  background: rgba(255, 255, 255, 0.95) !important;
+  color: var(--text-main) !important;
+  border-bottom: 1px solid rgba(0,0,0,0.05) !important;
+  transition: all 0.2s ease;
+  width: 36px !important;
+  height: 36px !important;
+  line-height: 36px !important;
+  font-size: 16px !important;
+  font-weight: 600 !important;
+}
+.leaflet-bar a:hover {
+  background: #fff !important;
+  color: var(--color-primary) !important;
+}
+.leaflet-bar a:first-child { border-radius: 12px 12px 0 0 !important; }
+.leaflet-bar a:last-child { border-bottom: none !important; border-radius: 0 0 12px 12px !important; }
+
+/* Attribution discreto */
+.leaflet-control-attribution {
+  background: rgba(255, 255, 255, 0.7) !important;
+  backdrop-filter: blur(4px);
+  padding: 2px 8px !important;
+  border-radius: 4px 0 0 0;
+  font-size: 10px !important;
+  color: var(--text-sub) !important;
+}
+.leaflet-control-attribution a {
+  color: var(--text-sub) !important;
+  text-decoration: none !important;
+}
+
+/* --- ANIMACIONES --- */
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+@keyframes slideInLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes pulse-subtle { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+
+.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
+.animate-slide-up { animation: slideUp 0.5s var(--trans-spring) forwards; }
+.animate-slide-left { animation: slideInLeft 0.5s var(--trans-spring) forwards; }
+
+.hover-scale { transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.hover-scale:hover { transform: scale(1.02); }
+.hover-scale:active { transform: scale(0.96); }
+
+/* --- SPINNER DE CARGA --- */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(157, 36, 73, 0.1);
+  border-left-color: var(--color-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* --- RESETS MOVIL ESPCIFICOS --- */
+@media (max-width: 768px) {
+  .leaflet-control-zoom { display: none !important; } /* Ocultar zoom en movil para mas espacio */
+  
+  /* Bottom Sheet Style overrides if needed */
+  .mobile-sheet {
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 40px rgba(0,0,0,0.15);
+  }
+}
