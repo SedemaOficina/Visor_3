@@ -1,19 +1,19 @@
-
 const { useState, useEffect, useRef } = React;
 
-
 const ZONING_CAT_INFO = {
-    AEE: { color: '#FF5F5F', label: 'Agroecológico Especial (AEE)' },        // rojo coral claro
-    AE:  { color: '#FFB55A', label: 'Agroecológico (AE)' },                  // naranja claro
-    AFE: { color: '#FFD447', label: 'Agroforestal Especial (AFE)' },         // amarillo suave
-    AF:  { color: '#7BE495', label: 'Agroforestal (AF)' },                   // verde menta
-    FPE: { color: '#5AD2FF', label: 'Forestal Protección Esp. (FPE)' },      // cyan claro
-    FP:  { color: '#7FA6FF', label: 'Forestal Protección (FP)' },            // azul claro
-    FCE: { color: '#C77DFF', label: 'Forestal Conservación Esp. (FCE)' },    // violeta claro
-    FC:  { color: '#FF85D6', label: 'Forestal Conservación (FC)' },          // magenta claro
-    
+  AEE: { color: '#FF5F5F', label: 'Agroecológico Especial (AEE)' },
+  AE:  { color: '#FFB55A', label: 'Agroecológico (AE)' },
+  AFE: { color: '#FFD447', label: 'Agroforestal Especial (AFE)' },
+  AF:  { color: '#7BE495', label: 'Agroforestal (AF)' },
+  FPE: { color: '#5AD2FF', label: 'Forestal Protección Esp. (FPE)' },
+  FP:  { color: '#7FA6FF', label: 'Forestal Protección (FP)' },
+  FCE: { color: '#C77DFF', label: 'Forestal Conservación Esp. (FCE)' },
+  FC:  { color: '#FF85D6', label: 'Forestal Conservación (FC)' }
 };
-  const ZONING_ORDER = ['FC','FCE','FP','FPE','AF','AFE','AE','AEE'];
+
+
+
+const ZONING_ORDER = ['FC','FCE','FP','FPE','AF','AFE','AE','AEE'];
     
 const LAYER_STYLES = {
     sc: { 
