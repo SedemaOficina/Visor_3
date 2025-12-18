@@ -2153,9 +2153,13 @@ const ResultsContent = ({ analysis, onExportReady }) => {
 
 
 
-    const nombreArchivo = `ficha-${(analysis.alcaldia || 'CDMX')
-      .replace(/\s+/g, '_')
-      .toUpperCase()}-${new Date().toISOString().slice(0, 10)}.pdf`;
+    // ✅ Eliminar acentos y caracteres especiales del nombre de archivo
+    const cleanAlcaldia = (analysis.alcaldia || 'CDMX')
+      .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // remove accents
+      .replace(/[^a-zA-Z0-9]/g, "_")
+      .toUpperCase();
+
+    const nombreArchivo = `ficha-${cleanAlcaldia}-${new Date().toISOString().slice(0, 10)}.pdf`;
 
     pdf.save(nombreArchivo);
   }, [analysis]);
