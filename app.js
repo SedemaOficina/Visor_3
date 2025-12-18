@@ -3579,7 +3579,7 @@ const MapViewer = ({
 };
 
 /* ------------------------------------------------ */
-/* 8. LEYENDA FLOTANTE (Mejorada) */
+/* 8. LEYENDA FLOTANTE (Mejorada - Unificada) */
 /* ------------------------------------------------ */
 const Legend = ({
   visibleMapLayers,
@@ -3595,8 +3595,6 @@ const Legend = ({
   selectedAnpId,
   anpGeneralVisible
 }) => {
-  const [activeTab, setActiveTab] = useState('capas');
-
   if (!isOpen) {
     return (
       <button
@@ -3615,12 +3613,12 @@ const Legend = ({
   }
 
   return (
-    <div className="fixed bottom-24 right-4 z-[2000] w-72 glass-panel rounded-xl shadow-soft animate-fade-in flex flex-col max-h-[70vh]">
+    <div className="fixed bottom-24 right-4 z-[2000] w-80 glass-panel rounded-xl shadow-soft animate-fade-in flex flex-col max-h-[75vh]">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50 rounded-t-xl">
+      <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50 rounded-t-xl shrink-0">
         <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2">
           <Icons.Layers className="h-4 w-4 text-[#9d2449]" />
-          Capas y Mapa Base
+          Capas y Simbología
         </h3>
         <button
           onClick={() => setIsOpen(false)}
@@ -3630,104 +3628,49 @@ const Legend = ({
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className="flex border-b border-gray-100 bg-gray-50/50">
-        <button
-          onClick={() => setActiveTab('capas')}
-          className={`flex-1 py-3 text-[12px] font-bold uppercase tracking-wider transition-colors border-b-2
-            ${activeTab === 'capas' ? 'border-[#9d2449] text-[#9d2449] bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'}
-          `}
-        >
-          Capas
-        </button>
-        <button
-          onClick={() => setActiveTab('base')}
-          className={`flex-1 py-3 text-[12px] font-bold uppercase tracking-wider transition-colors border-b-2
-            ${activeTab === 'base' ? 'border-[#9d2449] text-[#9d2449] bg-white' : 'border-transparent text-gray-500 hover:text-gray-700'}
-          `}
-        >
-          Mapa Base
-        </button>
-      </div>
+      {/* Content Scrollable - Single Block */}
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-white/80 space-y-6">
 
-      {/* Content Scrollable */}
-      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-white/80">
-        {activeTab === 'capas' && (
-          <div className="space-y-5">
-            {/* Capas Generales */}
-            <div>
-              <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Contexto</div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between group">
-                  <span className="text-[13px] text-gray-700 font-medium">Límite Alcaldías</span>
-                  <ToggleSwitch checked={visibleMapLayers.alcaldias} onChange={() => toggleLayer('alcaldias')} />
+        {/* 1. Contexto */}
+        <div>
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Contexto y Límites</div>
+          <div className="space-y-3">
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[13px] text-gray-700 font-medium group-hover:text-gray-900 transition-colors">Alcaldías</span>
+              <ToggleSwitch checked={visibleMapLayers.alcaldias} onChange={() => toggleLayer('alcaldias')} />
+            </label>
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[13px] text-gray-700 font-medium group-hover:text-gray-900 transition-colors">Suelo de Conservación</span>
+              <ToggleSwitch checked={visibleMapLayers.sc} onChange={() => toggleLayer('sc')} />
+            </label>
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[13px] text-gray-700 font-medium group-hover:text-gray-900 transition-colors">Límite Edo. Méx</span>
+              <ToggleSwitch checked={visibleMapLayers.edomex} onChange={() => toggleLayer('edomex')} />
+            </label>
+            <label className="flex items-center justify-between group cursor-pointer">
+              <span className="text-[13px] text-gray-700 font-medium group-hover:text-gray-900 transition-colors">Límite Morelos</span>
+              <ToggleSwitch checked={visibleMapLayers.morelos} onChange={() => toggleLayer('morelos')} />
+            </label>
+
+            {/* ANP Switch */}
+            <div className="pt-2 border-t border-gray-100">
+              <label className="flex items-center justify-between group cursor-pointer">
+                <div className="flex items-center gap-2">
+                  <div className="w-3 h-3 rounded-full bg-[#a855f7] border border-white shadow-sm" />
+                  <span className="text-[13px] text-gray-800 font-bold">Áreas Naturales Protegidas</span>
                 </div>
-                <div className="flex items-center justify-between group">
-                  <span className="text-[13px] text-gray-700 font-medium">Suelo de Conservación</span>
-                  <ToggleSwitch checked={visibleMapLayers.sc} onChange={() => toggleLayer('sc')} />
-                </div>
-                <div className="flex items-center justify-between group">
-                  <span className="text-[13px] text-gray-700 font-medium">Límite Edo. Méx</span>
-                  <ToggleSwitch checked={visibleMapLayers.edomex} onChange={() => toggleLayer('edomex')} />
-                </div>
-                <div className="flex items-center justify-between group">
-                  <span className="text-[13px] text-gray-700 font-medium">Límite Morelos</span>
-                  <ToggleSwitch checked={visibleMapLayers.morelos} onChange={() => toggleLayer('morelos')} />
-                </div>
-                {/* ANP Switch */}
-                <div className="flex items-center justify-between group mt-3 pt-3 border-t border-gray-100">
-                  <div className="flex items-center gap-2">
-                    <div className="w-3 h-3 rounded-full bg-[#a855f7] border border-white shadow-sm" />
-                    <span className="text-[13px] text-gray-800 font-bold">Áreas Naturales Protegidas</span>
-                  </div>
-                  <ToggleSwitch checked={visibleMapLayers.anp} onChange={() => toggleLayer('anp')} />
-                </div>
-              </div>
+                <ToggleSwitch checked={visibleMapLayers.anp} onChange={() => toggleLayer('anp')} />
+              </label>
             </div>
 
-            {/* Zonificación */}
-            <div>
-              <div className="flex items-center justify-between mb-3">
-                <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Zonificación PGOEDF</div>
-                <button onClick={toggleZoningGroup} className="text-[10px] text-[#9d2449] font-bold hover:underline">
-                  {visibleMapLayers.zoning ? 'Ocultar todo' : 'Mostrar todo'}
-                </button>
-              </div>
-
-              <div className={`space-y-2 transition-opacity duration-200 ${!visibleMapLayers.zoning ? 'opacity-50 pointer-events-none' : ''}`}>
-                {ZONING_ORDER.map(cat => {
-                  const info = ZONING_CAT_INFO[cat];
-                  const isChecked = visibleZoningCats[cat] !== false;
-                  return (
-                    <div key={cat} className="flex items-center justify-between">
-                      <div className="flex items-center gap-2.5">
-                        <span
-                          className="w-3 h-3 rounded shadow-sm"
-                          style={{ backgroundColor: info?.color || '#999' }}
-                        />
-                        <span className="text-[12px] text-gray-600 font-medium leading-tight max-w-[160px]">
-                          {info?.label || cat}
-                        </span>
-                      </div>
-                      <ToggleSwitch
-                        checked={isChecked}
-                        onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            </div>
-
-            {/* Zonificación ANP Específica (Dinámica) */}
+            {/* ANP Zonificación (Dinámica) */}
             <div
-              className={`pt-3 border-t border-gray-100 ${!selectedAnpId ? 'opacity-50 cursor-not-allowed' : ''}`}
-              title={!selectedAnpId ? "Selecciona un ANP en el mapa para ver su zonificación" : ""}
+              className={`transition-opacity ${!selectedAnpId ? 'opacity-50 pointer-events-none' : ''}`}
             >
-              <div className="flex items-center justify-between">
+              <label className="flex items-center justify-between group cursor-pointer">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded border border-purple-500 bg-purple-100 shadow-sm" />
-                  <span className="text-[12px] text-purple-900 font-bold">Zonificación Interna ANP</span>
+                  <span className="text-[13px] text-purple-900 font-bold">Zonificación Interna ANP</span>
                 </div>
                 <ToggleSwitch
                   checked={visibleMapLayers.selectedAnpZoning}
@@ -3739,43 +3682,72 @@ const Legend = ({
                     }
                     toggleLayer('selectedAnpZoning');
                   }}
-                  disabled={!selectedAnpId || anpGeneralVisible}
                 />
-              </div>
+              </label>
             </div>
-
           </div>
-        )}
+        </div>
 
-        {activeTab === 'base' && (
-          <div className="space-y-3">
+        {/* 2. Zonificación PGOEDF */}
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Zonificación PGOEDF 2000</div>
+            <button onClick={toggleZoningGroup} className="text-[10px] text-[#9d2449] font-bold hover:underline">
+              {visibleMapLayers.zoning ? 'Ocultar todo' : 'Mostrar todo'}
+            </button>
+          </div>
+
+          <div className={`space-y-2 pl-1 transition-opacity duration-200 ${!visibleMapLayers.zoning ? 'opacity-50 pointer-events-none' : ''}`}>
+            {ZONING_ORDER.map(cat => {
+              const info = ZONING_CAT_INFO[cat];
+              const isChecked = visibleZoningCats[cat] !== false;
+              return (
+                <div key={cat} className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span
+                      className="w-3 h-3 rounded shadow-sm shrink-0"
+                      style={{ backgroundColor: info?.color || '#999' }}
+                    />
+                    <span className="text-[11px] text-gray-600 font-medium leading-tight">
+                      {info?.label || cat}
+                    </span>
+                  </div>
+                  <ToggleSwitch
+                    checked={isChecked}
+                    onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
+                  />
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 3. Mapa Base */}
+        <div>
+          <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Mapa Base</div>
+          <div className="grid grid-cols-1 gap-2">
             {[
-              { id: 'STREETS', label: 'Mapa Claro (Calles)', img: 'https://api.mapbox.com/styles/v1/mapbox/light-v11/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN },
-              { id: 'SATELLITE', label: 'Satélite + Calles', img: 'https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN },
-              { id: 'TOPO', label: 'Topográfico', img: 'https://api.mapbox.com/styles/v1/mapbox/outdoors-v12/static/-99.1332,19.4326,10,0/300x200?access_token=' + MAPBOX_TOKEN }
+              { id: 'STREETS', label: 'Mapa Claro (Calles)' },
+              { id: 'SATELLITE', label: 'Satélite + Calles' },
+              { id: 'TOPO', label: 'Topográfico' }
             ].map(opt => (
               <button
                 key={opt.id}
                 onClick={() => setActiveBaseLayer(opt.id)}
                 className={`
-                    w-full text-left rounded-lg overflow-hidden border-2 transition-all group relative
-                    ${activeBaseLayer === opt.id ? 'border-[#9d2449] ring-2 ring-[#9d2449]/20 shadow-md' : 'border-transparent shadow-sm hover:shadow-md'}
+                    w-full text-left px-3 py-2.5 rounded-lg border flex items-center justify-between transition-all
+                    ${activeBaseLayer === opt.id
+                    ? 'bg-[#9d2449]/5 border-[#9d2449] text-[#9d2449]'
+                    : 'bg-gray-50 border-transparent text-gray-600 hover:bg-white hover:border-gray-200 shadow-sm'}
                  `}
               >
-                <div className="relative h-20 bg-gray-200">
-                  <img src={opt.img} alt={opt.label} className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity" />
-                  <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors" />
-                </div>
-                <div className="p-2 bg-white flex items-center justify-between">
-                  <span className={`text-[12px] font-bold ${activeBaseLayer === opt.id ? 'text-[#9d2449]' : 'text-gray-700'}`}>
-                    {opt.label}
-                  </span>
-                  {activeBaseLayer === opt.id && <Icons.CheckCircle className="h-4 w-4 text-[#9d2449]" />}
-                </div>
+                <span className="text-[12px] font-bold">{opt.label}</span>
+                {activeBaseLayer === opt.id && <Icons.CheckCircle className="h-4 w-4" />}
               </button>
             ))}
           </div>
-        )}
+        </div>
+
       </div>
     </div>
   );
