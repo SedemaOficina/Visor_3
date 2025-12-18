@@ -411,6 +411,13 @@ const Icons = {
       <polyline points="22 4 12 14.01 9 11.01" />
     </IconBase>
   ),
+  AlertCircle: (p) => (
+    <IconBase {...p}>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="12" />
+      <line x1="12" y1="16" x2="12.01" y2="16" />
+    </IconBase>
+  ),
   XCircle: (p) => (
     <IconBase {...p}>
       <circle cx="12" cy="12" r="10" />
@@ -793,102 +800,194 @@ const StatusMessage = ({ analysis }) => {
 };
 
 /* ------------------------------------------------ */
+/* ------------------------------------------------ */
 /* 6.2 Resumen Ejecutivo */
 /* ------------------------------------------------ */
-return (
-  <>
-    <div className="glass-panel rounded-xl p-4 mb-4 animate-slide-up">
-      {/* Header con Badge */}
-      <div className="flex items-center justify-between mb-3">
-        {!isOutside && (
-          <span
-            className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase shadow-sm"
-            style={{
-              backgroundColor: isSC ? '#3B7D23' : isUrban ? '#3b82f6' : '#6b7280',
-              color: '#ffffff'
-            }}
+
+/* ------------------------------------------------ */
+/* NEW COMPONENT: TOAST NOTIFICATIONS */
+/* ------------------------------------------------ */
+const ToastContext = React.createContext(null);
+
+const ToastProvider = ({ children }) => {
+  const [toasts, setToasts] = useState([]);
+
+  const addToast = React.useCallback((message, type = 'info') => {
+    const id = Date.now();
+    setToasts(prev => [...prev, { id, message, type }]);
+    setTimeout(() => removeToast(id), 3000);
+  }, []);
+
+  const removeToast = React.useCallback((id) => {
+    setToasts(prev => prev.filter(t => t.id !== id));
+  }, []);
+
+  return (
+    <ToastContext.Provider value={{ addToast }}>
+      {children}
+      <div className="fixed bottom-24 left-1/2 transform -translate-x-1/2 z-[5000] flex flex-col gap-2 pointer-events-none">
+        {toasts.map(t => (
+          <div
+            key={t.id}
+            className={`
+              pointer-events-auto px-4 py-3 rounded-lg shadow-lg text-sm font-semibold text-white animate-slide-up flex items-center gap-2
+              ${t.type === 'error' ? 'bg-red-600' : t.type === 'success' ? 'bg-green-600' : 'bg-gray-800'}
+            `}
           >
-            {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
-          </span>
+            {t.type === 'error' && <Icons.AlertCircle className="h-4 w-4" />}
+            {t.type === 'success' && <Icons.CheckCircle className="h-4 w-4" />}
+            {t.message}
+          </div>
+        ))}
+      </div>
+    </ToastContext.Provider>
+  );
+};
+
+const useToast = () => React.useContext(ToastContext);
+
+/* ------------------------------------------------ */
+/* NEW COMPONENT: SKELETON ANALYSIS */
+/* ------------------------------------------------ */
+const SkeletonAnalysis = () => (
+  <div className="animate-fade-in space-y-4 w-full">
+    {/* Header Skeleton */}
+    <div className="flex justify-between items-center mb-4">
+      <div className="h-6 w-24 skeleton rounded bg-gray-200" />
+      <div className="h-4 w-16 skeleton rounded bg-gray-200" />
+    </div>
+
+    {/* Banner Skeleton */}
+    <div className="h-24 w-full skeleton rounded-xl bg-gray-100 mb-4" />
+
+    {/* Details grid skeleton */}
+    <div className="grid grid-cols-2 gap-3">
+      <div className="h-12 w-full skeleton rounded bg-gray-100" />
+      <div className="h-12 w-full skeleton rounded bg-gray-100" />
+    </div>
+
+    {/* Long block skeleton */}
+    <div className="h-40 w-full skeleton rounded-xl bg-gray-100 mt-4" />
+  </div>
+);
+
+const ResultsContent = ({ analysis, onExportPDF }) => {
+  const { status } = analysis;
+  const isOutside = status === 'OUTSIDE_CDMX';
+  const isSC = status === 'CONSERVATION_SOIL';
+  const isUrban = status === 'URBAN_SOIL';
+  const isANP = analysis.isANP;
+
+  const zoningColor = analysis.zoningKey ? getZoningColor(analysis.zoningKey) : '#9ca3af';
+  const showZoningBlock = !isOutside && !isUrban; // Adjust logic as needed
+
+  const [copied, setCopied] = useState(false);
+  const copyCoords = () => {
+    navigator.clipboard.writeText(`${analysis.coordinate.lat.toFixed(5)}, ${analysis.coordinate.lng.toFixed(5)}`);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
+
+  // State for tabs
+  const [showDetails, setShowDetails] = useState(false);
+  const [activeTab, setActiveTab] = useState('prohibidas');
+
+  return (
+    <>
+      <div className="glass-panel rounded-xl p-4 mb-4 animate-slide-up">
+        {/* Header con Badge */}
+        <div className="flex items-center justify-between mb-3">
+          {!isOutside && (
+            <span
+              className="inline-flex items-center px-3 py-1 rounded-full text-[11px] font-bold tracking-wider uppercase shadow-sm"
+              style={{
+                backgroundColor: isSC ? '#3B7D23' : isUrban ? '#3b82f6' : '#6b7280',
+                color: '#ffffff'
+              }}
+            >
+              {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
+            </span>
+          )}
+
+          <button
+            onClick={copyCoords}
+            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+            title="Copiar coordenadas"
+          >
+            <div className="flex items-center gap-1 text-[10px]">
+              <Icons.Copy className="h-3 w-3" />
+              <span className="font-mono">{analysis.coordinate.lat.toFixed(4)}, {analysis.coordinate.lng.toFixed(4)}</span>
+            </div>
+            {copied && <span className="absolute -mt-6 right-0 bg-black text-white text-[9px] px-2 py-0.5 rounded animate-fade-in">Copiado</span>}
+          </button>
+        </div>
+
+        {/* Warning Outside */}
+        {isOutside ? (
+          <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-2 animate-pulse-subtle">
+            <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
+              <Icons.XCircle className="h-4 w-4" />
+              <span>Fuera de CDMX</span>
+            </div>
+            <p className="text-xs text-red-600 leading-snug">
+              Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
+            </p>
+          </div>
+        ) : (
+          <div className="mb-3">
+            <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Alcaldía</div>
+            <div className="text-lg font-bold text-gray-800 leading-tight">
+              {analysis.alcaldia || 'Ciudad de México'}
+            </div>
+          </div>
         )}
 
-        <button
-          onClick={copyCoords}
-          className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-          title="Copiar coordenadas"
-        >
-          <div className="flex items-center gap-1 text-[10px]">
-            <Icons.Copy className="h-3 w-3" />
-            <span className="font-mono">{analysis.coordinate.lat.toFixed(4)}, {analysis.coordinate.lng.toFixed(4)}</span>
-          </div>
-          {copied && <span className="absolute -mt-6 right-0 bg-black text-white text-[9px] px-2 py-0.5 rounded animate-fade-in">Copiado</span>}
-        </button>
-      </div>
-
-      {/* Warning Outside */}
-      {isOutside ? (
-        <div className="bg-red-50 border border-red-100 rounded-lg p-3 mb-2 animate-pulse-subtle">
-          <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
-            <Icons.XCircle className="h-4 w-4" />
-            <span>Fuera de CDMX</span>
-          </div>
-          <p className="text-xs text-red-600 leading-snug">
-            Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
-          </p>
-        </div>
-      ) : (
-        <div className="mb-3">
-          <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Alcaldía</div>
-          <div className="text-lg font-bold text-gray-800 leading-tight">
-            {analysis.alcaldia || 'Ciudad de México'}
-          </div>
-        </div>
-      )}
-
-      {/* Zonificación Badge */}
-      {showZoningBlock && (
-        <div className="mb-4">
-          <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-1">
-            {isANP ? 'Zonificación Interna' : 'Zonificación PGOEDF'}
-          </div>
-          {analysis.zoningName ? (
-            <div className="flex items-start gap-2">
-              <div
-                className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                style={{ backgroundColor: zoningColor }}
-              />
-              <div className="text-sm font-semibold text-gray-700 leading-snug">
-                {analysis.zoningName} <span className="text-gray-400 font-normal">({analysis.zoningKey})</span>
-              </div>
+        {/* Zonificación Badge */}
+        {showZoningBlock && (
+          <div className="mb-4">
+            <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-1">
+              {isANP ? 'Zonificación Interna' : 'Zonificación PGOEDF'}
             </div>
-          ) : (
-            <span className="text-sm text-gray-400 italic">No disponible</span>
-          )}
-        </div>
-      )}
-
-      {/* ANP Block */}
-      {isSC && isANP && (
-        <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 mb-3">
-          <div className="flex items-center gap-1.5 text-purple-800 font-bold text-xs mb-2">
-            <Icons.Verified className="h-3 w-3" /> {/* Assuming Verified exists or check Icons list. Using CheckCircle as fallback if needed manually but Verified would be nice. I will stick to what is in Icons obj or standard ones */}
-            <span>Área Natural Protegida</span>
+            {analysis.zoningName ? (
+              <div className="flex items-start gap-2">
+                <div
+                  className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                  style={{ backgroundColor: zoningColor }}
+                />
+                <div className="text-sm font-semibold text-gray-700 leading-snug">
+                  {analysis.zoningName} <span className="text-gray-400 font-normal">({analysis.zoningKey})</span>
+                </div>
+              </div>
+            ) : (
+              <span className="text-sm text-gray-400 italic">No disponible</span>
+            )}
           </div>
-          <div className="space-y-1 text-xs text-gray-700">
-            <div className="font-medium text-purple-900">{analysis.anpNombre}</div>
-            <div className="flex justify-between"><span>Categoría:</span> <span className="font-medium">{analysis.anpCategoria}</span></div>
-            <div className="flex justify-between"><span>Decreto:</span> <span className="font-mono text-[10px]">{formatDate(analysis.anpFechaDecreto)}</span></div>
-          </div>
-        </div>
-      )}
+        )}
 
-      <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
-        <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
+        {/* ANP Block */}
+        {isSC && isANP && (
+          <div className="bg-purple-50 border border-purple-100 rounded-lg p-3 mb-3">
+            <div className="flex items-center gap-1.5 text-purple-800 font-bold text-xs mb-2">
+              <Icons.Verified className="h-3 w-3" /> {/* Assuming Verified exists or check Icons list. Using CheckCircle as fallback if needed manually but Verified would be nice. I will stick to what is in Icons obj or standard ones */}
+              <span>Área Natural Protegida</span>
+            </div>
+            <div className="space-y-1 text-xs text-gray-700">
+              <div className="font-medium text-purple-900">{analysis.anpNombre}</div>
+              <div className="flex justify-between"><span>Categoría:</span> <span className="font-medium">{analysis.anpCategoria}</span></div>
+              <div className="flex justify-between"><span>Decreto:</span> <span className="font-mono text-[10px]">{formatDate(analysis.anpFechaDecreto)}</span></div>
+            </div>
+          </div>
+        )}
+
+        <div className="mt-4 pt-3 border-t border-gray-100 flex gap-2">
+          <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
+        </div>
+
       </div>
-
-    </div>
-  </>
-);
+    </>
+  );
 };
 /* ------------------------------------------------ */
 /* 6.3 Actividades agrupadas */
