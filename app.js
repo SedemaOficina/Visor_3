@@ -14,12 +14,13 @@ const ZONING_CAT_INFO = {
   FP: { color: '#7FA6FF', label: 'Forestal Protección (FP)' },
   FCE: { color: '#C77DFF', label: 'Forestal Conservación Esp. (FCE)' },
   FC: { color: '#FF85D6', label: 'Forestal Conservación (FC)' },
-  ANP_ZON: { color: '#8b5cf6', label: 'Zonificación ANP Específica' }
+  FCE: { color: '#C77DFF', label: 'Forestal Conservación Esp. (FCE)' },
+  FC: { color: '#FF85D6', label: 'Forestal Conservación (FC)' }
 };
 
 
 
-const ZONING_ORDER = ['FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE', 'ANP_ZON'];
+const ZONING_ORDER = ['FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE'];
 
 const LAYER_STYLES = {
   sc: {
@@ -510,8 +511,11 @@ let dataCache = {
   sc: null,
   edomex: null,
   morelos: null,
-  zoning: null,
-  anp: null,
+  edomex: null,
+  morelos: null,
+  zoning: null,      // PGOEDF (Main)
+  anpInternal: null, // Zonificación interna ANP (Archivos D)
+  anp: null,         // Polígonos ANP (Archivo C)
   rules: null
 };
 
@@ -633,20 +637,17 @@ const loadExtraData = async () => {
     );
 
   // ✅ Cargar zonificación MAIN + zonificaciones extra
-  const zoningUrls = [
-    DATA_FILES.ZONIFICACION_MAIN,
-    ...(DATA_FILES.ZONIFICACION_FILES || [])
-  ].filter(Boolean);
-
-  const [zoningCollections, rules, edomex, morelos, anp] = await Promise.all([
-    Promise.all(zoningUrls.map(fJ)),
+  const [mainZoning, anpInternalList, rules, edomex, morelos, anp] = await Promise.all([
+    fJ(DATA_FILES.ZONIFICACION_MAIN),
+    Promise.all((DATA_FILES.ZONIFICACION_FILES || []).map(fJ)),
     fC(DATA_FILES.USOS_SUELO_CSV),
     fJ(DATA_FILES.LIMITES_EDOMEX),
     fJ(DATA_FILES.LIMITES_MORELOS),
     fJ(DATA_FILES.ANP)
   ]);
 
-  dataCache.zoning = mergeFeatureCollections(zoningCollections);
+  dataCache.zoning = mainZoning; // Solo PGOEDF
+  dataCache.anpInternal = mergeFeatureCollections(anpInternalList); // Zonificación interna unificada para búsqueda
   dataCache.rules = rules;
   dataCache.edomex = edomex;
   dataCache.morelos = morelos;
@@ -667,11 +668,13 @@ const analyzeLocation = async (c) => {
     coordinate: c
   };
 
+  // ---------------------------------------------------
+  // 1. Validar si está fuera de CDMX
+  // ---------------------------------------------------
   if (!dataCache.cdmx) return r;
 
   if (dataCache.cdmx?.features.length && !findFeature(c, dataCache.cdmx)) {
     r.status = 'OUTSIDE_CDMX';
-
     if (dataCache.edomex && dataCache.morelos) {
       const inEM = findFeature(c, dataCache.edomex);
       const inMOR = findFeature(c, dataCache.morelos);
@@ -680,9 +683,13 @@ const analyzeLocation = async (c) => {
     return r;
   }
 
+  // Alcaldía
   const alc = findFeature(c, dataCache.alcaldias);
   r.alcaldia = alc ? (alc.properties.NOMBRE || alc.properties.NOMGEO) : "CDMX";
 
+  // ---------------------------------------------------
+  // 2. Determinar STATUS: URBAN vs CONSERVATION
+  // ---------------------------------------------------
   if (!dataCache.sc || !dataCache.sc.features?.length) {
     r.status = 'NO_DATA';
     return r;
@@ -691,90 +698,97 @@ const analyzeLocation = async (c) => {
   const sc = findFeature(c, dataCache.sc);
   if (!sc) {
     r.status = 'URBAN_SOIL';
-    return r;
+    // Nota: Aunque sea urbano, podría caer en ANP (paso 3).
+  } else {
+    r.status = 'CONSERVATION_SOIL';
+    r.isRestricted = true;
   }
 
-  r.status = 'CONSERVATION_SOIL';
-  r.isRestricted = true;
-
-  // =====================================================
-  // ✅ ANP detectada (pero NO bloquea zonificación interna)
-  // =====================================================
+  // ---------------------------------------------------
+  // 3. Detectar ANP (Cualquier suelo)
+  // ---------------------------------------------------
   if (dataCache.anp?.features?.length) {
     const anpFeat = findFeature(c, dataCache.anp);
     if (anpFeat) {
       const p = (anpFeat.properties || {});
-
       r.isANP = true;
       r.anp = { ...p };
 
-      // Campos explícitos
       r.anpId = p.ANP_ID ?? null;
       r.anpNombre = p.NOMBRE ?? null;
       r.anpTipoDecreto = p.TIPO_DECRETO ?? null;
       r.anpCategoria = p.CATEGORIA_PROTECCION ?? null;
       r.anpFechaDecreto = p.FECHA_DECRETO ?? null;
       r.anpSupDecretada = p.SUP_DECRETADA ?? null;
-
-      // ✅ Importante:
-      // NO hacemos return.
-      // Dejamos que se evalúe zonificación (zoning) para que puedas ver la zonificación interna.
-      // Si quieres seguir ocultando el catálogo de actividades por estar en ANP:
-      r.noActivitiesCatalog = true;
     }
   }
 
-
-  if (dataCache.zoning?.features?.length) {
-    const z = findFeature(c, dataCache.zoning);
+  // ---------------------------------------------------
+  // 4. Zonificación PGOEDF (SOLO si es Suelo de Conservación)
+  // ---------------------------------------------------
+  if (r.status === 'CONSERVATION_SOIL' && dataCache.zoning?.features?.length) {
+    const z = findFeature(c, dataCache.zoning); // PGOEDF
 
     if (z) {
       r.zoningKey = (z.properties.CLAVE || '').toString().trim().toUpperCase();
       r.zoningName = z.properties.PGOEDF || z.properties.UGA || r.zoningKey;
 
+      // 4.1 Cruzar con CSV de actividades
       if (dataCache.rules?.length) {
         const all = [];
         const pro = [];
 
-        // 1) Detectar PDU / Poblados Rurales por nombre
+        // Filtro especial: PDU o Poblados -> no mostrar catálogo
         const zn = (r.zoningName || '').toString().toUpperCase();
         r.isPDU = zn.includes('PDU') || zn.includes('POBLAD');
 
-        // 2) Detectar si el CSV NO trae columna para esa clave
-        const hasColumn =
-          dataCache.rules.length > 0 &&
-          Object.prototype.hasOwnProperty.call(dataCache.rules[0], r.zoningKey);
+        const hasColumn = Object.prototype.hasOwnProperty.call(dataCache.rules[0], r.zoningKey);
 
-        if (!hasColumn) {
+        if (!hasColumn || r.isPDU) {
           r.noActivitiesCatalog = true;
-        } else if (dataCache.rules[0] && r.zoningKey in dataCache.rules[0]) {
+        } else {
           dataCache.rules.forEach(row => {
             const val = (row[r.zoningKey] || '').trim().toUpperCase();
             if (!val) return;
-
             const act = {
               sector: (row['Sector'] || row['ector'] || '').trim(),
               general: (row['Actividad general'] || row['Act_general'] || '').trim(),
               specific: (row['Actividad específica'] || row['Actividad especifica'] || '').trim()
             };
-
             if (val === 'A') all.push(act);
             else if (val === 'P') pro.push(act);
           });
-
           r.allowedActivities = all;
           r.prohibitedActivities = pro;
         }
       }
     } else {
-      r.zoningName = "Sin zonificación específica";
-      r.zoningKey = "SC";
+      r.zoningName = "Sin zonificación PGOEDF detectada";
+      r.zoningKey = "SC"; // Fallback
       r.noActivitiesCatalog = true;
     }
-  } else {
-    r.zoningName = "Cargando detalles...";
+  } else if (r.status === 'URBAN_SOIL') {
+    // Si es urbano, no aplicamos PGOEDF (catálogo SC)
     r.noActivitiesCatalog = true;
   }
+
+  // ---------------------------------------------------
+  // 5. Zonificación Interna ANP (Si aplica)
+  // ---------------------------------------------------
+  if (r.isANP && r.anpId && dataCache.anpInternal?.features?.length) {
+    // Buscar si cae en algún polígono interno
+    // Opcional: filtrar primero por ANP_ID si el geojson interno lo trae,
+    // pero findFeature geométrico es lo más seguro.
+    const zInt = findFeature(c, dataCache.anpInternal);
+    if (zInt) {
+      // Si encontramos zonificación interna, la guardamos para mostrarla
+      r.anpInternalFeature = zInt;
+      r.anpZoningData = { ...zInt.properties };
+      // Aquí indicamos que EXISTE zonificación específica
+      r.hasInternalAnpZoning = true;
+    }
+  }
+
   return r;
 };
 
@@ -3288,11 +3302,6 @@ const MapViewer = ({
       zoning.features.forEach(f => {
         let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
 
-        // ✅ Fix: Si no tiene CLAVE pero es un archivo específico (tiene ZONIFICACION), usar 'ANP_ZON'
-        if (!k && f.properties?.ZONIFICACION) {
-          k = 'ANP_ZON';
-        }
-
         if (byKey[k]) byKey[k].push(f);
       });
 
@@ -3320,8 +3329,9 @@ const MapViewer = ({
   }, [extraDataLoaded]);
 
   // ✅ EFFECT: Manejo dinámico de Zonificación de ANP Seleccionada
+  // ✅ EFFECT: Manejo dinámico de Zonificación de ANP Seleccionada (usando anpInternal)
   useEffect(() => {
-    if (!mapInstance.current || !dataCache.zoning) return;
+    if (!mapInstance.current || !dataCache.anpInternal) return;
 
     // 1. Limpiar capa anterior si existe
     if (selectedAnpLayerRef.current) {
@@ -3332,15 +3342,15 @@ const MapViewer = ({
     // 2. Si no hay ANP seleccionada o la capa "selectedAnpZoning" está apagada, salir
     if (!selectedAnpId || !visibleMapLayers.selectedAnpZoning) return;
 
-    // 3. Filtrar features del ANP seleccionado
-    const candidates = dataCache.zoning.features.filter(f => {
-      const k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
-      // Es un feature de zonificación específica (sin CLAVE)
-      if (!k && f.properties?.ZONIFICACION) {
-        // Si tiene ANP_ID y coincide
-        if (f.properties.ANP_ID && f.properties.ANP_ID === selectedAnpId) return true;
-        return false;
-      }
+    // 3. Filtrar features del ANP seleccionado dentro de anpInternal
+    const candidates = dataCache.anpInternal.features.filter(f => {
+      // Usar ANP_ID si existe, si no, check espacial (mas costoso, aquí asumimos ID en D files)
+      // Si el archivo geojson D no tiene ANP_ID en properties, habrá que confiar en que
+      // el `analyzeLocation` ya nos dio el feature.
+      // PERO para dibujar TODO el mapa del ANP, necesitamos todos los polígonos del ANP.
+
+      // Asumimos que los archivos internos tienen ANP_ID. Si no, habría que usar geometría.
+      if (f.properties?.ANP_ID === selectedAnpId) return true;
       return false;
     });
 
