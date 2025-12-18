@@ -2389,7 +2389,6 @@ const ResultsContent = ({ analysis, onExportReady }) => {
       )}
 
       {analysis.status === 'CONSERVATION_SOIL' &&
-        !isANP &&
         !analysis.isPDU &&
         !analysis.noActivitiesCatalog && (
           <>
