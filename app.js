@@ -8,12 +8,13 @@ const ZONING_CAT_INFO = {
   FPE: { color: '#5AD2FF', label: 'Forestal Protección Esp. (FPE)' },
   FP: { color: '#7FA6FF', label: 'Forestal Protección (FP)' },
   FCE: { color: '#C77DFF', label: 'Forestal Conservación Esp. (FCE)' },
-  FC: { color: '#FF85D6', label: 'Forestal Conservación (FC)' }
+  FC: { color: '#FF85D6', label: 'Forestal Conservación (FC)' },
+  ANP_ZON: { color: '#8b5cf6', label: 'Zonificación ANP Específica' }
 };
 
 
 
-const ZONING_ORDER = ['FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE'];
+const ZONING_ORDER = ['FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE', 'ANP_ZON'];
 
 const LAYER_STYLES = {
   sc: {
@@ -3181,7 +3182,13 @@ const MapViewer = ({
       ZONING_ORDER.forEach(k => (byKey[k] = []));
 
       zoning.features.forEach(f => {
-        const k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+        let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+
+        // ✅ Fix: Si no tiene CLAVE pero es un archivo específico (tiene ZONIFICACION), usar 'ANP_ZON'
+        if (!k && f.properties?.ZONIFICACION) {
+          k = 'ANP_ZON';
+        }
+
         if (byKey[k]) byKey[k].push(f);
       });
 
