@@ -1,3 +1,6 @@
+/* ------------------------------------------------ */
+/* 1. CONFIGURACIÓN E IMPORTACIONES */
+/* ------------------------------------------------ */
 const { useState, useEffect, useRef } = window.React;
 const ReactDOM = window.ReactDOM;
 
@@ -151,7 +154,7 @@ const FAQ_ITEMS = [
 ];
 
 /* ------------------------------------------------ */
-/* 2. UTILIDADES */
+/* 2. UTILIDADES GEOESPACIALES Y GENERALES */
 /* ------------------------------------------------ */
 
 const getZoningColor = (c) => {
@@ -344,13 +347,7 @@ const parseCoordinateInput = (value) => {
 };
 
 /* ------------------------------------------------ */
-/* 3. ICONOS (SVG) – CORREGIDOS */
-/* ------------------------------------------------ */
-/* ------------------------------------------------ */
-/* COMPONENTE BASE PARA ICONOS (FALTABA ESTO) */
-/* ------------------------------------------------ */
-/* ------------------------------------------------ */
-/* 3. ICONOS (SVG) – CORREGIDOS */
+/* 3. ICONOS (SVG) */
 /* ------------------------------------------------ */
 
 /* 1. PRIMERO defines el componente base */
@@ -503,7 +500,7 @@ const Icons = {
 
 
 /* ------------------------------------------------ */
-/* 5. LÓGICA GEOESPACIAL */
+/* 4. LÓGICA GEOESPACIAL (GEOJSON & DATOS) */
 /* ------------------------------------------------ */
 
 let dataCache = {
@@ -781,7 +778,7 @@ const analyzeLocation = async (c) => {
 };
 
 /* ------------------------------------------------ */
-/* 6. COMPONENTES UI */
+/* 5. COMPONENTES UI COMPARTIDOS */
 /* ------------------------------------------------ */
 
 /* 6.1 Mensajes de estado */
@@ -1109,10 +1106,8 @@ const LegalDisclaimer = () => (
     <strong>Aviso Legal:</strong> La información mostrada es orientativa y no sustituye la interpretación oficial.
   </div>
 );
-
-
 // ------------------------------------------------
-// FICHA PDF (plantilla oculta para exportar)
+/* 6. EXPORTACIÓN Y PDF */
 // ------------------------------------------------
 
 // ✅ QR como IMG (para que html2canvas lo capture bien)
@@ -3006,6 +3001,9 @@ const ToggleSwitch = ({ checked, onChange }) => (
   </div>
 );
 
+/* ------------------------------------------------ */
+/* 8. VISOR DE MAPA (LEAFLET) */
+/* ------------------------------------------------ */
 const MapViewer = ({
   location,
   onLocationSelect,
