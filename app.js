@@ -3611,19 +3611,18 @@ const MapViewer = ({
           </div>
         </div>
       </div>
-  )
-}
+
 
 {/* Nota inicial desktop */ }
-{
-  !analysisStatus && (
-    <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
-      <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
-        Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
+  {
+    !analysisStatus && (
+      <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
+        <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
+          Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
+        </div>
       </div>
-    </div>
-  )
-}
+    )
+  }
     </div >
   );
 };
