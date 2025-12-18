@@ -179,7 +179,7 @@ const getZoningStyle = (f) => {
     weight: 1, // Cleaner lines
     dashArray: null,
     fillColor: c,
-    fillOpacity: 0.15, // Unified low opacity for PGOEDF zoning
+    fillOpacity: 0.12, // Increased transparency for satellite view
     opacity: 1,
     stroke: true,
     interactive: true
@@ -2065,7 +2065,7 @@ const ResultsContent = ({ analysis, onExportReady }) => {
       if (EXPORT_STATE.visibleMapLayers?.edomex) {
         addGeoJson(
           dataCache.edomex,
-          { color: LAYER_STYLES.edomex.color, weight: 2, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.1 },
+          { color: LAYER_STYLES.edomex.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 },
           405
         );
       }
@@ -2074,7 +2074,7 @@ const ResultsContent = ({ analysis, onExportReady }) => {
       if (EXPORT_STATE.visibleMapLayers?.morelos) {
         addGeoJson(
           dataCache.morelos,
-          { color: LAYER_STYLES.morelos.color, weight: 2, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.1 },
+          { color: LAYER_STYLES.morelos.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 },
           405
         );
       }
@@ -2088,7 +2088,7 @@ const ResultsContent = ({ analysis, onExportReady }) => {
             weight: 2.2,
             opacity: 0.95,
             fillColor: LAYER_STYLES.anp.fill,
-            fillOpacity: 0.22   // ✅ misma transparencia que zonificación
+            fillOpacity: 0.12   // ✅ misma transparencia que zonificación
           },
           428
         );
@@ -2894,9 +2894,6 @@ const SidebarDesktop = ({
   onToggle,
   onExportReady,
   desktopSearchSetRef,
-  onExportReady,
-  desktopSearchSetRef,
-  isLoading,
   onOpenHelp // ✅ Prop para abrir ayuda
 }) => (
   <div className="hidden md:flex h-full z-[2000]">
@@ -2983,7 +2980,6 @@ const SidebarDesktop = ({
 );
 
 
-/* ------------------------------------------------ */
 /* 7.3 Bottom Sheet Móvil */
 /* ------------------------------------------------ */
 const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onStateChange, onExportPDF, onExportReady }) => {
@@ -3316,7 +3312,7 @@ const MapViewer = ({
         weight: 2,
         opacity: 1,
         fillColor: LAYER_STYLES.sc.fill,
-        fillOpacity: 0.5, // ✅ SC se nota más
+        fillOpacity: 0.35, // ✅ SC se nota pero deja ver satélite
         interactive: false
       },
       null,
@@ -3427,7 +3423,7 @@ const MapViewer = ({
           weight: 1.5,
           opacity: 0.9,
           fillColor: LAYER_STYLES.anp.fill,
-          fillOpacity: 0.15   // ✅ Baja opacidad (igual que zoning)
+          fillOpacity: 0.12   // ✅ Baja opacidad para ver satélite
         },
         'NOMBRE',
         'paneOverlay',
