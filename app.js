@@ -176,10 +176,10 @@ const getZoningStyle = (f) => {
 
   return {
     color: c,
-    weight: 1.5,
-    dashArray: null, // Unified to solid line
+    weight: 1, // Cleaner lines
+    dashArray: null,
     fillColor: c,
-    fillOpacity: 0.5, // Unified opacity
+    fillOpacity: 0.15, // Unified low opacity for PGOEDF zoning
     opacity: 1,
     stroke: true,
     interactive: true
@@ -3171,10 +3171,10 @@ const MapViewer = ({
       sc,
       {
         color: LAYER_STYLES.sc.color,
-        weight: 1.8,
-        opacity: 0.9,
+        weight: 2,
+        opacity: 1,
         fillColor: LAYER_STYLES.sc.fill,
-        fillOpacity: 0.18,
+        fillOpacity: 0.5, // ✅ SC se nota más
         interactive: false
       },
       null,
@@ -3282,10 +3282,10 @@ const MapViewer = ({
         anp,
         {
           color: LAYER_STYLES.anp.color,
-          weight: 2.2,
-          opacity: 0.95,
+          weight: 1.5,
+          opacity: 0.9,
           fillColor: LAYER_STYLES.anp.fill,
-          fillOpacity: 0.22   // ✅ misma transparencia que zonificación
+          fillOpacity: 0.15   // ✅ Baja opacidad (igual que zoning)
         },
         'NOMBRE',
         'paneOverlay',
@@ -3624,48 +3624,6 @@ const MapViewer = ({
                   <ToggleSwitch checked={!!visibleMapLayers.anp} onChange={() => toggleLayer('anp')} />
                 </div>
 
-                {/* ✅ Capa Específica ANP (Zon_...) - Dependiente */}
-                <div
-                  className={`flex items-center justify-between px-2 py-1.5 rounded-lg border border-gray-100 transition-colors
-                      ${!selectedAnpId ? 'opacity-50 cursor-not-allowed bg-gray-50' : 'hover:bg-gray-50 cursor-pointer'}
-                    `}
-                  title={!selectedAnpId ? "Selecciona un ANP en el mapa para ver su zonificación" : ""}
-                  onClick={() => {
-                    if (!selectedAnpId) return;
-                    // Restricción: No activar si la capa superior ANP está visible?
-                    // O al revés? El usuario dijo: "no se pueda activar si la capa superior de anp está activada"
-                    if (visibleMapLayers.anp) {
-                      alert("Para ver la zonificación interna, desactiva primero la capa general de 'Áreas Naturales Protegidas'.");
-                      return;
-                    }
-                    toggleLayer('selectedAnpZoning');
-                  }}
-                >
-                  <div className="flex items-center gap-2 min-w-0">
-                    <span className="w-3 h-3 rounded border border-gray-300"
-                      style={{ backgroundColor: ZONING_CAT_INFO.ANP_ZON?.color || '#8b5cf6' }} />
-                    <span className="text-[11px] text-gray-800 truncate">
-                      Zonificación ANP Selecc.
-                    </span>
-                  </div>
-
-                  {/* Toggle deshabilitado visualmente si ANP general está activa (regla de negocio user) */}
-                  <ToggleSwitch
-                    checked={!!visibleMapLayers.selectedAnpZoning}
-                    onChange={() => {
-                      if (!selectedAnpId) return;
-                      if (visibleMapLayers.anp) {
-                        // Opción: Auto-desactivar ANP general? 
-                        // El usuario dijo "no se pueda activar", implying disabled.
-                        // Vamos a bloquearlo.
-                        alert("Desactiva la capa 'Áreas Naturales Protegidas' para ver el detalle interno.");
-                        return;
-                      }
-                      toggleLayer('selectedAnpZoning');
-                    }}
-                    disabled={!selectedAnpId || !!visibleMapLayers.anp}
-                  />
-                </div>
               </div>
             </div>
 
