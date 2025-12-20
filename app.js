@@ -2893,6 +2893,7 @@ const SidebarDesktop = ({
   onToggle,
   onExportReady,
   desktopSearchSetRef,
+  isLoading,
   onOpenHelp // ✅ Prop para abrir ayuda
 }) => (
   <div className="hidden md:flex h-full z-[2000]">
