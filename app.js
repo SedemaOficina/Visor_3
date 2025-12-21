@@ -1977,7 +1977,11 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage }, ref) => {
 
 /* 6.5 CONTENIDO PRINCIPAL DEL PANEL */
 /* ------------------------------------------------ */
+/* 6.5 CONTENIDO PRINCIPAL DEL PANEL */
+/* ------------------------------------------------ */
 const ResultsContent = ({ analysis, onExportReady }) => {
+  if (!analysis) return null; // 🛡️ CRASH FIX: Evita renderizar sin datos
+
   const [activeTab, setActiveTab] = useState('prohibidas');
   const [showDetails, setShowDetails] = useState(true);
   const [mapImage, setMapImage] = useState(null);
@@ -2340,7 +2344,12 @@ const ResultsContent = ({ analysis, onExportReady }) => {
   }, [analysis]);
 
   // ✅ Esta es la ÚNICA función que deben usar botones / App
-  const requestExportPDF = React.useCallback(() => {
+  const requestExportPDF = React.useCallback((e) => {
+    // 🛡️ GUARD: Solo permitir si el evento es confiable (usuario real)
+    if (!e || !e.isTrusted) {
+      console.warn("Intento de exportación bloqueado (sin interacción de usuario)");
+      return;
+    }
     exportArmedRef.current = true;
     handleExportPDF();
   }, [handleExportPDF]);
@@ -2872,7 +2881,7 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
       {/* Exportar PDF (solo por acción del usuario) */}
       <button
         type="button"
-        onClick={() => onExportPDF?.()}
+        onClick={(e) => onExportPDF?.(e)}
         className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
       >
         <Icons.Pdf className="h-5 w-5 mb-1" />
@@ -3161,8 +3170,8 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 
           <button
             type="button"
-            onClick={() => {
-              if (onExportPDF) onExportPDF();
+            onClick={(e) => {
+              if (onExportPDF) onExportPDF(e);
               else alert('No se pudo generar el PDF. Intenta recargar la página.');
             }}
             className="flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
@@ -3675,25 +3684,10 @@ const Legend = ({
   selectedAnpId,
   anpGeneralVisible
 }) => {
-  if (!isOpen) {
-    return (
-      <button
-        onClick={() => setIsOpen(true)}
-        className="
-          fixed bottom-32 right-4 md:bottom-8 z-[5000]
-          w-14 h-14 bg-[#9d2148] text-white rounded-full shadow-lg
-          flex items-center justify-center
-          hover:bg-[#7d1d3a] hover:scale-110 active:scale-95 transition-all
-        "
-        title="Abrir Leyenda"
-      >
-        <Icons.Layers className="h-7 w-7" />
-      </button>
-    );
-  }
+  if (!isOpen) return null; // ✅ Legend logic moved to MapControls
 
   return (
-    <div className="fixed bottom-24 right-4 z-[2000] w-80 glass-panel rounded-xl shadow-soft animate-fade-in flex flex-col max-h-[75vh]">
+    <div className="fixed bottom-24 right-4 z-[5000] w-80 glass-panel rounded-xl shadow-soft animate-fade-in flex flex-col max-h-[75vh]">
       {/* Header */}
       <div className="flex items-center justify-between p-4 border-b border-gray-100 bg-white/50 rounded-t-xl shrink-0">
         <h3 className="font-bold text-gray-800 text-sm flex items-center gap-2">
@@ -3880,15 +3874,17 @@ const App = () => {
     EXPORT_STATE.visibleZoningCats = { ...visibleZoningCats };
   }, [activeBaseLayer, visibleMapLayers, visibleZoningCats]);
 
+
+
   const [mobileSheetState, setMobileSheetState] = useState('collapsed'); // collapsed | mid | full
 
   // ✅ acá se guarda la función REAL que exporta el PDF (la define ResultsContent)
   const [exportHandler, setExportHandler] = useState(null);
 
   // ✅ Wrapper: solo se ejecuta por botón (acción del usuario)
-  const handleExportClick = React.useCallback(() => {
+  const handleExportClick = React.useCallback((e) => {
     if (typeof exportHandler === 'function') {
-      exportHandler();
+      exportHandler(e);
     } else {
       alert('Aún no se puede exportar. Intenta de nuevo en un momento.');
     }
@@ -3943,10 +3939,8 @@ const App = () => {
     setLocation(null);
     setAnalysis(null);
     setMobileSheetState('collapsed');
-
-    setAnalysis(null);
-    setMobileSheetState('collapsed');
     // setAddressText(''); // No longer needed
+
 
     resetMapViewRef.current?.();
   };
@@ -4105,42 +4099,55 @@ const App = () => {
             </div>
           )}
 
-          {/* BOTONES MÓVIL */}
-          <div className="md:hidden absolute bottom-40 right-4 z-[3400] pointer-events-auto flex flex-col items-end gap-3">
-            <button
-              type="button"
-              onClick={() => setIsHelpOpen(true)}
-              className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] active:scale-95 transition"
-              aria-label="Ayuda"
-              title="Ayuda"
-            >
-              ?
-            </button>
-
-            {(!analysis || mobileSheetState !== 'full') && (
-              <>
-                {/* The Legend component now handles its own button */}
-                {/* <button
+          {/* CONTROLES DE MAPA (NUEVA UI) */}
+          <div className="absolute inset-0 pointer-events-none z-[3000]">
+            {/* Top Right: Ayuda + Capas */}
+            <div className="absolute top-24 right-4 flex flex-col items-end gap-3 pointer-events-auto">
+              {/* Botón Ayuda */}
+              <button
                 type="button"
-                onClick={() => setIsLegendOpen(o => !o)}
-                className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] active:scale-95 transition"
-                aria-label="Capas"
+                onClick={() => setIsHelpOpen(true)}
+                className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                title="Ayuda"
+              >
+                <span className="font-bold text-lg">?</span>
+              </button>
+
+              {/* Botón Capas (Legend toggle) */}
+              <button
+                type="button"
+                onClick={() => setIsLegendOpen(v => !v)}
+                className={`w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
                 title="Capas"
               >
                 <Icons.Layers className="h-5 w-5" />
-              </button> */}
+              </button>
+            </div>
 
+            {/* Bottom Right: Reset View + Location */}
+            <div className="absolute bottom-40 md:bottom-8 right-4 flex flex-col items-end gap-3 pointer-events-auto">
+              {/* Reset View */}
+              {analysis && (
                 <button
                   type="button"
-                  onClick={handleUserLocation}
-                  className="w-12 h-12 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] active:scale-95 transition"
-                  aria-label="Mi ubicación"
-                  title="Mi ubicación"
+                  onClick={() => resetMapViewRef.current?.()}
+                  className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-gray-600 hover:text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                  title="Restablecer vista"
                 >
-                  <Icons.Navigation className="h-5 w-5" />
+                  <Icons.Maximize className="h-5 w-5" />
                 </button>
-              </>
-            )}
+              )}
+
+              {/* My Location */}
+              <button
+                type="button"
+                onClick={handleUserLocation}
+                className="w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                title="Mi ubicación"
+              >
+                <Icons.Navigation className="h-5 w-5" />
+              </button>
+            </div>
           </div>
         </div>
 
