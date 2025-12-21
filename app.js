@@ -2803,6 +2803,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
       text-[14px] font-semibold flex items-center justify-center gap-2
       shadow-sm hover:bg-[#7d1d3a]
     "
+            title="Usar mi ubicación actual"
           >
             <Icons.Navigation className="h-4 w-4" />
             Mi ubicación
@@ -2852,6 +2853,7 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
         target="_blank"
         rel="noreferrer"
         className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
+        title="Ver ubicación en Google Maps"
       >
         <Icons.MapIcon className="h-5 w-5 mb-1" />
         <span className="text-[9px] font-bold">Google Maps</span>
@@ -2862,6 +2864,7 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
         type="button"
         onClick={handleCopyLink}
         className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
+        title="Copiar enlace directo al portapapeles"
       >
         <Icons.Share className="h-5 w-5 mb-1" />
         <span className="text-[9px] font-bold">Copiar enlace</span>
@@ -3118,6 +3121,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
               }}
               className="p-1.5 rounded-full bg-[#9d2148] shadow-sm active:scale-95 transition"
               aria-label="Cerrar resultados"
+              title="Cerrar ficha"
             >
               <Icons.X className="h-4 w-4 text-white" />
             </button>
@@ -3138,6 +3142,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
             target="_blank"
             rel="noreferrer"
             className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#9d2148] text-white py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-[#7d1d3a] transition-colors"
+            title="Ver ubicación en Google Maps"
           >
             <Icons.MapIcon className="h-4 w-4" /> Google Maps
           </a>
@@ -3158,6 +3163,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
               }
             }}
             className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
+            title="Compartir ubicación"
           >
             <Icons.Share className="h-4 w-4" /> Compartir
           </button>
@@ -3169,6 +3175,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
               else alert('No se pudo generar el PDF. Intenta recargar la página.');
             }}
             className="flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
+            title="Descargar ficha técnica en PDF"
           >
             <Icons.Pdf className="h-4 w-4" /> Exportar PDF
           </button>
