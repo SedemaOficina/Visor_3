@@ -45,21 +45,19 @@ window.App.Constants.DATA_FILES = {
     // ✅ Zonificaciones extra (se agregan encima)
     ZONIFICACION_FILES: [
         './data/Zon_Bosque_de_Tlalpan.geojson',
-        './data/Zon_Cumbres_del_Ajusco.geojson',
+        './data/Zon_Cerro_de_la_Estrella.geojson',
         './data/Zon_Desierto_de_los_Leones.geojson',
-        './data/Zon_Ecoguardas.geojson',
-        './data/Zon_Ejidos_de_Xochimilco_y_San_Gregorio_Atlapulco.geojson',
-        './data/Zon_El_Tepeyac.geojson',
+        './data/Zon_Ejidos_de_Xochimilco.geojson',
         './data/Zon_La_Loma.geojson',
-        './data/Zon_Los_Encinos.geojson',
-        './data/Zon_San_Nicolas_Totolapan.geojson'
+        './data/Zon_Sierra_de_Guadalupe.geojson',
+        './data/Zon_Sierra_de_Santa_Catarina.geojson'
     ],
 
     // ✅ TABLA DE USOS
-    USOS_SUELO_CSV: './data/Tabla_Gral_Zonificacion_PGOEDF.csv',
+    USOS_SUELO_CSV: './data/tabla_actividades_pgoedf.csv',
 
     // ✅ ANP (Polígonos generales, no zonificación)
-    ANP: './data/ANP.geojson'
+    ANP: './data/anp_consolidada.geojson'
 };
 
 window.App.Constants.CONTACT_INFO = {
