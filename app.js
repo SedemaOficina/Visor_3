@@ -4022,11 +4022,12 @@ const App = () => {
   }
 
   return (
-    <div className="flex flex-col h-full w-full overflow-hidden bg-[#f3f4f6]" style={{ fontFamily: "'Inter', sans-serif" }}>
+    <div className="flex flex-col w-full h-[100dvh] overflow-hidden bg-[#f3f4f6]" style={{ fontFamily: "'Inter', sans-serif" }}>
       {/* ✅ Estilos Globales */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
-        body { font-family: 'Inter', sans-serif; margin: 0; padding: 0; }
+        html, body, #root { height: 100%; width: 100%; margin: 0; padding: 0; }
+        body { font-family: 'Inter', sans-serif; }
         .glass-panel { backdrop-filter: blur(12px); background: rgba(255,255,255,0.85); border: 1px solid rgba(255,255,255,0.5); }
       `}</style>
 
