@@ -4082,18 +4082,16 @@ const App = () => {
               <Icons.Layers className="h-5 w-5" />
             </button>
 
-            {/* 3. Reset View (Condicional) */}
-            {analysis && (
-              <button
-                type="button"
-                onClick={() => resetMapViewRef.current?.()}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-gray-600 hover:text-[#9d2148] hover:scale-105 active:scale-95 transition"
-                title="Restablecer vista"
-                aria-label="Restablecer vista"
-              >
-                <Icons.RotateCcw className="h-5 w-5" />
-              </button>
-            )}
+            {/* 3. Reset View (Siempre visible) */}
+            <button
+              type="button"
+              onClick={() => resetMapViewRef.current?.()}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              title="Restablecer vista"
+              aria-label="Restablecer vista"
+            >
+              <Icons.RotateCcw className="h-5 w-5" />
+            </button>
 
             {/* 4. Mi Ubicación */}
             <button
