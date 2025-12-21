@@ -2840,13 +2840,8 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
 /* ------------------------------------------------ */
 
 const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
-  const handleCopyLink = () => {
-    const url = `${window.location.origin}${window.location.pathname}?lat=${analysis.coordinate.lat}&lng=${analysis.coordinate.lng}&open=1`;
-    navigator.clipboard.writeText(url);
-  };
-
   return (
-    <div className="grid grid-cols-3 gap-2 w-full">
+    <div className="hidden md:grid grid-cols-2 gap-2 w-full">
       {/* Google Maps */}
       <a
         href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
@@ -2858,17 +2853,6 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
         <Icons.MapIcon className="h-5 w-5 mb-1" />
         <span className="text-[9px] font-bold">Google Maps</span>
       </a>
-
-      {/* Copiar enlace */}
-      <button
-        type="button"
-        onClick={handleCopyLink}
-        className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
-        title="Copiar enlace directo al portapapeles"
-      >
-        <Icons.Share className="h-5 w-5 mb-1" />
-        <span className="text-[9px] font-bold">Copiar enlace</span>
-      </button>
 
       {/* Exportar PDF (solo por acción del usuario) */}
       <button
