@@ -1517,7 +1517,7 @@ const PdfExportController = ({ analysis, onExportReady }) => {
 
   useEffect(() => {
     if (!onExportReady) return;
-    onExportReady(requestExportPDF);
+    onExportReady(() => requestExportPDF); // ✅ Fix: Wrap in closure to avoid executing function
     return () => onExportReady(null);
   }, [onExportReady, requestExportPDF]);
 
