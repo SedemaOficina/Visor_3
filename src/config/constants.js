@@ -80,7 +80,7 @@ window.App.Constants.FAQ_ITEMS = [
     }
 ];
 
-window.App.Constants.MAPBOX_TOKEN = 'pk.eyJ1Ijoiam9yZ2VoZXIiLCJhIjoiY2w4dHZ4ZWhpMDU3ZTN1cGU4d3FsZ210ZCJ9.7k3F5e3Y9o8f9Qwk7xZ2jA';
+window.App.Constants.MAPBOX_TOKEN = 'pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0b2gzZnB0NnU2a2xwY2oifQ.2BDJUISBBvrm1wM8RwXusg';
 
 window.App.Constants.INITIAL_CENTER = [19.34, -99.145]; // Centro CDMX aprox
 window.App.Constants.INITIAL_ZOOM = 10;
