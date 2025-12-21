@@ -3680,7 +3680,7 @@ const Legend = ({
       <button
         onClick={() => setIsOpen(true)}
         className="
-          fixed bottom-8 right-4 z-[1000]
+          fixed bottom-32 right-4 md:bottom-8 z-[5000]
           w-14 h-14 bg-[#9d2148] text-white rounded-full shadow-lg
           flex items-center justify-center
           hover:bg-[#7d1d3a] hover:scale-110 active:scale-95 transition-all
@@ -4156,6 +4156,12 @@ const App = () => {
           }}
           onExportPDF={handleExportClick} // pass the handler that calls the state func
           onExportReady={setExportHandler}
+        />
+
+        {/* ✅ MODAL DE AYUDA (Restaurado) */}
+        <HelpModal
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
         />
       </div>
     </div>
