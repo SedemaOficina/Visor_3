@@ -123,6 +123,13 @@ body {
   backdrop-filter: blur(4px);
 }
 
+/* Allow click-through on specific overlay panes (like Alcaldias borders) */
+.leaflet-paneContext-pane {
+  pointer-events: none !important;
+  z-index: 450;
+  /* Ensure z-index is respected visually */
+}
+
 .leaflet-tooltip.custom-tooltip::before {
   border-top-color: rgba(15, 23, 42, 0.95) !important;
 }
