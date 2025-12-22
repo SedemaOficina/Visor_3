@@ -241,11 +241,12 @@
                 fontSize: `${T.small}px`,
                 fontWeight: 800,
                 letterSpacing: '0.02em',
-                lineHeight: 1,
+                lineHeight: 1.3, // Increased to prevent clipping
                 backgroundColor: bg,
                 color: fg,
                 border: border === 'transparent' ? '1px solid transparent' : `1px solid ${border}`,
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                paddingTop: '5px' // Slight optical adjustment
             });
 
             const h2 = (color = C.ink) => ({
@@ -677,7 +678,7 @@
                                     backgroundColor: '#fbfbfc'
                                 }}>
                                     <ul style={{ margin: 0, paddingLeft: '16px', listStyleType: 'disc' }}>
-                                        {(window.App.Constants.PROVISIONS_NOTES || []).map((note, idx) => (
+                                        {(window.App?.Constants?.PROVISIONS_NOTES || []).map((note, idx) => (
                                             <li key={idx} style={{
                                                 fontSize: `${T.base}px`,
                                                 marginBottom: '6px',
