@@ -543,7 +543,7 @@ const App = () => {
 
   useEffect(() => {
     if (location && extraDataLoaded) {
-      analyzeLocation(location).then(setAnalysis);
+      analyzeLocation(location, dataCache).then(setAnalysis);
     }
   }, [location, extraDataLoaded]);
 

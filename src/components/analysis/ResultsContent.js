@@ -304,7 +304,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     const [activeTab, setActiveTab] = useState('prohibidas');
     const [showDetails, setShowDetails] = useState(true);
     const [showNotes, setShowNotes] = useState(false);
-    const PROVISIONS_NOTES = window.App.Constants.PROVISIONS_NOTES || [];
+    const PROVISIONS_NOTES = (window.App && window.App.Constants && window.App.Constants.PROVISIONS_NOTES) ? window.App.Constants.PROVISIONS_NOTES : [];
 
     return (
         <div className="space-y-4 animate-in bg-white border border-gray-200 rounded-lg px-4 pt-2 pb-3">
