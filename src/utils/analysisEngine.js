@@ -88,8 +88,22 @@
             // CASO C: Punto intersecta un polígono PGOEDF válido
             else if (z) {
                 // Usa el campo CLAVE para determinar la zonificación
-                r.zoningKey = (z.properties.CLAVE || '').toString().trim().toUpperCase();
-                r.zoningName = r.zoningKey; // El nombre ES la clave
+                let k = (z.properties.CLAVE || '').toString().trim().toUpperCase();
+
+                // Lógica para separar subtipos de PDU (Programas, Poblados, Urbana)
+                if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                    const desc = (z.properties.PGOEDF || '').toLowerCase();
+                    if (desc.includes('parcial')) {
+                        k = 'PDU_PP';
+                    } else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) {
+                        k = 'PDU_PR';
+                    } else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) {
+                        k = 'PDU_ZU';
+                    }
+                }
+
+                r.zoningKey = k;
+                r.zoningName = z.properties.PGOEDF || r.zoningKey; // El nombre legible viene del campo PGOEDF
             }
             // CASO B: Punto dentro de SC pero en "hueco" (NO intersecta polígono PGOEDF)
             else {

@@ -295,6 +295,19 @@ const MapViewer = ({
             zoning.features.forEach(f => {
                 let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
 
+                // Lógica para separar subtipos de PDU que comparten la misma CLAVE
+                if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                    const desc = (f.properties?.PGOEDF || '').toLowerCase(); // Usar PGOEDF para distinguir
+
+                    if (desc.includes('parcial')) {
+                        k = 'PDU_PP'; // Programas Parciales
+                    } else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) {
+                        k = 'PDU_PR'; // Poblados Rurales
+                    } else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) {
+                        k = 'PDU_ZU'; // Zona Urbana / Centro de Barrio
+                    }
+                }
+
                 if (byKey[k]) byKey[k].push(f);
             });
 
