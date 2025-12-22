@@ -9,6 +9,11 @@ const getZoningDisplay = (analysis) => {
     // Si la clave es explicitamente ANP (fallback) mostramos eso, si no, mostramos el nombre real (ej. Forestal)
     if (analysis.zoningKey === 'ANP') return 'ÁREA NATURAL PROTEGIDA';
     if (analysis.zoningKey === 'NODATA') return 'Información no disponible';
+
+    // ✅ Prioritize Clean Label from Constants (if matches key)
+    const catInfo = window.App.Constants.ZONING_CAT_INFO[analysis.zoningKey];
+    if (catInfo && catInfo.label) return catInfo.label;
+
     return analysis.zoningName || 'Sin información';
 };
 

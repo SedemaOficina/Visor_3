@@ -27,22 +27,22 @@ window.App.Constants.COLORS = {
 
 window.App.Constants.ZONING_CAT_INFO = {
     // Forestal (Verdes y Turquesas - Peso Visual Bajo)
-    FC: { color: '#15803d', label: 'Forestal Conservación (FC)' },      // Green 700
-    FCE: { color: '#4ade80', label: 'Forestal Conservación Esp. (FCE)' }, // Green 400
-    FP: { color: '#0e7490', label: 'Forestal Protección (FP)' },        // Cyan 700
-    FPE: { color: '#22d3ee', label: 'Forestal Protección Esp. (FPE)' }, // Cyan 400
+    FC: { color: '#15803d', label: 'Forestal Conservación' },           // Green 700
+    FCE: { color: '#4ade80', label: 'Forestal Conservación Especial' }, // Green 400
+    FP: { color: '#0e7490', label: 'Forestal Protección' },             // Cyan 700
+    FPE: { color: '#22d3ee', label: 'Forestal Protección Especial' },   // Cyan 400
 
     // Agro y Mixto (Amarillos y Limas - Tierra/Vegetación)
-    AE: { color: '#fbbf24', label: 'Agroecológico (AE)' },              // Amber 400
-    AEE: { color: '#fcd34d', label: 'Agroecológico Especial (AEE)' },   // Amber 300
-    AF: { color: '#65a30d', label: 'Agroforestal (AF)' },               // Lime 600
-    AFE: { color: '#a3e635', label: 'Agroforestal Especial (AFE)' },    // Lime 400
+    AE: { color: '#fbbf24', label: 'Agroecológico' },                   // Amber 400
+    AEE: { color: '#fcd34d', label: 'Agroecológico Especial' },         // Amber 300
+    AF: { color: '#65a30d', label: 'Agroforestal' },                    // Lime 600
+    AFE: { color: '#a3e635', label: 'Agroforestal Especial' },          // Lime 400
 
     // PDU y Otros (Estructurales - Colores Distintivos)
-    PDU_PP: { color: '#e11d48', label: 'Programas Parciales (PP)' },    // Rose 600 (Distinct from ANP Purple)
-    PDU_PR: { color: '#d97706', label: 'Poblados Rurales (PR)' },       // Amber 600
-    PDU_ZU: { color: '#94a3b8', label: 'Zona Urbana (ZU)' },            // Slate 400
-    PDU_ER: { color: '#3b82f6', label: 'Equipamiento Rural (ER)' },     // Blue 500
+    PDU_PP: { color: '#e11d48', label: 'Programas Parciales' },         // Rose 600
+    PDU_PR: { color: '#d97706', label: 'Poblados Rurales' },            // Amber 600
+    PDU_ZU: { color: '#94a3b8', label: 'Zona Urbana' },                 // Slate 400
+    PDU_ER: { color: '#3b82f6', label: 'Equipamiento Rural' },          // Blue 500
 
     ANP_ZON: { color: '#9333ea', label: 'Zonificación ANP (interna)' }  // Purple 600
 };
