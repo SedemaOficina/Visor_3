@@ -176,7 +176,7 @@
                 h1: 13.5,
                 h2: 11.2,
                 lead: 10,
-                lh: 1.42
+                lh: 1.25
             };
 
             const S = {
@@ -254,12 +254,12 @@
                 alignItems: 'center',
                 justifyContent: 'center',
                 gap: '6px',
-                padding: '3px 10px',
+                padding: '4px 10px',
                 borderRadius: 999,
                 fontSize: `${T.small}px`,
                 fontWeight: 800,
                 letterSpacing: '0.02em',
-                lineHeight: 1,
+                lineHeight: 1.1,
                 backgroundColor: bg,
                 color: fg,
                 border: border === 'transparent' ? '1px solid transparent' : `1px solid ${border}`,
@@ -275,6 +275,9 @@
                 padding: '6px 10px',
                 borderRadius: '6px',
                 borderLeft: `4px solid ${color === C.ink ? C.guinda : color}`, // Colored indicator
+                display: 'flex',
+                alignItems: 'center',
+                lineHeight: 1.2
             });
 
             const section = (mb = S.gap3) => ({ marginBottom: `${mb}px` });
@@ -431,14 +434,14 @@
                                 <div style={{ display: 'grid', gap: '6px', marginBottom: '8px' }}>
                                     {isOutside && (
                                         <div style={{ display: 'grid', gap: '4px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
-                                                <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                                <span style={{ lineHeight: 1.3 }}>Punto fuera de CDMX</span>
+                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
+                                                <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                                <span style={{ lineHeight: 1.1 }}>Punto fuera de CDMX</span>
                                             </div>
                                             {outsideContextName && (
-                                                <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
-                                                    <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', marginTop: '3px', border: '1px solid #9ca3af' }} />
-                                                    <span style={{ lineHeight: 1.3 }}><strong>{outsideContextName}</strong></span>
+                                                <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
+                                                    <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', border: '1px solid #9ca3af' }} />
+                                                    <span style={{ lineHeight: 1.1 }}><strong>{outsideContextName}</strong></span>
                                                 </div>
                                             )}
 
@@ -457,15 +460,15 @@
                                         </div>
                                     )}
                                     {isSC && (
-                                        <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            <span style={{ lineHeight: 1.3 }}>Punto “SC”: Suelo de Conservación</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
+                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                            <span style={{ lineHeight: 1.1 }}>Punto “SC”: Suelo de Conservación</span>
                                         </div>
                                     )}
                                     {isUrban && (
-                                        <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.su, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            <span style={{ lineHeight: 1.3 }}>Punto “SU”: Suelo Urbano</span>
+                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
+                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.su, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                            <span style={{ lineHeight: 1.1 }}>Punto “SU”: Suelo Urbano</span>
                                         </div>
                                     )}
                                 </div>
@@ -524,7 +527,7 @@
                             <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
                                 <div style={{ flex: '1 1 58%', minWidth: '240px' }}>
                                     <div style={{ fontSize: `${T.small}px`, fontWeight: 800, color: C.sub }}>Dirección</div>
-                                    <div style={{ fontSize: `${T.base}px`, color: C.ink, marginTop: '2px' }}>
+                                    <div style={{ fontSize: `${T.base}px`, color: C.ink }}>
                                         {direccion}
                                     </div>
                                 </div>
@@ -565,7 +568,7 @@
                                         <td style={tbl.tdLabel}>Tipo de suelo</td>
                                         <td style={tbl.td}>
                                             <span style={badge(soilBg, soilFg)}>{statusLabel}</span>
-                                            <div style={{ fontSize: `${T.micro}px`, color: C.mute, marginTop: '3px' }}>
+                                            <div style={{ fontSize: `${T.micro}px`, color: C.mute }}>
                                                 {isSC ? 'Clasificación territorial: SC (PGOEDF 2000)' : ''}
                                             </div>
                                         </td>
