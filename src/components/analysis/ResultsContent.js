@@ -230,7 +230,8 @@ const AnpInternalCard = ({ analysis }) => {
 
     const data = analysis.anpInternalFeature.properties || {};
     const nombre = data.NOMBRE || analysis.anpNombre || 'Desconocido';
-    const categoria = data.CATEGORIA_PROTECCION || analysis.anpCategoria || 'N/A';
+    // Prioritize specific fields from the detailed shapefile
+    const zonificacion = data.ZONIFICACION || data.CATEGORIA_PROTECCION || analysis.anpCategoria || 'N/A';
 
     return (
         <div className="bg-purple-50 rounded-xl p-4 mb-4 animate-slide-up border border-purple-100">
@@ -241,12 +242,12 @@ const AnpInternalCard = ({ analysis }) => {
 
             <div className="space-y-2 text-xs text-gray-700">
                 <div className="grid grid-cols-1 gap-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-500">Nombre</span>
-                    <span className="font-medium text-gray-900">{nombre}</span>
+                    <span className="text-[10px] uppercase font-bold text-gray-500">Nombre Oficial</span>
+                    <span className="font-medium text-gray-900">{nombre || 'Desconocido'}</span>
                 </div>
                 <div className="grid grid-cols-1 gap-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-500">Categoría</span>
-                    <div className="font-medium text-gray-900">{categoria}</div>
+                    <span className="text-[10px] uppercase font-bold text-gray-500">Zonificación Programa de Manejo</span>
+                    <div className="font-medium text-gray-900">{zonificacion || 'N/A'}</div>
                 </div>
             </div>
         </div>
