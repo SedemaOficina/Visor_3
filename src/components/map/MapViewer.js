@@ -318,13 +318,29 @@ const MapViewer = ({
                 if (!feats?.length) return;
 
                 const fc = { type: 'FeatureCollection', features: feats };
+                // Obtenemos el color específico de esta categoría (ej. PDU_PP -> Naranja)
+                const catInfo = window.App.Constants.ZONING_CAT_INFO[k];
+                const fixedColor = catInfo ? catInfo.color : '#9ca3af';
+
                 const layer = window.L.geoJSON(fc, {
                     pane: 'paneOverlay',
-                    style: (feature) => getZoningStyle(feature),
+                    style: {
+                        color: fixedColor,
+                        weight: 1.5,
+                        opacity: 0.9,
+                        fillColor: fixedColor,
+                        fillOpacity: 0.2,
+                        interactive: true
+                    },
                     interactive: true,
                     onEachFeature: (feature, layerInstance) => {
-                        layerInstance.on('mouseover', () => layerInstance.setStyle({ weight: 3 })); // Standard hover
-                        layerInstance.on('mouseout', () => layerInstance.setStyle({ weight: 1.5 }));
+                        // Hover: aumentar grosor y opacidad, manteniendo el color fijo
+                        layerInstance.on('mouseover', () => {
+                            layerInstance.setStyle({ weight: 3, fillOpacity: 0.4 });
+                        });
+                        layerInstance.on('mouseout', () => {
+                            layerInstance.setStyle({ weight: 1.5, fillOpacity: 0.2 });
+                        });
 
                         const label = feature.properties?.PGOEDF;
                         if (label) layerInstance.bindTooltip(label, { sticky: true, className: 'custom-tooltip' });

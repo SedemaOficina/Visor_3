@@ -760,7 +760,17 @@
                     const byKey = {};
                     ZONING_ORDER.forEach(k => (byKey[k] = []));
                     dataCache.zoning.features.forEach(f => {
-                        const k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+                        let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+
+                        // Lógica PDU idéntica a MapViewer
+                        if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                            const desc = (f.properties?.PGOEDF || '').toLowerCase();
+                            if (desc.includes('parcial')) k = 'PDU_PP';
+                            else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
+                            else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
+                            else if (desc.includes('equipamiento')) k = 'PDU_ER';
+                        }
+
                         if (byKey[k]) byKey[k].push(f);
                     });
                     ZONING_ORDER.forEach((k, idx) => {
@@ -768,7 +778,16 @@
                         if (!isOn) return;
                         const feats = byKey[k];
                         if (!feats?.length) return;
-                        addGeoJson({ type: 'FeatureCollection', features: feats }, (feature) => getZoningStyle(feature), 430 + idx);
+
+                        const color = ZONING_CAT_INFO[k]?.color || '#9ca3af';
+                        addGeoJson({ type: 'FeatureCollection', features: feats }, {
+                            color,
+                            weight: 1.5,
+                            opacity: 0.9,
+                            fillColor: color,
+                            fillOpacity: 0.2,
+                            interactive: false
+                        }, 430 + idx);
                     });
                 }
 

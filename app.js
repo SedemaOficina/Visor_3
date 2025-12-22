@@ -43,41 +43,22 @@ const ResultsContent = window.App.Components.ResultsContent;
 const SearchLogicDesktop = window.App.Components.SearchLogicDesktop;
 const SidebarDesktop = window.App.Components.SidebarDesktop;
 
-// (Moved to src/config/constants.js)
-
-// (Moved to src/config/constants.js)
-
-
-// (Moved to src/config/constants.js)
-
 const { analyzeLocation } = window.App.Analysis;
 
 const PdfExportController = window.App.Components.PdfExportController;
 
 
-// (Moved to src/utils/analysisEngine.js or src/components/features/PdfExportController.js)
-
-
-
-// ✅ Helper para tiles base (Leaflet)
-// (Moved to src/utils/geoUtils.js)
-
-// (Moved to src/config/constants.js)
-
 /* ------------------------------------------------ */
 /* 2. UTILIDADES GEOESPACIALES Y GENERALES */
 /* ------------------------------------------------ */
 
-// (Moved to src/utils/geoUtils.js)
 
-// (Moved to src/utils/geoUtils.js)
 
 /* ------------------------------------------------ */
 /* 3. ICONOS (SVG) */
 /* ------------------------------------------------ */
 
-/* 1. PRIMERO defines el componente base */
-// (Icons moved to src/components/ui/Icons.js)
+
 
 
 /* ------------------------------------------------ */
@@ -96,9 +77,7 @@ let dataCache = {
   rules: null
 };
 
-// (Moved to src/utils/geoUtils.js)
 
-// (Moved to src/utils/geoUtils.js)
 
 const loadCoreData = async () => {
   const fJ = async (u) => {
@@ -180,7 +159,7 @@ const loadExtraData = async () => {
 
 /* ===== FIN BLOQUE NUEVO (MERGE + loadExtraData) ===== */
 
-// (Moved to src/utils/analysisEngine.js)
+
 
 /* ------------------------------------------------ */
 /* 5. COMPONENTES UI COMPARTIDOS */
@@ -188,7 +167,7 @@ const loadExtraData = async () => {
 
 /* 6.1 Mensajes de estado */
 
-// (Moved to src/components/analysis/ResultsContent.js)
+
 
 /* ------------------------------------------------ */
 /* ------------------------------------------------ */
@@ -238,17 +217,7 @@ const ToastProvider = ({ children }) => {
 const useToast = () => React.useContext(ToastContext);
 
 /* ------------------------------------------------ */
-// (Moved to src/components/ui/SkeletonAnalysis.js and src/components/analysis/ResultsContent.js)
-// ------------------------------------------------
-// (Moved to src/components/features/PdfExportController.js)
-
 /* ------------------------------------------------ */
-/* 7. INTERFAZ: BÚSQUEDA, CONTROLES, SIDEBAR */
-/* ------------------------------------------------ */
-// (Moved to src/components/search/MobileSearchBar.js)
-// (Moved to src/components/search/SearchLogicDesktop.js)
-// (Moved to src/components/analysis/ResultsContent.js)
-// (Moved to src/components/layout/SidebarDesktop.js)
 
 
 /* 7.3 Bottom Sheet Móvil */
@@ -413,20 +382,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 };
 
 
-/* ------------------------------------------------ */
-/* COMPONENTE TOGGLE SWITCH (FALTABA ESTO) */
-/* ------------------------------------------------ */
-// (Moved to src/components/ui/ToggleSwitch.js)
 
-/* ------------------------------------------------ */
-/* 8. VISOR DE MAPA (LEAFLET) */
-/* ------------------------------------------------ */
-// (Moved to src/components/map/MapViewer.js)
-
-/* ------------------------------------------------ */
-/* 8. LEYENDA FLOTANTE (Mejorada - Unificada) */
-/* ------------------------------------------------ */
-// (Moved to src/components/map/Legend.js)
 
 /* ------------------------------------------------ */
 /* 9. APLICACIÓN PRINCIPAL */
