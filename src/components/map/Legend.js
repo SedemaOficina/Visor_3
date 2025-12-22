@@ -18,7 +18,10 @@ const Legend = ({
 
     activeBaseLayer,
     setActiveBaseLayer,
+    activeBaseLayer,
+    setActiveBaseLayer,
     selectedAnpId,
+    anpName,
     anpGeneralVisible
 }) => {
     if (!isOpen) return null; // ✅ Legend logic moved to MapControls
@@ -83,7 +86,11 @@ const Legend = ({
                                 <div className="w-3.5 h-3.5 rounded bg-gray-300 border border-white border-dashed shadow-sm" title="Límite Alcaldías (Línea blanca)" />
                                 <span className="text-[11px] text-gray-700 font-medium group-hover:text-gray-900">Alcaldías</span>
                             </div>
-                            <ToggleSwitch checked={visibleMapLayers.alcaldias} onChange={() => toggleLayer('alcaldias')} />
+                            <ToggleSwitch
+                                checked={visibleMapLayers.alcaldias}
+                                onChange={() => toggleLayer('alcaldias')}
+                                activeColor="#9ca3af" // Gris
+                            />
                         </label>
 
                         <label className="flex items-center justify-between group cursor-pointer hover:bg-gray-50/50 p-1 rounded-lg transition-colors">
@@ -91,7 +98,11 @@ const Legend = ({
                                 <div className="w-3.5 h-3.5 rounded shadow-sm opacity-80" style={{ backgroundColor: LAYER_STYLES.sc.color }} />
                                 <span className="text-[11px] text-gray-700 font-medium group-hover:text-gray-900">Suelo de Conservación</span>
                             </div>
-                            <ToggleSwitch checked={visibleMapLayers.sc} onChange={() => toggleLayer('sc')} />
+                            <ToggleSwitch
+                                checked={visibleMapLayers.sc}
+                                onChange={() => toggleLayer('sc')}
+                                activeColor={LAYER_STYLES.sc.color}
+                            />
                         </label>
 
                         <label className="flex items-center justify-between group cursor-pointer hover:bg-gray-50/50 p-1 rounded-lg transition-colors">
@@ -99,7 +110,11 @@ const Legend = ({
                                 <div className="w-3.5 h-3.5 rounded border border-gray-200 shadow-sm opacity-60" style={{ backgroundColor: LAYER_STYLES.edomex.color }} />
                                 <span className="text-[11px] text-gray-700 font-medium group-hover:text-gray-900">Límite Edo. Méx</span>
                             </div>
-                            <ToggleSwitch checked={visibleMapLayers.edomex} onChange={() => toggleLayer('edomex')} />
+                            <ToggleSwitch
+                                checked={visibleMapLayers.edomex}
+                                onChange={() => toggleLayer('edomex')}
+                                activeColor={LAYER_STYLES.edomex.color}
+                            />
                         </label>
 
                         <label className="flex items-center justify-between group cursor-pointer hover:bg-gray-50/50 p-1 rounded-lg transition-colors">
@@ -107,7 +122,11 @@ const Legend = ({
                                 <div className="w-3.5 h-3.5 rounded border border-gray-200 shadow-sm opacity-60" style={{ backgroundColor: LAYER_STYLES.morelos.color }} />
                                 <span className="text-[11px] text-gray-700 font-medium group-hover:text-gray-900">Límite Morelos</span>
                             </div>
-                            <ToggleSwitch checked={visibleMapLayers.morelos} onChange={() => toggleLayer('morelos')} />
+                            <ToggleSwitch
+                                checked={visibleMapLayers.morelos}
+                                onChange={() => toggleLayer('morelos')}
+                                activeColor={LAYER_STYLES.morelos.color}
+                            />
                         </label>
 
                         <div className="pt-2 border-t border-gray-100">
@@ -116,7 +135,12 @@ const Legend = ({
                                     <div className="w-3.5 h-3.5 rounded bg-[#a855f7] border border-white shadow-sm" />
                                     <span className="text-[11px] text-gray-800 font-bold">Áreas Naturales Protegidas</span>
                                 </div>
-                                <ToggleSwitch checked={visibleMapLayers.anp} onChange={() => toggleLayer('anp')} />
+                                <ToggleSwitch
+                                    checked={visibleMapLayers.anp}
+                                    onChange={() => toggleLayer('anp')}
+                                    activeColor="#a855f7" // Morado ANP
+                                    title={selectedAnpId && anpName ? `ANP: ${anpName}` : "Activar/Desactivar capa ANP"}
+                                />
                             </label>
                         </div>
 
@@ -136,6 +160,7 @@ const Legend = ({
                                         }
                                         toggleLayer('selectedAnpZoning');
                                     }}
+                                    activeColor="#9333ea" // Morado fuerte
                                 />
                             </label>
                         </div>
@@ -169,6 +194,7 @@ const Legend = ({
                                     <ToggleSwitch
                                         checked={isChecked}
                                         onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
+                                        activeColor={info?.color || '#999'}
                                     />
                                 </div>
                             );

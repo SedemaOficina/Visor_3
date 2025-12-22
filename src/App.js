@@ -632,6 +632,7 @@ const App = () => {
             activeBaseLayer={activeBaseLayer}
             setActiveBaseLayer={setActiveBaseLayer}
             selectedAnpId={analysis?.anpId}
+            anpName={analysis?.anpNombre}
             anpGeneralVisible={visibleMapLayers.anp}
           />
 
