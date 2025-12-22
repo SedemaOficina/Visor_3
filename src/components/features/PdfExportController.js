@@ -203,6 +203,7 @@
                 anp: COLORS.anp || '#7e22ce',
                 red: COLORS.error || '#b91c1c',
                 green: COLORS.success || '#15803d',
+                warning: '#f59e0b', // Amber 500
                 edomex: '#FFD86B',
                 morelos: '#B8A1FF'
             };
@@ -416,7 +417,10 @@
                                     border: S.hair,
                                     borderRadius: `${S.radius}px`,
                                     padding: '8px',
-                                    boxSizing: 'border-box'
+                                    boxSizing: 'border-box',
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                    justifyContent: 'center'
                                 }}
                             >
                                 <div style={{ fontSize: `${T.small}px`, fontWeight: 800, marginBottom: '6px', color: C.ink }}>
@@ -433,6 +437,11 @@
                                                 <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
                                                     <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', marginTop: '3px', border: '1px solid #9ca3af' }} />
                                                     <span style={{ lineHeight: 1.3 }}><strong>{outsideContextName}</strong></span>
+                                                </div>
+                                            )}
+                                            {outsideContextName && (
+                                                <div style={{ fontSize: `${T.micro}px`, color: C.mute, marginTop: '2px', marginLeft: '16px' }}>
+                                                    Referencia territorial: {outsideContextName}
                                                 </div>
                                             )}
                                             <div style={{ marginTop: '10px', fontSize: `${T.micro}px`, color: C.sub, textAlign: 'justify', lineHeight: 1.4 }}>
@@ -811,7 +820,16 @@
 
                 // Wait for tile load manually or just increase timeout
                 let tileCount = 0;
-                m.on('layeradd', () => tileCount++);
+                let tilesLoaded = 0;
+
+                m.on('layeradd', () => { tileCount++; });
+
+                // Track tile loading on the base layer specifically
+                base.on('tileloadstart', () => { tileCount++; });
+                base.on('tileload', () => { tilesLoaded++; });
+                base.on('load', () => {
+                    // Base layer fully loaded
+                });
 
                 const base = L.tileLayer(getBaseLayerUrl(activeBaseLayer || 'SATELLITE'), {
                     crossOrigin: 'anonymous',
@@ -890,22 +908,29 @@
                     resolve(img || null);
                 };
 
-                const timeout = setTimeout(() => {
+                // Logic to wait for tiles
+                const capture = () => {
                     leafletImageFn(m, (err, canvas) => {
                         if (err || !canvas) return done(null);
+
+                        // Check if canvas is basically empty/gray? (Optional)
+                        // For now we rely on the wait.
                         done(canvas.toDataURL('image/png'));
                     });
-                }, 3000); // Increased timeout for safety
+                };
+
+                // Backup timeout if 'load' never fires properly
+                const safetyTimeout = setTimeout(() => {
+                    console.warn('Map capture timeout - forcing capture');
+                    capture();
+                }, 4000);
 
                 base.once('load', () => {
-                    // Extra wait after load to ensure rendering
+                    // Add a small delay after load to ensure painting
                     setTimeout(() => {
-                        clearTimeout(timeout);
-                        leafletImageFn(m, (err, canvas) => {
-                            if (err || !canvas) return done(null);
-                            done(canvas.toDataURL('image/png'));
-                        });
-                    }, 500);
+                        clearTimeout(safetyTimeout);
+                        capture();
+                    }, 800);
                 });
             });
         };
