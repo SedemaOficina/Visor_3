@@ -406,8 +406,8 @@ const App = () => {
     anp: true,
     zoning: true,
     alcaldias: true,
-    edomex: true,
-    morelos: true,
+    edomex: false, // Oculto por defecto
+    morelos: false, // Oculto por defecto
     selectedAnpZoning: true
   });
 

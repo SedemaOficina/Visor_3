@@ -424,6 +424,23 @@ const MapViewer = ({
 
     // 5) marker + flyTo
     useEffect(() => {
+        if (!mapInstance.current || !layersRef.current.alcaldias) return;
+
+        // Dynamic style for Alcaldías based on Base Layer
+        const isSatellite = activeBaseLayer === 'SATELLITE';
+        const dynamicColor = isSatellite ? '#FFFFFF' : '#374151'; // White on Sat, Dark Gray on Streets
+
+        layersRef.current.alcaldias.setStyle({
+            color: dynamicColor,
+            weight: 2,
+            dashArray: '8,4',
+            opacity: 0.9,
+            fillOpacity: 0
+        });
+
+    }, [activeBaseLayer, extraDataLoaded]); // Re-run when base layer changes
+
+    useEffect(() => {
         if (!mapInstance.current || !location || !window.L) return;
 
         if (markerRef.current) markerRef.current.remove();

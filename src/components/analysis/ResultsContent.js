@@ -401,10 +401,10 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                                         className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
                                     >
                                         <span className="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
-                                            <Icons.Info className="h-4 w-4 text-gray-500" />
+                                            {Icons.Info ? <Icons.Info className="h-4 w-4 text-gray-500" /> : <span>i</span>}
                                             Notas Normativas
                                         </span>
-                                        {showNotes ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <Icons.ChevronDown className="h-4 w-4 text-gray-400" />}
+                                        {showNotes ? (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) : (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
                                     </button>
 
                                     {showNotes && (
