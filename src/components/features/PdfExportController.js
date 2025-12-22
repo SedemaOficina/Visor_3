@@ -896,7 +896,19 @@
                 const isSU = (analysisStatus === 'URBAN_SOIL');
                 const pinFill = isSC ? LAYER_STYLES.sc.color : isSU ? '#3b82f6' : '#9d2148';
 
-                L.circleMarker([lat, lng], { radius: 8, color: '#ffffff', weight: 3, fillColor: pinFill, fillOpacity: 1 }).addTo(m);
+                if (!m.getPane('pointPane')) {
+                    m.createPane('pointPane');
+                    m.getPane('pointPane').style.zIndex = 600;
+                }
+
+                L.circleMarker([lat, lng], {
+                    radius: 8,
+                    color: '#ffffff',
+                    weight: 3,
+                    fillColor: pinFill,
+                    fillOpacity: 1,
+                    pane: 'pointPane'
+                }).addTo(m);
 
                 let settled = false;
                 const done = (img) => {
