@@ -151,7 +151,13 @@
             }
         } else if (r.status === 'URBAN_SOIL') {
             r.noActivitiesCatalog = true;
-            r.zoningName = "Suelo Urbano"; // Valor por defecto para SU
+            if (r.isANP) {
+                // CASO ESPECIAL: ANP en Suelo Urbano (ej. Histórico Coyoacán)
+                r.zoningName = "ÁREA NATURAL PROTEGIDA";
+                r.zoningKey = "ANP";
+            } else {
+                r.zoningName = "Suelo Urbano"; // Valor por defecto para SU
+            }
         }
 
         // ---------------------------------------------------

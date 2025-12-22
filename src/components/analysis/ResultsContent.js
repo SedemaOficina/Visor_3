@@ -303,6 +303,8 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
 
     const [activeTab, setActiveTab] = useState('prohibidas');
     const [showDetails, setShowDetails] = useState(true);
+    const [showNotes, setShowNotes] = useState(false);
+    const PROVISIONS_NOTES = window.App.Constants.PROVISIONS_NOTES || [];
 
     return (
         <div className="space-y-4 animate-in bg-white border border-gray-200 rounded-lg px-4 pt-2 pb-3">
@@ -404,6 +406,32 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                                         accentColor="#15803d"
                                     />
                                 )}
+
+                                {/* NOTAS NORMATIVAS (COLLAPSIBLE) */}
+                                <div className="mt-4 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                                    <button
+                                        onClick={() => setShowNotes(!showNotes)}
+                                        className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
+                                    >
+                                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
+                                            <Icons.Info className="h-4 w-4 text-gray-500" />
+                                            Notas Normativas Generales
+                                        </span>
+                                        {showNotes ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <Icons.ChevronDown className="h-4 w-4 text-gray-400" />}
+                                    </button>
+
+                                    {showNotes && (
+                                        <div className="p-4 bg-white border-t border-gray-200">
+                                            <ul className="space-y-2 list-disc pl-4 marker:text-gray-400">
+                                                {PROVISIONS_NOTES.map((note, idx) => (
+                                                    <li key={idx} className="text-[11px] text-gray-600 leading-relaxed text-justify">
+                                                        {note}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+                                    )}
+                                </div>
                             </div>
                         )}
                     </>

@@ -660,11 +660,38 @@
                                         </div>
                                     </>
                                 )}
-                            </section>
-                        </>
-                    )}
-                    <section style={{ marginTop: `${S.gap2}px` }}>
-                        <h2 style={h2()}>5. Enlaces de referencia</h2>
+                            </>
+                                )}
+                        </section>
+
+                    <section style={section(S.gap2)}>
+                        <h2 style={h2()}>5. Notas Normativas Generales y Complementarias</h2>
+                        <div style={{
+                            border: `1px solid ${C.hair}`,
+                            padding: '10px 12px',
+                            borderRadius: `${S.radius}px`,
+                            backgroundColor: '#fbfbfc'
+                        }}>
+                            <ul style={{ margin: 0, paddingLeft: '16px', listStyleType: 'disc' }}>
+                                {(window.App.Constants.PROVISIONS_NOTES || []).map((note, idx) => (
+                                    <li key={idx} style={{
+                                        fontSize: `${T.base}px`,
+                                        marginBottom: '6px',
+                                        textAlign: 'justify',
+                                        color: C.ink
+                                    }}>
+                                        {note}
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    </section>
+                </>
+            )
+        }
+                    < section style = {{ marginTop: `${S.gap2}px` }
+    }>
+                        <h2 style={h2()}>6. Enlaces de referencia</h2>
                         <div style={{ fontSize: `${T.small}px`, color: C.sub, marginBottom: `${S.gap2}px` }}>
                             <strong>Visor:</strong> {visorUrlShort}
                             <div style={{ marginTop: '8px' }}>
@@ -692,290 +719,290 @@
                         >
                             <strong>Aviso legal:</strong> La presente ficha tiene carácter orientativo y no sustituye dictámenes técnicos, resoluciones administrativas ni instrumentos jurídicos emitidos por las autoridades competentes. La información se basa en datos geoespaciales y normativos disponibles al momento de la consulta y puede estar sujeta a actualización.
                         </div>
-                    </section>
-                </div>
+                    </section >
+                </div >
             );
-        })();
+})();
     });
 
-    const PdfExportController = ({ analysis, onExportReady, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats }) => {
-        const [mapImage, setMapImage] = useState(null);
-        const pdfRef = useRef(null);
-        const exportArmedRef = useRef(false);
+const PdfExportController = ({ analysis, onExportReady, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats }) => {
+    const [mapImage, setMapImage] = useState(null);
+    const pdfRef = useRef(null);
+    const exportArmedRef = useRef(false);
 
-        const buildExportMapImage = ({ lat, lng, zoom = 14, analysisStatus }) => {
-            return new Promise((resolve) => {
-                const L = window.L;
-                const leafletImageFn =
-                    window.leafletImage ||
-                    window.leafletImage?.default ||
-                    (typeof leafletImage !== 'undefined' ? leafletImage : null);
+    const buildExportMapImage = ({ lat, lng, zoom = 14, analysisStatus }) => {
+        return new Promise((resolve) => {
+            const L = window.L;
+            const leafletImageFn =
+                window.leafletImage ||
+                window.leafletImage?.default ||
+                (typeof leafletImage !== 'undefined' ? leafletImage : null);
 
-                if (!L || typeof leafletImageFn !== 'function') {
-                    console.warn('leaflet-image no disponible');
-                    return resolve(null);
-                }
+            if (!L || typeof leafletImageFn !== 'function') {
+                console.warn('leaflet-image no disponible');
+                return resolve(null);
+            }
 
-                const el = document.getElementById('export-map');
-                if (!el) {
-                    console.warn('No existe #export-map');
-                    return resolve(null);
-                }
+            const el = document.getElementById('export-map');
+            if (!el) {
+                console.warn('No existe #export-map');
+                return resolve(null);
+            }
 
-                el.innerHTML = '';
-                const m = L.map(el, {
-                    zoomControl: false,
-                    attributionControl: false,
-                    preferCanvas: true
-                }).setView([lat, lng], zoom);
+            el.innerHTML = '';
+            const m = L.map(el, {
+                zoomControl: false,
+                attributionControl: false,
+                preferCanvas: true
+            }).setView([lat, lng], zoom);
 
-                const base = L.tileLayer(getBaseLayerUrl(activeBaseLayer || 'SATELLITE'), {
-                    crossOrigin: 'anonymous',
-                    maxZoom: 19
-                }).addTo(m);
+            const base = L.tileLayer(getBaseLayerUrl(activeBaseLayer || 'SATELLITE'), {
+                crossOrigin: 'anonymous',
+                maxZoom: 19
+            }).addTo(m);
 
-                const addGeoJson = (fc, style, paneZ = 400) => {
-                    if (!fc?.features?.length) return null;
-                    m.createPane(`p${paneZ}`);
-                    m.getPane(`p${paneZ}`).style.zIndex = paneZ;
-                    return L.geoJSON(fc, { pane: `p${paneZ}`, style, interactive: false }).addTo(m);
-                };
+            const addGeoJson = (fc, style, paneZ = 400) => {
+                if (!fc?.features?.length) return null;
+                m.createPane(`p${paneZ}`);
+                m.getPane(`p${paneZ}`).style.zIndex = paneZ;
+                return L.geoJSON(fc, { pane: `p${paneZ}`, style, interactive: false }).addTo(m);
+            };
 
-                if (visibleMapLayers?.sc) {
-                    addGeoJson(dataCache.sc, { color: LAYER_STYLES.sc.color, weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES.sc.fill, fillOpacity: 0.18 }, 410);
-                }
-                if (visibleMapLayers?.alcaldias) {
-                    addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, 420);
-                }
-                if (visibleMapLayers?.edomex) {
-                    addGeoJson(dataCache.edomex, { color: LAYER_STYLES.edomex.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 }, 405);
-                }
-                if (visibleMapLayers?.morelos) {
-                    addGeoJson(dataCache.morelos, { color: LAYER_STYLES.morelos.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 }, 405);
-                }
-                if (visibleMapLayers?.anp) {
-                    addGeoJson(dataCache.anp, { color: LAYER_STYLES.anp.color, weight: 2.2, opacity: 0.95, fillColor: LAYER_STYLES.anp.fill, fillOpacity: 0.12 }, 428);
-                }
-                if (visibleMapLayers?.zoning && dataCache.zoning?.features?.length) {
-                    const byKey = {};
-                    ZONING_ORDER.forEach(k => (byKey[k] = []));
-                    dataCache.zoning.features.forEach(f => {
-                        let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+            if (visibleMapLayers?.sc) {
+                addGeoJson(dataCache.sc, { color: LAYER_STYLES.sc.color, weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES.sc.fill, fillOpacity: 0.18 }, 410);
+            }
+            if (visibleMapLayers?.alcaldias) {
+                addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, 420);
+            }
+            if (visibleMapLayers?.edomex) {
+                addGeoJson(dataCache.edomex, { color: LAYER_STYLES.edomex.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 }, 405);
+            }
+            if (visibleMapLayers?.morelos) {
+                addGeoJson(dataCache.morelos, { color: LAYER_STYLES.morelos.color, weight: 1, dashArray: '4,4', opacity: 0.9, fillOpacity: 0.08 }, 405);
+            }
+            if (visibleMapLayers?.anp) {
+                addGeoJson(dataCache.anp, { color: LAYER_STYLES.anp.color, weight: 2.2, opacity: 0.95, fillColor: LAYER_STYLES.anp.fill, fillOpacity: 0.12 }, 428);
+            }
+            if (visibleMapLayers?.zoning && dataCache.zoning?.features?.length) {
+                const byKey = {};
+                ZONING_ORDER.forEach(k => (byKey[k] = []));
+                dataCache.zoning.features.forEach(f => {
+                    let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
 
-                        // Lógica PDU idéntica a MapViewer
-                        if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
-                            const desc = (f.properties?.PGOEDF || '').toLowerCase();
-                            if (desc.includes('equipamiento')) k = 'PDU_ER';
-                            else if (desc.includes('parcial')) k = 'PDU_PP';
-                            else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
-                            else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
-                        }
+                    // Lógica PDU idéntica a MapViewer
+                    if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                        const desc = (f.properties?.PGOEDF || '').toLowerCase();
+                        if (desc.includes('equipamiento')) k = 'PDU_ER';
+                        else if (desc.includes('parcial')) k = 'PDU_PP';
+                        else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
+                        else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
+                    }
 
-                        if (byKey[k]) byKey[k].push(f);
-                    });
-                    ZONING_ORDER.forEach((k, idx) => {
-                        const isOn = (visibleZoningCats?.[k] !== false);
-                        if (!isOn) return;
-                        const feats = byKey[k];
-                        if (!feats?.length) return;
+                    if (byKey[k]) byKey[k].push(f);
+                });
+                ZONING_ORDER.forEach((k, idx) => {
+                    const isOn = (visibleZoningCats?.[k] !== false);
+                    if (!isOn) return;
+                    const feats = byKey[k];
+                    if (!feats?.length) return;
 
-                        const color = ZONING_CAT_INFO[k]?.color || '#9ca3af';
-                        addGeoJson({ type: 'FeatureCollection', features: feats }, {
-                            color,
-                            weight: 1.5,
-                            opacity: 0.9,
-                            fillColor: color,
-                            fillOpacity: 0.2,
-                            interactive: false
-                        }, 430 + idx);
-                    });
-                }
+                    const color = ZONING_CAT_INFO[k]?.color || '#9ca3af';
+                    addGeoJson({ type: 'FeatureCollection', features: feats }, {
+                        color,
+                        weight: 1.5,
+                        opacity: 0.9,
+                        fillColor: color,
+                        fillOpacity: 0.2,
+                        interactive: false
+                    }, 430 + idx);
+                });
+            }
 
-                const isSC = (analysisStatus === 'CONSERVATION_SOIL');
-                const isSU = (analysisStatus === 'URBAN_SOIL');
-                const pinFill = isSC ? LAYER_STYLES.sc.color : isSU ? '#3b82f6' : '#9d2148';
+            const isSC = (analysisStatus === 'CONSERVATION_SOIL');
+            const isSU = (analysisStatus === 'URBAN_SOIL');
+            const pinFill = isSC ? LAYER_STYLES.sc.color : isSU ? '#3b82f6' : '#9d2148';
 
-                L.circleMarker([lat, lng], { radius: 8, color: '#ffffff', weight: 3, fillColor: pinFill, fillOpacity: 1 }).addTo(m);
+            L.circleMarker([lat, lng], { radius: 8, color: '#ffffff', weight: 3, fillColor: pinFill, fillOpacity: 1 }).addTo(m);
 
-                let settled = false;
-                const done = (img) => {
-                    if (settled) return;
-                    settled = true;
-                    try { m.remove(); } catch { }
-                    resolve(img || null);
-                };
+            let settled = false;
+            const done = (img) => {
+                if (settled) return;
+                settled = true;
+                try { m.remove(); } catch { }
+                resolve(img || null);
+            };
 
-                const timeout = setTimeout(() => {
+            const timeout = setTimeout(() => {
+                leafletImageFn(m, (err, canvas) => {
+                    if (err || !canvas) return done(null);
+                    done(canvas.toDataURL('image/png'));
+                });
+            }, 2200);
+
+            base.once('load', () => {
+                setTimeout(() => {
+                    clearTimeout(timeout);
                     leafletImageFn(m, (err, canvas) => {
                         if (err || !canvas) return done(null);
                         done(canvas.toDataURL('image/png'));
                     });
-                }, 2200);
-
-                base.once('load', () => {
-                    setTimeout(() => {
-                        clearTimeout(timeout);
-                        leafletImageFn(m, (err, canvas) => {
-                            if (err || !canvas) return done(null);
-                            done(canvas.toDataURL('image/png'));
-                        });
-                    }, 250);
-                });
+                }, 250);
             });
-        };
-
-        const handleExportPDF = React.useCallback(async () => {
-            if (!exportArmedRef.current) return;
-            exportArmedRef.current = false;
-
-            if (!analysis || !pdfRef.current) return;
-
-            if (!window.jspdf?.jsPDF) {
-                alert('Error: La librería de PDF no se ha cargado correctamente.');
-                return;
-            }
-            const { jsPDF } = window.jspdf;
-
-            if (typeof html2canvas === 'undefined') {
-                alert('No se encontró html2canvas. Verifica que el script esté cargado.');
-                return;
-            }
-
-            if (!dataCache?.sc || !dataCache?.alcaldias || !dataCache?.anp) {
-                alert('Aún se están cargando capas del mapa. Intenta de nuevo en unos segundos.');
-                return;
-            }
-
-            try {
-                const img = await buildExportMapImage({
-                    lat: analysis.coordinate.lat,
-                    lng: analysis.coordinate.lng,
-                    zoom: 14,
-                    analysisStatus: analysis.status
-                });
-
-                if (img) {
-                    setMapImage(img);
-                } else {
-                    const url = getStaticMapUrl({
-                        lat: analysis.coordinate.lat,
-                        lng: analysis.coordinate.lng,
-                        zoom: 14
-                    });
-                    const ok = await preloadImage(url);
-                    setMapImage(ok ? url : null);
-                }
-                await new Promise(r => setTimeout(r, 80));
-            } catch (e) {
-                console.warn('No se pudo generar/cargar mapa exportable:', e);
-                try {
-                    const url = getStaticMapUrl({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: 14 });
-                    const ok = await preloadImage(url);
-                    setMapImage(ok ? url : null);
-                    await new Promise(r => setTimeout(r, 80));
-                } catch {
-                    setMapImage(null);
-                }
-            }
-
-            const element = pdfRef.current;
-            const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-            const scale = isMobile ? 1.4 : 2;
-
-            let canvas;
-            try {
-                canvas = await html2canvas(element, { scale, useCORS: true, backgroundColor: '#ffffff', logging: false });
-            } catch (e) {
-                console.error('Fallo al renderizar la ficha para PDF:', e);
-                alert('No se pudo generar la ficha PDF en este dispositivo/navegador. Intenta desde Chrome/desktop.');
-                return;
-            }
-
-            const imgData = canvas.toDataURL('image/png');
-            const pdf = new jsPDF('p', 'mm', 'a4');
-
-            const pdfWidth = pdf.internal.pageSize.getWidth();
-            const pdfHeight = pdf.internal.pageSize.getHeight();
-            const M = 12;
-            const FOOTER = 16;
-            const usableW = pdfWidth - (M * 2);
-            const usableH = pdfHeight - (M * 2) - FOOTER;
-
-            const imgProps = pdf.getImageProperties(imgData);
-            let imgW = usableW;
-            let imgH = (imgProps.height * imgW) / imgProps.width;
-
-            let totalPages = Math.max(1, Math.ceil(imgH / usableH));
-            const remainder = imgH - usableH * (totalPages - 1);
-
-            if (totalPages > 1 && remainder / usableH < 0.28) {
-                const targetPages = totalPages - 1;
-                const scaleDown = (usableH * targetPages) / imgH;
-                if (scaleDown > 0.92) {
-                    imgW = imgW * scaleDown;
-                    imgH = (imgProps.height * imgW) / imgProps.width;
-                    totalPages = Math.max(1, Math.ceil(imgH / usableH));
-                }
-            }
-
-            const drawPage = (pageIndex) => {
-                const yOffset = -(pageIndex * usableH);
-                pdf.setFillColor(255, 255, 255);
-                pdf.rect(0, 0, pdfWidth, M + 10, 'F');
-                pdf.setFontSize(9);
-                pdf.setTextColor(17, 24, 39);
-                pdf.text('Visor de Consulta Ciudadana — Ficha', M, 10);
-                pdf.setFontSize(8);
-                pdf.setTextColor(107, 114, 128);
-                const headRight = `${(analysis?.alcaldia || 'CDMX')} · ${new Date().toISOString().slice(0, 10)}`;
-                pdf.text(headRight, pdfWidth - M, 10, { align: 'right' });
-                pdf.setDrawColor(229, 231, 235);
-                pdf.setLineWidth(0.2);
-                pdf.line(M, 14, pdfWidth - M, 14);
-                pdf.addImage(imgData, 'PNG', M, (M + 6) + yOffset, imgW, imgH);
-                pdf.setFillColor(255, 255, 255);
-                pdf.rect(0, pdfHeight - (M + FOOTER), pdfWidth, (M + FOOTER), 'F');
-                pdf.setDrawColor(229, 231, 235);
-                pdf.setLineWidth(0.2);
-                pdf.line(M, pdfHeight - (M + FOOTER) + 4, pdfWidth - M, pdfHeight - (M + FOOTER) + 4);
-                pdf.setFontSize(8);
-                pdf.setTextColor(107, 114, 128);
-                pdf.text(`Página ${pageIndex + 1} de ${totalPages}`, pdfWidth / 2, pdfHeight - 6, { align: 'center' });
-            };
-
-            for (let i = 0; i < totalPages; i++) {
-                if (i > 0) pdf.addPage();
-                drawPage(i);
-            }
-
-            const cleanAlcaldia = (analysis.alcaldia || 'CDMX').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
-            const nombreArchivo = `ficha-${cleanAlcaldia}-${new Date().toISOString().slice(0, 10)}.pdf`;
-            pdf.save(nombreArchivo);
-        }, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats]);
-
-        const requestExportPDF = React.useCallback((e) => {
-            if (!e || !e.isTrusted) return;
-            exportArmedRef.current = true;
-            handleExportPDF();
-        }, [handleExportPDF]);
-
-        useEffect(() => {
-            if (!onExportReady) return;
-            onExportReady(() => requestExportPDF);
-            return () => onExportReady(null);
-        }, [onExportReady, requestExportPDF]);
-
-        if (!analysis) return null;
-
-        return (
-            <>
-                <div id="export-map" style={{ width: '900px', height: '520px', position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -1 }}></div>
-                <div style={{ position: 'absolute', top: -9999, left: -9999, width: '794px', zIndex: -1 }}>
-                    <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} />
-                </div>
-            </>
-        );
+        });
     };
 
-    window.App.Components.PdfExportController = PdfExportController;
-})();
+    const handleExportPDF = React.useCallback(async () => {
+        if (!exportArmedRef.current) return;
+        exportArmedRef.current = false;
+
+        if (!analysis || !pdfRef.current) return;
+
+        if (!window.jspdf?.jsPDF) {
+            alert('Error: La librería de PDF no se ha cargado correctamente.');
+            return;
+        }
+        const { jsPDF } = window.jspdf;
+
+        if (typeof html2canvas === 'undefined') {
+            alert('No se encontró html2canvas. Verifica que el script esté cargado.');
+            return;
+        }
+
+        if (!dataCache?.sc || !dataCache?.alcaldias || !dataCache?.anp) {
+            alert('Aún se están cargando capas del mapa. Intenta de nuevo en unos segundos.');
+            return;
+        }
+
+        try {
+            const img = await buildExportMapImage({
+                lat: analysis.coordinate.lat,
+                lng: analysis.coordinate.lng,
+                zoom: 14,
+                analysisStatus: analysis.status
+            });
+
+            if (img) {
+                setMapImage(img);
+            } else {
+                const url = getStaticMapUrl({
+                    lat: analysis.coordinate.lat,
+                    lng: analysis.coordinate.lng,
+                    zoom: 14
+                });
+                const ok = await preloadImage(url);
+                setMapImage(ok ? url : null);
+            }
+            await new Promise(r => setTimeout(r, 80));
+        } catch (e) {
+            console.warn('No se pudo generar/cargar mapa exportable:', e);
+            try {
+                const url = getStaticMapUrl({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: 14 });
+                const ok = await preloadImage(url);
+                setMapImage(ok ? url : null);
+                await new Promise(r => setTimeout(r, 80));
+            } catch {
+                setMapImage(null);
+            }
+        }
+
+        const element = pdfRef.current;
+        const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+        const scale = isMobile ? 1.4 : 2;
+
+        let canvas;
+        try {
+            canvas = await html2canvas(element, { scale, useCORS: true, backgroundColor: '#ffffff', logging: false });
+        } catch (e) {
+            console.error('Fallo al renderizar la ficha para PDF:', e);
+            alert('No se pudo generar la ficha PDF en este dispositivo/navegador. Intenta desde Chrome/desktop.');
+            return;
+        }
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const M = 12;
+        const FOOTER = 16;
+        const usableW = pdfWidth - (M * 2);
+        const usableH = pdfHeight - (M * 2) - FOOTER;
+
+        const imgProps = pdf.getImageProperties(imgData);
+        let imgW = usableW;
+        let imgH = (imgProps.height * imgW) / imgProps.width;
+
+        let totalPages = Math.max(1, Math.ceil(imgH / usableH));
+        const remainder = imgH - usableH * (totalPages - 1);
+
+        if (totalPages > 1 && remainder / usableH < 0.28) {
+            const targetPages = totalPages - 1;
+            const scaleDown = (usableH * targetPages) / imgH;
+            if (scaleDown > 0.92) {
+                imgW = imgW * scaleDown;
+                imgH = (imgProps.height * imgW) / imgProps.width;
+                totalPages = Math.max(1, Math.ceil(imgH / usableH));
+            }
+        }
+
+        const drawPage = (pageIndex) => {
+            const yOffset = -(pageIndex * usableH);
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, 0, pdfWidth, M + 10, 'F');
+            pdf.setFontSize(9);
+            pdf.setTextColor(17, 24, 39);
+            pdf.text('Visor de Consulta Ciudadana — Ficha', M, 10);
+            pdf.setFontSize(8);
+            pdf.setTextColor(107, 114, 128);
+            const headRight = `${(analysis?.alcaldia || 'CDMX')} · ${new Date().toISOString().slice(0, 10)}`;
+            pdf.text(headRight, pdfWidth - M, 10, { align: 'right' });
+            pdf.setDrawColor(229, 231, 235);
+            pdf.setLineWidth(0.2);
+            pdf.line(M, 14, pdfWidth - M, 14);
+            pdf.addImage(imgData, 'PNG', M, (M + 6) + yOffset, imgW, imgH);
+            pdf.setFillColor(255, 255, 255);
+            pdf.rect(0, pdfHeight - (M + FOOTER), pdfWidth, (M + FOOTER), 'F');
+            pdf.setDrawColor(229, 231, 235);
+            pdf.setLineWidth(0.2);
+            pdf.line(M, pdfHeight - (M + FOOTER) + 4, pdfWidth - M, pdfHeight - (M + FOOTER) + 4);
+            pdf.setFontSize(8);
+            pdf.setTextColor(107, 114, 128);
+            pdf.text(`Página ${pageIndex + 1} de ${totalPages}`, pdfWidth / 2, pdfHeight - 6, { align: 'center' });
+        };
+
+        for (let i = 0; i < totalPages; i++) {
+            if (i > 0) pdf.addPage();
+            drawPage(i);
+        }
+
+        const cleanAlcaldia = (analysis.alcaldia || 'CDMX').normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+        const nombreArchivo = `ficha-${cleanAlcaldia}-${new Date().toISOString().slice(0, 10)}.pdf`;
+        pdf.save(nombreArchivo);
+    }, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats]);
+
+    const requestExportPDF = React.useCallback((e) => {
+        if (!e || !e.isTrusted) return;
+        exportArmedRef.current = true;
+        handleExportPDF();
+    }, [handleExportPDF]);
+
+    useEffect(() => {
+        if (!onExportReady) return;
+        onExportReady(() => requestExportPDF);
+        return () => onExportReady(null);
+    }, [onExportReady, requestExportPDF]);
+
+    if (!analysis) return null;
+
+    return (
+        <>
+            <div id="export-map" style={{ width: '900px', height: '520px', position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -1 }}></div>
+            <div style={{ position: 'absolute', top: -9999, left: -9999, width: '794px', zIndex: -1 }}>
+                <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} />
+            </div>
+        </>
+    );
+};
+
+window.App.Components.PdfExportController = PdfExportController;
+}) ();
