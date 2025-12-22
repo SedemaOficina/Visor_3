@@ -127,6 +127,18 @@ body {
   border-top-color: rgba(15, 23, 42, 0.95) !important;
 }
 
+/* Tooltip transparente para contenido coloreado dinámico */
+.leaflet-tooltip.colored-tooltip-container {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+}
+
+.leaflet-tooltip.colored-tooltip-container::before {
+  display: none !important;
+}
+
 /* Controles de Zoom más elegantes */
 .leaflet-bar {
   border: none !important;

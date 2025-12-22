@@ -37,6 +37,34 @@ const MapViewer = ({
     const markerRef = useRef(null);
     const [tilesLoading, setTilesLoading] = useState(true);
 
+    // ✅ Helper para tooltips coloreados
+    const bindColoredTooltip = (layerInstance, label, color, prefix = '') => {
+        const html = `
+        <div style="
+            background: ${color};
+            color: #fff;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-weight: 600;
+            font-size: 11px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            text-transform: uppercase;
+            letter-spacing: 0.025em;
+            border: 1px solid rgba(255,255,255,0.2);
+            white-space: nowrap;
+        ">
+            ${prefix ? `<span style="opacity:0.8; margin-right:4px;">${prefix}</span>` : ''}
+            ${label}
+        </div>
+        `;
+        layerInstance.bindTooltip(html, {
+            sticky: true,
+            className: 'colored-tooltip-container',
+            direction: 'top',
+            offset: [0, -10]
+        });
+    };
+
     // 1) INIT MAP
     useEffect(() => {
         if (!mapRef.current || mapInstance.current || !window.L) return;
@@ -138,11 +166,11 @@ const MapViewer = ({
 
                     // Tooltip Logic
                     if (name === 'sc') {
-                        layerInstance.bindTooltip("Suelo de Conservación", {
-                            sticky: true,
-                            className: 'custom-tooltip'
-                        });
+                        // SC usa tooltip estandar pero podriamos colorearlo si se quiere. Mantenemos standard por ahora o verde?
+                        // Usuario pidio "capas", SC es una capa. Vamos a ponerle verde.
+                        bindColoredTooltip(layerInstance, "Suelo de Conservación", LAYER_STYLES.sc.color);
                     } else if (tooltipField && feature.properties?.[tooltipField]) {
+                        // Generic fallback
                         layerInstance.bindTooltip(feature.properties[tooltipField], {
                             sticky: true,
                             className: 'custom-tooltip'
@@ -223,7 +251,11 @@ const MapViewer = ({
                         layerInstance.on('mouseout', () => layerInstance.setStyle({ weight: 1.5 }));
                     }
 
-                    if (tooltipField && feature.properties?.[tooltipField]) {
+                    if (name === 'anp' && feature.properties?.NOMBRE) {
+                        // ✅ ANP con prefijo y color morado
+                        bindColoredTooltip(layerInstance, feature.properties.NOMBRE, LAYER_STYLES.anp.color, "ANP:");
+                    } else if (tooltipField && feature.properties?.[tooltipField]) {
+                        // Default styling for generic layers like Edomex/Morelos
                         layerInstance.bindTooltip(feature.properties[tooltipField], {
                             sticky: true,
                             className: 'custom-tooltip'
@@ -344,7 +376,9 @@ const MapViewer = ({
                         });
 
                         const label = feature.properties?.PGOEDF;
-                        if (label) layerInstance.bindTooltip(label, { sticky: true, className: 'custom-tooltip' });
+                        if (label) {
+                            bindColoredTooltip(layerInstance, label, fixedColor);
+                        }
                     }
                 });
 
@@ -379,7 +413,8 @@ const MapViewer = ({
                 interactive: true,
                 onEachFeature: (feature, layerInstance) => {
                     const label = feature.properties?.ZONIFICACION || 'Zonificación ANP';
-                    layerInstance.bindTooltip(label, { sticky: true, className: 'custom-tooltip' });
+                    const style = getZoningStyle(feature);
+                    bindColoredTooltip(layerInstance, label, style.color);
                 }
             });
             selectedAnpLayerRef.current = layer;
