@@ -765,10 +765,10 @@
                         // Lógica PDU idéntica a MapViewer
                         if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
                             const desc = (f.properties?.PGOEDF || '').toLowerCase();
-                            if (desc.includes('parcial')) k = 'PDU_PP';
+                            if (desc.includes('equipamiento')) k = 'PDU_ER';
+                            else if (desc.includes('parcial')) k = 'PDU_PP';
                             else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
                             else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
-                            else if (desc.includes('equipamiento')) k = 'PDU_ER';
                         }
 
                         if (byKey[k]) byKey[k].push(f);

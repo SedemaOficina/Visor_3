@@ -299,14 +299,14 @@ const MapViewer = ({
                 if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
                     const desc = (f.properties?.PGOEDF || '').toLowerCase(); // Usar PGOEDF para distinguir
 
-                    if (desc.includes('parcial')) {
+                    if (desc.includes('equipamiento')) {
+                        k = 'PDU_ER'; // Equipamiento Rural (prioridad antes de 'rural')
+                    } else if (desc.includes('parcial')) {
                         k = 'PDU_PP'; // Programas Parciales
                     } else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) {
                         k = 'PDU_PR'; // Poblados Rurales
                     } else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) {
                         k = 'PDU_ZU'; // Zona Urbana / Centro de Barrio
-                    } else if (desc.includes('equipamiento')) {
-                        k = 'PDU_ER'; // Equipamiento Rural
                     }
                 }
 
