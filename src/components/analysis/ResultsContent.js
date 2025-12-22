@@ -323,9 +323,7 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                         />
                         <div className="text-sm font-semibold text-gray-700 leading-snug break-words">
                             {zoningDisplay}
-                            {analysis.zoningKey && !['ANP', 'NODATA'].includes(analysis.zoningKey) && (
-                                <span className="text-gray-400 font-normal ml-1">({analysis.zoningKey})</span>
-                            )}
+
                         </div>
                     </div>
                 </div>
