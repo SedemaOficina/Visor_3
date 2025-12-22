@@ -350,7 +350,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     const REGULATORY_NOTES = (window.App && window.App.Constants && window.App.Constants.REGULATORY_NOTES) ? window.App.Constants.REGULATORY_NOTES : [];
 
     return (
-        <div className="space-y-4 animate-in bg-white border border-gray-200 rounded-lg px-4 pt-4 pb-4">
+        <div className="space-y-4 animate-in">
 
             <LocationSummary analysis={analysis} zoningDisplay={zoningDisplay} />
 
