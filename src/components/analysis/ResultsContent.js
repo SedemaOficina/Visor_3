@@ -169,6 +169,53 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
 };
 
 /* ------------------------------------------------ */
+/* TARJETA: DATOS GENERALES ANP */
+/* ------------------------------------------------ */
+const AnpGeneralCard = ({ analysis }) => {
+    if (!analysis || !analysis.isANP) return null;
+
+    const { anpNombre, anpCategoria, anpTipoDecreto, anpFechaDecreto, anpSupDecretada } = analysis;
+
+    return (
+        <div className="bg-purple-50 rounded-xl p-4 mb-4 animate-slide-up border border-purple-100">
+            <div className="flex items-center gap-2 text-purple-800 font-bold text-sm mb-3 border-b border-purple-100 pb-2">
+                <Icons.Leaf className="h-4 w-4" />
+                <span>Datos Generales ANP</span>
+            </div>
+
+            <div className="space-y-3 text-xs text-gray-700">
+                <div className="grid grid-cols-1 gap-1">
+                    <span className="text-[10px] uppercase font-bold text-gray-500">Nombre Oficial</span>
+                    <span className="font-medium text-gray-900 text-sm">{anpNombre || 'No disponible'}</span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Categoría</span>
+                        <span className="font-medium text-gray-900">{anpCategoria || 'N/D'}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Tipo Decreto</span>
+                        <span className="font-medium text-gray-900">{anpTipoDecreto || 'N/D'}</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Fecha Decreto</span>
+                        <span className="font-medium text-gray-900">{anpFechaDecreto || 'N/D'}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Superficie</span>
+                        <span className="font-medium text-gray-900">{anpSupDecretada ? `${anpSupDecretada} ha` : 'N/D'}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+/* ------------------------------------------------ */
 /* TARJETA SECUNDARIA: ZONIFICACIÓN INTERNA ANP */
 /* ------------------------------------------------ */
 const AnpInternalCard = ({ analysis }) => {
@@ -317,6 +364,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
 
             <LocationSummary analysis={analysis} zoningDisplay={zoningDisplay} />
 
+            <AnpGeneralCard analysis={analysis} />
             <AnpInternalCard analysis={analysis} />
 
             <div className="bg-gray-50 border border-gray-100 p-3 rounded-xl mb-4">
