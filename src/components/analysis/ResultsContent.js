@@ -12,12 +12,7 @@ const StatusMessage = ({ analysis }) => {
 
     if (status === 'OUTSIDE_CDMX') return null;
 
-    if (isANP)
-        return (
-            <div className="p-3 bg-purple-50 text-purple-800 text-xs border-l-4 border-purple-600 rounded-r">
-                <strong>Área Natural Protegida:</strong> Consulte el Programa de Manejo correspondiente.
-            </div>
-        );
+
 
     if (status === 'NO_DATA')
         return (
@@ -283,7 +278,24 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     return (
         <div className="space-y-4 animate-in bg-white border border-gray-200 rounded-lg px-4 pt-2 pb-3">
 
-            <LocationSummary analysis={analysis} onExportPDF={onExportPDF} />
+            {analysis.status === 'OUTSIDE_CDMX' ? (
+                <>
+                    <div className="bg-red-50 border border-red-100 rounded-lg p-3 animate-pulse-subtle">
+                        <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
+                            <Icons.XCircle className="h-4 w-4" />
+                            <span>Fuera de CDMX</span>
+                        </div>
+                        <p className="text-xs text-red-600 leading-snug">
+                            Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
+                        </p>
+                    </div>
+                    <LegalDisclaimer />
+                </>
+            ) : (
+                <>
+                    <LocationSummary analysis={analysis} onExportPDF={onExportPDF} />
+                </>
+            )}
 
 
             {analysis.zoningName === 'Cargando detalles...' && (
