@@ -361,9 +361,9 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
         </div>
       )}
 
-      {analysis && analysis.status !== 'OUTSIDE_CDMX' && (
+      {analysis && (
         <div className="flex-shrink-0 p-3 bg-white border-t border-gray-200 safe-area-bottom flex gap-3 overflow-x-auto">
-          {/* Google Maps (solo si está dentro de CDMX) */}
+
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
             target="_blank"

@@ -129,33 +129,29 @@ const LegalDisclaimer = () => (
 const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
     return (
         <div className="hidden md:grid grid-cols-2 gap-2 w-full">
-            {/* Google Maps (solo si está dentro de CDMX) */}
-            {analysis.status !== 'OUTSIDE_CDMX' && (
-                <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
-                    title="Ver ubicación en Google Maps"
-                >
-                    <Icons.MapIcon className="h-5 w-5 mb-1" />
-                    <span className="text-[9px] font-bold">Google Maps</span>
-                </a>
-            )}
+            {/* Google Maps */}
+            <a
+                href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148]"
+                title="Ver ubicación en Google Maps"
+            >
+                <Icons.MapIcon className="h-5 w-5 mb-1" />
+                <span className="text-[9px] font-bold">Google Maps</span>
+            </a>
 
-            {/* Exportar PDF (solo si está dentro de CDMX) */}
-            {analysis.status !== 'OUTSIDE_CDMX' && (
-                <button
-                    type="button"
-                    onClick={(e) => onExportPDF?.(e)}
-                    className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148] active:scale-95 transition-transform"
-                    title="Generar ficha en PDF"
-                    aria-label="Exportar resultados a PDF"
-                >
-                    <Icons.Pdf className="h-5 w-5 mb-1" />
-                    <span className="text-[9px] font-bold">Exportar PDF</span>
-                </button>
-            )}
+            {/* Exportar PDF */}
+            <button
+                type="button"
+                onClick={(e) => onExportPDF?.(e)}
+                className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148] active:scale-95 transition-transform"
+                title="Generar ficha en PDF"
+                aria-label="Exportar resultados a PDF"
+            >
+                <Icons.Pdf className="h-5 w-5 mb-1" />
+                <span className="text-[9px] font-bold">Exportar PDF</span>
+            </button>
         </div>
     );
 };
@@ -171,8 +167,6 @@ const LocationSummary = ({ analysis, onExportPDF }) => {
         ? getAnpZoningColor(analysis.zoningName)
         : (analysis.zoningKey ? getZoningColor(analysis.zoningKey) : '#9ca3af');
     const showZoningBlock = !isOutside && !isUrban;
-
-
 
     const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
 
@@ -192,8 +186,6 @@ const LocationSummary = ({ analysis, onExportPDF }) => {
                             {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                         </span>
                     )}
-
-
                 </div>
 
                 {/* Status Message (ANP / No Data) moved here to be BELOW badge */}
@@ -278,25 +270,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     return (
         <div className="space-y-4 animate-in bg-white border border-gray-200 rounded-lg px-4 pt-2 pb-3">
 
-            {analysis.status === 'OUTSIDE_CDMX' ? (
-                <>
-                    <div className="bg-red-50 border border-red-100 rounded-lg p-3 animate-pulse-subtle">
-                        <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
-                            <Icons.XCircle className="h-4 w-4" />
-                            <span>Fuera de CDMX</span>
-                        </div>
-                        <p className="text-xs text-red-600 leading-snug">
-                            Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
-                        </p>
-                    </div>
-                    <LegalDisclaimer />
-                </>
-            ) : (
-                <>
-                    <LocationSummary analysis={analysis} onExportPDF={onExportPDF} />
-                </>
-            )}
-
+            <LocationSummary analysis={analysis} onExportPDF={onExportPDF} />
 
             {analysis.zoningName === 'Cargando detalles...' && (
                 <div className="p-2 bg-yellow-50 text-yellow-800 text-[10px] rounded border border-yellow-200">
