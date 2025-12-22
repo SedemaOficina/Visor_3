@@ -205,12 +205,12 @@ const MapViewer = ({
             {
                 color: LAYER_STYLES.alcaldias.color,
                 weight: 2, // Hierarchy: Thicker than zones, thinner than 3
-                dashArray: '8,4',
                 opacity: 0.9,
                 fillOpacity: 0
             },
             null,
-            'paneContext'
+            'paneContext',
+            false // ✅ Interactive false to prevent blocking SC layer
         );
 
         map.on('click', e => onLocationSelect(e.latlng));
@@ -468,7 +468,6 @@ const MapViewer = ({
         layersRef.current.alcaldias.setStyle({
             color: dynamicColor,
             weight: 2,
-            dashArray: '8,4',
             opacity: 0.9,
             fillOpacity: 0
         });

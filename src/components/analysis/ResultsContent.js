@@ -229,7 +229,7 @@ const AnpInternalCard = ({ analysis }) => {
         <div className="bg-purple-50 rounded-xl p-4 mb-4 animate-slide-up border border-purple-100">
             <div className="flex items-center gap-2 text-purple-800 font-bold text-sm mb-3 border-b border-purple-100 pb-2">
                 <Icons.Verified className="h-4 w-4" />
-                <span>Detalle Área Natural Protegida</span>
+                <span>Zonificación del Área Natural Protegida</span>
             </div>
 
             <div className="space-y-2 text-xs text-gray-700">
