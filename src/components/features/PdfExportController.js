@@ -258,7 +258,11 @@
                 fontSize: `${T.h2}px`,
                 fontWeight: 800,
                 margin: `0 0 ${S.gap1}px 0`,
-                color
+                color: '#111827', // Use dark text for contrast
+                backgroundColor: '#f3f4f6', // Light gray background
+                padding: '6px 10px',
+                borderRadius: '6px',
+                borderLeft: `4px solid ${color === C.ink ? C.guinda : color}`, // Colored indicator
             });
 
             const section = (mb = S.gap3) => ({ marginBottom: `${mb}px` });
@@ -330,7 +334,7 @@
                     />
                     <div style={{ borderTop: `1px solid ${C.hair}`, marginBottom: `${S.gap2}px` }} />
                     <section style={section(S.gap3)}>
-                        <h2 style={h2()}>0. Mapa de referencia y simbología</h2>
+                        <h2 style={h2()}>Mapa de referencia y simbología</h2>
                         <div style={{ display: 'flex', gap: '12px' }}>
                             <div
                                 style={{
@@ -413,14 +417,14 @@
                                 <div style={{ display: 'grid', gap: '6px', marginBottom: '8px' }}>
                                     {isOutside && (
                                         <div style={{ display: 'grid', gap: '4px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                                <span style={{ width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                                Punto fuera de CDMX
+                                            <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
+                                                <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                                <span style={{ lineHeight: 1.3 }}>Punto fuera de CDMX</span>
                                             </div>
                                             {outsideContextName && (
-                                                <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                                    <span style={{ width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', border: '1px solid #9ca3af' }} />
-                                                    Estado: <strong>{outsideContextName}</strong>
+                                                <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
+                                                    <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', marginTop: '3px', border: '1px solid #9ca3af' }} />
+                                                    <span style={{ lineHeight: 1.3 }}>Estado: <strong>{outsideContextName}</strong></span>
                                                 </div>
                                             )}
                                             <div style={{ marginTop: '8px', fontSize: `${T.micro}px`, color: C.sub, textAlign: 'justify', lineHeight: 1.35 }}>
@@ -431,15 +435,15 @@
                                         </div>
                                     )}
                                     {isSC && (
-                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            Punto “SC”: Suelo de Conservación
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
+                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                            <span style={{ lineHeight: 1.3 }}>Punto “SC”: Suelo de Conservación</span>
                                         </div>
                                     )}
                                     {isUrban && (
-                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ width: '10px', height: '10px', borderRadius: 999, background: C.su, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            Punto “SU”: Suelo Urbano
+                                        <div style={{ display: 'flex', alignItems: 'flex-start', fontSize: `${T.small}px`, color: C.sub }}>
+                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.su, marginRight: '6px', marginTop: '3px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                            <span style={{ lineHeight: 1.3 }}>Punto “SU”: Suelo Urbano</span>
                                         </div>
                                     )}
                                 </div>
@@ -527,7 +531,7 @@
                     </section>
                     {!isOutside && (
                         <section style={section(S.gap3)}>
-                            <h2 style={h2()}>1. Identificación normativa básica</h2>
+                            <h2 style={h2()}>Identificación normativa básica</h2>
                             <table style={tbl.table}>
                                 <tbody>
                                     <tr style={{ background: tbl.zebra(0) }}>
@@ -614,7 +618,7 @@
                     )}
                     {isUrban && (
                         <section style={section(S.gap3)}>
-                            <h2 style={h2()}>2. Referencia para Suelo Urbano</h2>
+                            <h2 style={h2()}>Referencia para Suelo Urbano</h2>
                             <p style={{ fontSize: `${T.base}px`, color: C.sub, textAlign: 'justify', margin: 0 }}>
                                 La ubicación consultada se encuentra en Suelo Urbano. La regulación específica del uso del suelo corresponde a los Programas de Desarrollo Urbano aplicables, emitidos por la autoridad competente en materia de desarrollo urbano (SEDUVI). Esta ficha es de carácter orientativo y no sustituye los instrumentos oficiales.
                             </p>
@@ -623,7 +627,7 @@
                     {isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog && (
                         <>
                             <section style={section(S.gap2)}>
-                                <h2 style={h2(C.red)}>3. Actividades prohibidas</h2>
+                                <h2 style={h2(C.red)}>Actividades prohibidas</h2>
 
                                 {detalleProhibidas.length === 0 ? (
                                     <div style={{ fontSize: `${T.small}px`, color: C.sub }}>
@@ -661,7 +665,7 @@
                                 )}
                             </section>
                             <section style={section(S.gap2)}>
-                                <h2 style={h2(C.green)}>4. Actividades permitidas</h2>
+                                <h2 style={h2(C.green)}>Actividades permitidas</h2>
                                 {detallePermitidas.length === 0 ? (
                                     <div style={{ fontSize: `${T.small}px`, color: C.sub }}>
                                         No se identificaron actividades clasificadas como permitidas para esta zonificación en el catálogo cargado.
@@ -700,7 +704,7 @@
                             </section>
 
                             <section style={section(S.gap2)}>
-                                <h2 style={h2()}>5. Notas Normativas Generales y Complementarias</h2>
+                                <h2 style={h2()}>Notas Normativas Generales y Complementarias</h2>
                                 <div style={{
                                     border: `1px solid ${C.hair}`,
                                     padding: '10px 12px',
@@ -725,7 +729,7 @@
                     )
                     }
                     <section style={{ marginTop: `${S.gap2}px` }}>
-                        <h2 style={h2()}>6. Enlaces de referencia</h2>
+                        <h2 style={h2()}>Enlaces de referencia</h2>
                         <div style={{ fontSize: `${T.small}px`, color: C.sub, marginBottom: `${S.gap2}px` }}>
                             <strong>Visor:</strong> {visorUrlShort}
                             <div style={{ marginTop: '8px' }}>
