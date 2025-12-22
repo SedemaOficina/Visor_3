@@ -292,7 +292,7 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
             {/* Header con Badge */}
             <div className="flex items-center justify-between mb-3">
                 <span
-                    className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm"
+                    className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm leading-none"
                     style={{
                         backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
                         color: '#ffffff'

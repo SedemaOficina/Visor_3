@@ -647,9 +647,9 @@
                     {isUrban && (
                         <section style={section(S.gap3)}>
                             <h2 style={h2()}>Referencia para Suelo Urbano</h2>
-                            <p style={{ fontSize: `${T.base}px`, color: C.sub, textAlign: 'justify', margin: 0 }}>
+                            <div style={{ fontSize: `${T.base}px`, color: C.sub, textAlign: 'justify', margin: 0 }}>
                                 La ubicación consultada se encuentra en Suelo Urbano. La regulación específica del uso del suelo corresponde a los Programas de Desarrollo Urbano aplicables, emitidos por la autoridad competente en materia de desarrollo urbano (SEDUVI). Esta ficha es de carácter orientativo y no sustituye los instrumentos oficiales.
-                            </p>
+                            </div>
                         </section>
                     )}
                     {isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog && (
