@@ -123,6 +123,10 @@ const MapViewer = ({
         map.createPane('paneContext');
         map.getPane('paneContext').style.zIndex = 350; // ✅ Alcaldías abajo (Visual reference only)
 
+        // ✅ New Pane for SC (Middle layer: Above Alcaldías, Below Zoning/ANP)
+        map.createPane('paneSCOverlay');
+        map.getPane('paneSCOverlay').style.zIndex = 375;
+
         map.createPane('paneOverlay');
         map.getPane('paneOverlay').style.zIndex = 400;
 
@@ -195,7 +199,7 @@ const MapViewer = ({
                 interactive: true
             },
             null,
-            'paneOverlay', // ✅ Moved to Overlay to ensure interaction
+            'paneSCOverlay', // ✅ Moved to intermediate pane (z=375)
             true // Make Interactive
         );
 
@@ -247,8 +251,8 @@ const MapViewer = ({
                 interactive,
                 onEachFeature: (feature, layerInstance) => {
                     if (interactive) {
-                        layerInstance.on('mouseover', () => layerInstance.setStyle({ weight: 3 }));
-                        layerInstance.on('mouseout', () => layerInstance.setStyle({ weight: 1.5 }));
+                        layerInstance.on('mouseover', () => layerInstance.setStyle({ weight: 3, fillOpacity: 0.3 }));
+                        layerInstance.on('mouseout', () => layerInstance.setStyle({ weight: 1.5, fillOpacity: 0.1 }));
                     }
 
                     if (name === 'anp' && feature.properties?.NOMBRE) {
@@ -280,8 +284,9 @@ const MapViewer = ({
                     fillOpacity: 0.1
                 },
                 'NOMGEO',
+                'NOMGEO',
                 'paneBase',
-                false
+                true // ✅ Interactive
             );
         }
 
@@ -298,7 +303,7 @@ const MapViewer = ({
                 },
                 'NOMGEO',
                 'paneBase',
-                false
+                true // ✅ Interactive
             );
         }
         // ✅ ANP overlay (independiente de PGOEDF)
