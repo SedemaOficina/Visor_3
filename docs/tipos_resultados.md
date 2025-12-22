@@ -103,8 +103,8 @@ Se suman elementos al "Caso 6":
 *   **Tarjeta Zonificación Interna ANP:** (Bloque Morado Secundario)
     *   Icono: `Verified`
     *   Título: "Zonificación del Área Natural Protegida"
-    *   Nombre de la sub-zona (ej. "Zona de Uso Público")
-    *   Categoría de manejo
+    *   **Nombre Oficial:** (ej. "Zona de Uso Público")
+    *   **Zonificación Programa de Manejo:** (Valor del campo `ZONIFICACION`, ej. "Uso público")
 *   **Botones:** Google Maps / Exportar PDF
 *   **Aviso Legal**
 
