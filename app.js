@@ -394,17 +394,19 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
             <Icons.Share className="h-4 w-4" /> Compartir
           </button>
 
-          <button
-            type="button"
-            onClick={(e) => {
-              if (onExportPDF) onExportPDF(e);
-              else alert('No se pudo generar el PDF. Intenta recargar la página.');
-            }}
-            className="flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
-            title="Descargar ficha técnica en PDF"
-          >
-            <Icons.Pdf className="h-4 w-4" /> Exportar PDF
-          </button>
+          {analysis.status !== 'OUTSIDE_CDMX' && (
+            <button
+              type="button"
+              onClick={(e) => {
+                if (onExportPDF) onExportPDF(e);
+                else alert('No se pudo generar el PDF. Intenta recargar la página.');
+              }}
+              className="flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
+              title="Descargar ficha técnica en PDF"
+            >
+              <Icons.Pdf className="h-4 w-4" /> Exportar PDF
+            </button>
+          )}
         </div>
       )}
     </div>

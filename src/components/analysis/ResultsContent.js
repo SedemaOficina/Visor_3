@@ -146,17 +146,19 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
                 <span className="text-[9px] font-bold">Google Maps</span>
             </a>
 
-            {/* Exportar PDF (solo por acción del usuario) */}
-            <button
-                type="button"
-                onClick={(e) => onExportPDF?.(e)}
-                className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148] active:scale-95 transition-transform"
-                title="Generar ficha en PDF"
-                aria-label="Exportar resultados a PDF"
-            >
-                <Icons.Pdf className="h-5 w-5 mb-1" />
-                <span className="text-[9px] font-bold">Exportar PDF</span>
-            </button>
+            {/* Exportar PDF (solo si está dentro de CDMX) */}
+            {analysis.status !== 'OUTSIDE_CDMX' && (
+                <button
+                    type="button"
+                    onClick={(e) => onExportPDF?.(e)}
+                    className="flex flex-col items-center justify-center p-2 bg-white border rounded hover:border-[#9d2148] text-gray-600 hover:text-[#9d2148] active:scale-95 transition-transform"
+                    title="Generar ficha en PDF"
+                    aria-label="Exportar resultados a PDF"
+                >
+                    <Icons.Pdf className="h-5 w-5 mb-1" />
+                    <span className="text-[9px] font-bold">Exportar PDF</span>
+                </button>
+            )}
         </div>
     );
 };
@@ -173,12 +175,7 @@ const LocationSummary = ({ analysis, onExportPDF }) => {
         : (analysis.zoningKey ? getZoningColor(analysis.zoningKey) : '#9ca3af');
     const showZoningBlock = !isOutside && !isUrban;
 
-    const [copied, setCopied] = useState(false);
-    const copyCoords = () => {
-        navigator.clipboard.writeText(`${analysis.coordinate.lat.toFixed(5)}, ${analysis.coordinate.lng.toFixed(5)}`);
-        setCopied(true);
-        setTimeout(() => setCopied(false), 2000);
-    };
+
 
     const formatDate = (d) => d ? new Date(d).toLocaleDateString() : '—';
 
@@ -199,17 +196,7 @@ const LocationSummary = ({ analysis, onExportPDF }) => {
                         </span>
                     )}
 
-                    <button
-                        onClick={copyCoords}
-                        className="text-gray-400 hover:text-gray-600 transition-colors p-1"
-                        title="Copiar coordenadas"
-                    >
-                        <div className="flex items-center gap-1 text-[10px]">
-                            <Icons.Copy className="h-3 w-3" />
-                            <span className="font-mono">{analysis.coordinate.lat.toFixed(4)}, {analysis.coordinate.lng.toFixed(4)}</span>
-                        </div>
-                        {copied && <span className="absolute -mt-6 right-0 bg-black text-white text-[9px] px-2 py-0.5 rounded animate-fade-in">Copiado</span>}
-                    </button>
+
                 </div>
 
                 {/* Warning Outside */}

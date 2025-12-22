@@ -102,11 +102,10 @@
         const isANP = analysis.isANP;
 
         const statusLabel =
-            isANP ? 'Área Natural Protegida' :
-                isSC ? 'Suelo de Conservación' :
-                    isUrban ? 'Suelo Urbano' :
-                        analysis.status === 'OUTSIDE_CDMX' ? 'Fuera de la Ciudad de México' :
-                            'Información no disponible';
+            isSC ? 'Suelo de Conservación' :
+                isUrban ? 'Suelo Urbano' :
+                    analysis.status === 'OUTSIDE_CDMX' ? 'Fuera de la Ciudad de México' :
+                        'Información no disponible';
 
         const direccion =
             analysis.address ||
@@ -124,15 +123,11 @@
         let soilBadgeBg = '#e5e7eb';
         let soilBadgeColor = '#374151';
 
-        if (isSC && !isANP) {
+        if (isSC) {
             soilBadgeBg = '#3B7D23';
             soilBadgeColor = '#ffffff';
-        }
-        else if (isUrban) {
+        } else if (isUrban) {
             soilBadgeBg = '#3b82f6';
-            soilBadgeColor = '#ffffff';
-        } else if (isANP) {
-            soilBadgeBg = '#a855f7';
             soilBadgeColor = '#ffffff';
         }
 
