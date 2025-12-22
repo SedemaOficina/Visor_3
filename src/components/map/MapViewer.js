@@ -121,7 +121,7 @@ const MapViewer = ({
         map.getPane('paneBase').style.zIndex = 300;
 
         map.createPane('paneContext');
-        map.getPane('paneContext').style.zIndex = 450; // ✅ Alcaldías (Borders) on top of Zoning
+        map.getPane('paneContext').style.zIndex = 350; // ✅ Alcaldías abajo (Visual reference only)
 
         map.createPane('paneOverlay');
         map.getPane('paneOverlay').style.zIndex = 400;
