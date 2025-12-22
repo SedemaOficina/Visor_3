@@ -38,9 +38,6 @@ window.App.Constants.ZONING_CAT_INFO = {
     AF: { color: '#65a30d', label: 'Agroforestal (AF)' },               // Lime 600
     AFE: { color: '#a3e635', label: 'Agroforestal Especial (AFE)' },    // Lime 400
 
-    // Restauración (Tierras) - REMOVIDO a petición
-    // RE: { color: '#a16207', label: 'Rescate Ecológico (RE)' },
-
     // PDU y Otros (Estructurales - Colores Distintivos)
     PDU_PP: { color: '#e11d48', label: 'Programas Parciales (PP)' },    // Rose 600 (Distinct from ANP Purple)
     PDU_PR: { color: '#d97706', label: 'Poblados Rurales (PR)' },       // Amber 600
