@@ -99,6 +99,7 @@
 
         const isUrban = analysis.status === 'URBAN_SOIL';
         const isSC = analysis.status === 'CONSERVATION_SOIL';
+        const isOutside = analysis.status === 'OUTSIDE_CDMX';
         const isANP = analysis.isANP || analysis.zoningKey === 'ANP';
 
         const statusLabel =
@@ -373,7 +374,7 @@
                                                     width: '28px',
                                                     height: '28px',
                                                     borderRadius: '50%',
-                                                    background: isSC ? C.sc : isUrban ? C.su : C.mute,
+                                                    background: isSC ? C.sc : isUrban ? C.su : isOutside ? C.red : C.mute,
                                                     border: '3px solid #ffffff',
                                                     boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
                                                     display: 'flex',
@@ -384,7 +385,7 @@
                                                     color: '#ffffff'
                                                 }}
                                             >
-                                                {isSC ? 'SC' : isUrban ? 'SU' : ''}
+                                                {isSC ? 'SC' : isUrban ? 'SU' : isOutside ? 'F' : ''}
                                             </div>
                                         </div>
                                     )}
@@ -406,6 +407,12 @@
                                     Simbología de puntos y zonificación
                                 </div>
                                 <div style={{ display: 'grid', gap: '6px', marginBottom: '8px' }}>
+                                    {isOutside && (
+                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
+                                            <span style={{ width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
+                                            Punto fuera de CDMX
+                                        </div>
+                                    )}
                                     {isSC && (
                                         <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
                                             <span style={{ width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
@@ -497,91 +504,93 @@
                             </div>
                         </div>
                     </section>
-                    <section style={section(S.gap3)}>
-                        <h2 style={h2()}>1. Identificación normativa básica</h2>
-                        <table style={tbl.table}>
-                            <tbody>
-                                <tr style={{ background: tbl.zebra(0) }}>
-                                    <td style={tbl.tdLabel}>Alcaldía</td>
-                                    <td style={tbl.td}>{analysis.alcaldia || 'Ciudad de México'}</td>
-                                </tr>
-                                <tr style={{ background: tbl.zebra(1) }}>
-                                    <td style={tbl.tdLabel}>Tipo de suelo</td>
-                                    <td style={tbl.td}>
-                                        <span style={badge(soilBg, soilFg)}>{statusLabel}</span>
-                                        <div style={{ fontSize: `${T.micro}px`, color: C.mute, marginTop: '3px' }}>
-                                            {isSC ? 'Clasificación territorial: SC (PGOEDF 2000)' : isUrban ? 'Clasificación territorial: SU' : ''}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {!isUrban && (
-                                    <tr style={{ background: tbl.zebra(2) }}>
-                                        <td style={tbl.tdLabel}>Zonificación PGOEDF</td>
+                    {!isOutside && (
+                        <section style={section(S.gap3)}>
+                            <h2 style={h2()}>1. Identificación normativa básica</h2>
+                            <table style={tbl.table}>
+                                <tbody>
+                                    <tr style={{ background: tbl.zebra(0) }}>
+                                        <td style={tbl.tdLabel}>Alcaldía</td>
+                                        <td style={tbl.td}>{analysis.alcaldia || 'Ciudad de México'}</td>
+                                    </tr>
+                                    <tr style={{ background: tbl.zebra(1) }}>
+                                        <td style={tbl.tdLabel}>Tipo de suelo</td>
                                         <td style={tbl.td}>
-                                            <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', maxWidth: '100%' }}>
-                                                <span
-                                                    style={{
-                                                        ...badge(zoningColor, '#ffffff'),
-                                                        fontWeight: 800,
-                                                        maxWidth: '350px',
-                                                        overflow: 'hidden',
-                                                        textOverflow: 'ellipsis'
-                                                    }}
-                                                    title={zoningDisplay}
-                                                >
-                                                    {zoningDisplay}
-                                                </span>
-                                                {analysis.zoningKey && !['ANP', 'NODATA'].includes(analysis.zoningKey) && (
-                                                    <span style={badge('#ffffff', C.ink, zoningColor)}>
-                                                        {analysis.zoningKey}
-                                                    </span>
-                                                )}
-                                            </span>
+                                            <span style={badge(soilBg, soilFg)}>{statusLabel}</span>
+                                            <div style={{ fontSize: `${T.micro}px`, color: C.mute, marginTop: '3px' }}>
+                                                {isSC ? 'Clasificación territorial: SC (PGOEDF 2000)' : isUrban ? 'Clasificación territorial: SU' : ''}
+                                            </div>
                                         </td>
                                     </tr>
-                                )}
-
-                                {/* TARJETA SECUNDARIA ANP (Si tiene zonificación interna) */}
-                                {analysis.hasInternalAnpZoning && analysis.anpInternalFeature && (
-                                    <>
-                                        <tr style={{ background: '#fdf4ff' }}>
-                                            <td colSpan="2" style={{ ...tbl.td, border: S.hair, fontWeight: 800, color: C.anp, textAlign: 'center' }}>
-                                                DETALLE ÁREA NATURAL PROTEGIDA
-                                            </td>
-                                        </tr>
-                                        <tr style={{ background: tbl.zebra(3) }}>
-                                            <td style={tbl.tdLabel}>Nombre ANP</td>
+                                    {!isUrban && (
+                                        <tr style={{ background: tbl.zebra(2) }}>
+                                            <td style={tbl.tdLabel}>Zonificación PGOEDF</td>
                                             <td style={tbl.td}>
-                                                <strong>{analysis.anpInternalFeature.properties?.NOMBRE || analysis.anpNombre || '—'}</strong>
+                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', maxWidth: '100%' }}>
+                                                    <span
+                                                        style={{
+                                                            ...badge(zoningColor, '#ffffff'),
+                                                            fontWeight: 800,
+                                                            maxWidth: '350px',
+                                                            overflow: 'hidden',
+                                                            textOverflow: 'ellipsis'
+                                                        }}
+                                                        title={zoningDisplay}
+                                                    >
+                                                        {zoningDisplay}
+                                                    </span>
+                                                    {analysis.zoningKey && !['ANP', 'NODATA'].includes(analysis.zoningKey) && (
+                                                        <span style={badge('#ffffff', C.ink, zoningColor)}>
+                                                            {analysis.zoningKey}
+                                                        </span>
+                                                    )}
+                                                </span>
                                             </td>
                                         </tr>
-                                        <tr style={{ background: tbl.zebra(4) }}>
-                                            <td style={tbl.tdLabel}>Categoría</td>
-                                            <td style={tbl.td}>{analysis.anpInternalFeature.properties?.CATEGORIA_PROTECCION || analysis.anpCategoria || '—'}</td>
-                                        </tr>
-                                        <tr style={{ background: tbl.zebra(5) }}>
-                                            <td style={tbl.tdLabel}>Tipo Decreto</td>
-                                            <td style={tbl.td}>{analysis.anpInternalFeature.properties?.TIPO_DECRETO || analysis.anpTipoDecreto || '—'}</td>
-                                        </tr>
-                                        <tr style={{ background: tbl.zebra(6) }}>
-                                            <td style={tbl.tdLabel}>Superficie</td>
-                                            <td style={tbl.td}>{analysis.anpInternalFeature.properties?.SUP_DECRETADA || analysis.anpSupDecretada || '—'}</td>
-                                        </tr>
-                                        <tr style={{ background: tbl.zebra(7) }}>
-                                            <td style={tbl.tdLabel}>Fecha Decreto</td>
-                                            <td style={tbl.td}>{analysis.anpInternalFeature.properties?.FECHA_DECRETO ? new Date(analysis.anpInternalFeature.properties.FECHA_DECRETO).toLocaleDateString() : (analysis.anpFechaDecreto ? new Date(analysis.anpFechaDecreto).toLocaleDateString() : '—')}</td>
-                                        </tr>
-                                    </>
-                                )}
-                                <tr style={{ background: tbl.zebra(3) }}>
-                                    <td style={tbl.tdLabel}>Base de referencia</td>
-                                    <td style={tbl.td}>
-                                        Programa General de Ordenamiento Ecológico del Distrito Federal (PGOEDF 2000) y capas geoespaciales institucionales de SEDEMA.
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </section>
+                                    )}
+
+                                    {/* TARJETA SECUNDARIA ANP (Si tiene zonificación interna) */}
+                                    {analysis.hasInternalAnpZoning && analysis.anpInternalFeature && (
+                                        <>
+                                            <tr style={{ background: '#fdf4ff' }}>
+                                                <td colSpan="2" style={{ ...tbl.td, border: S.hair, fontWeight: 800, color: C.anp, textAlign: 'center' }}>
+                                                    DETALLE ÁREA NATURAL PROTEGIDA
+                                                </td>
+                                            </tr>
+                                            <tr style={{ background: tbl.zebra(3) }}>
+                                                <td style={tbl.tdLabel}>Nombre ANP</td>
+                                                <td style={tbl.td}>
+                                                    <strong>{analysis.anpInternalFeature.properties?.NOMBRE || analysis.anpNombre || '—'}</strong>
+                                                </td>
+                                            </tr>
+                                            <tr style={{ background: tbl.zebra(4) }}>
+                                                <td style={tbl.tdLabel}>Categoría</td>
+                                                <td style={tbl.td}>{analysis.anpInternalFeature.properties?.CATEGORIA_PROTECCION || analysis.anpCategoria || '—'}</td>
+                                            </tr>
+                                            <tr style={{ background: tbl.zebra(5) }}>
+                                                <td style={tbl.tdLabel}>Tipo Decreto</td>
+                                                <td style={tbl.td}>{analysis.anpInternalFeature.properties?.TIPO_DECRETO || analysis.anpTipoDecreto || '—'}</td>
+                                            </tr>
+                                            <tr style={{ background: tbl.zebra(6) }}>
+                                                <td style={tbl.tdLabel}>Superficie</td>
+                                                <td style={tbl.td}>{analysis.anpInternalFeature.properties?.SUP_DECRETADA || analysis.anpSupDecretada || '—'}</td>
+                                            </tr>
+                                            <tr style={{ background: tbl.zebra(7) }}>
+                                                <td style={tbl.tdLabel}>Fecha Decreto</td>
+                                                <td style={tbl.td}>{analysis.anpInternalFeature.properties?.FECHA_DECRETO ? new Date(analysis.anpInternalFeature.properties.FECHA_DECRETO).toLocaleDateString() : (analysis.anpFechaDecreto ? new Date(analysis.anpFechaDecreto).toLocaleDateString() : '—')}</td>
+                                            </tr>
+                                        </>
+                                    )}
+                                    <tr style={{ background: tbl.zebra(3) }}>
+                                        <td style={tbl.tdLabel}>Base de referencia</td>
+                                        <td style={tbl.td}>
+                                            Programa General de Ordenamiento Ecológico del Distrito Federal (PGOEDF 2000) y capas geoespaciales institucionales de SEDEMA.
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </section>
+                    )}
                     {isUrban && (
                         <section style={section(S.gap3)}>
                             <h2 style={h2()}>2. Referencia para Suelo Urbano</h2>
