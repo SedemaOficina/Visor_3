@@ -30,11 +30,11 @@ window.App.Constants.ZONING_CAT_INFO = {
     FC: { color: '#15803d', label: 'Forestal Conservación' },           // Green 700
     FCE: { color: '#4ade80', label: 'Forestal Conservación Especial' }, // Green 400
     FP: { color: '#0e7490', label: 'Forestal Protección' },             // Cyan 700
-    FPE: { color: '#22d3ee', label: 'Forestal Protección Especial' },   // Cyan 400
+    FPE: { color: '#0284c7', label: 'Forestal Protección Especial' },   // Sky 600 (Updated for contrast)
 
     // Agro y Mixto (Amarillos y Limas - Tierra/Vegetación)
     AE: { color: '#fbbf24', label: 'Agroecológico' },                   // Amber 400
-    AEE: { color: '#fcd34d', label: 'Agroecológico Especial' },         // Amber 300
+    AEE: { color: '#eab308', label: 'Agroecológico Especial' },         // Yellow 600 (Updated for visibility)
     AF: { color: '#65a30d', label: 'Agroforestal' },                    // Lime 600
     AFE: { color: '#a3e635', label: 'Agroforestal Especial' },          // Lime 400
 
@@ -44,7 +44,7 @@ window.App.Constants.ZONING_CAT_INFO = {
     PDU_ZU: { color: '#94a3b8', label: 'Zona Urbana' },                 // Slate 400
     PDU_ER: { color: '#3b82f6', label: 'Equipamiento Rural' },          // Blue 500
 
-    ANP_ZON: { color: '#9333ea', label: 'Zonificación ANP (interna)' }  // Purple 600
+    ANP_ZON: { color: '#7e22ce', label: 'Zonificación ANP (interna)' }  // Purple 700 (Darker than standard ANP)
 };
 
 window.App.Constants.ZONING_ORDER = [
