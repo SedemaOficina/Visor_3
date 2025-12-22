@@ -280,23 +280,8 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                     </span>
                 )}
 
-                {/* Mini KPIs visuales */}
-                {!isOutside && !isUrban && (
-                    <div className="flex gap-2">
-                        {analysis.allowedActivities?.length > 0 && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold text-green-700 bg-green-50 px-2 py-0.5 rounded border border-green-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-600"></span>
-                                {analysis.allowedActivities.length}
-                            </span>
-                        )}
-                        {analysis.prohibitedActivities?.length > 0 && (
-                            <span className="flex items-center gap-1 text-[10px] font-bold text-red-700 bg-red-50 px-2 py-0.5 rounded border border-red-100">
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-600"></span>
-                                {analysis.prohibitedActivities.length}
-                            </span>
-                        )}
-                    </div>
-                )}
+                {/* Mini KPIs visuales removidos a petición del usuario (Hacían ruido visual) */}
+                {/* !isOutside && !isUrban && ( ... ) */}
             </div>
 
             <StatusMessage analysis={analysis} />
