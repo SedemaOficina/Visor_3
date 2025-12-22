@@ -11,7 +11,8 @@ const getZoningDisplay = (analysis) => {
     if (analysis.zoningKey === 'NODATA') return 'Información no disponible';
 
     // ✅ Prioritize Clean Label from Constants (if matches key)
-    const catInfo = window.App.Constants.ZONING_CAT_INFO[analysis.zoningKey];
+    const store = window.App?.Constants?.ZONING_CAT_INFO || {};
+    const catInfo = store[analysis.zoningKey];
     if (catInfo && catInfo.label) return catInfo.label;
 
     return analysis.zoningName || 'Sin información';
