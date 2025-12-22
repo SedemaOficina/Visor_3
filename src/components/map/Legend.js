@@ -88,7 +88,7 @@ const Legend = ({
                             <ToggleSwitch
                                 checked={visibleMapLayers.sc}
                                 onChange={() => toggleLayer('sc')}
-                                activeColor={LAYER_STYLES.sc.color}
+                                activeColor="#9d2148"
                             />
                         </label>
 
@@ -103,7 +103,7 @@ const Legend = ({
                                 <ToggleSwitch
                                     checked={visibleMapLayers.anp}
                                     onChange={() => toggleLayer('anp')}
-                                    activeColor="#a855f7" // Morado ANP
+                                    activeColor="#9d2148"
                                     title={selectedAnpId && anpName ? `ANP: ${anpName}` : "Activar/Desactivar capa ANP"}
                                 />
                             </label>
@@ -125,7 +125,7 @@ const Legend = ({
                                         }
                                         toggleLayer('selectedAnpZoning');
                                     }}
-                                    activeColor="#9333ea" // Morado fuerte
+                                    activeColor="#9d2148"
                                 />
                             </label>
                         </div>
@@ -162,7 +162,7 @@ const Legend = ({
                                     <ToggleSwitch
                                         checked={isChecked}
                                         onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
-                                        activeColor={info?.color || '#999'}
+                                        activeColor="#9d2148"
                                     />
                                 </div>
                             );
@@ -194,7 +194,7 @@ const Legend = ({
                                     <ToggleSwitch
                                         checked={isChecked}
                                         onChange={() => setVisibleZoningCats(prev => ({ ...prev, [cat]: !isChecked }))}
-                                        activeColor={info?.color || '#999'}
+                                        activeColor="#9d2148"
                                     />
                                 </div>
                             );
