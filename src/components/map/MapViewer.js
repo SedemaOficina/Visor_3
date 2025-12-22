@@ -284,7 +284,6 @@ const MapViewer = ({
                     fillOpacity: 0.1
                 },
                 'NOMGEO',
-                'NOMGEO',
                 'paneBase',
                 true // ✅ Interactive
             );
