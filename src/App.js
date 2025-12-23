@@ -284,8 +284,13 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 
 const App = () => {
   // 1. DATA HOOK Integration
+  // Safe check for hook existence
+  const HookRef = window.App?.Hooks?.useAppData;
+  if (!HookRef) console.warn("CRITICAL: window.App.Hooks.useAppData is missing at App render!");
+
   const { useAppData } = window.App?.Hooks || {};
-  const { loading, dataCache, constants, error } = useAppData ? useAppData() : { loading: true };
+  const hookResult = useAppData ? useAppData() : { loading: true };
+  const { loading, dataCache, constants, error } = hookResult;
 
   // Constants Access
   const { ZONING_ORDER } = constants || {};
