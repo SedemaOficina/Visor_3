@@ -42,26 +42,37 @@
   <div id="root"></div>
 
   <!-- ✅ CONFIG & UTILS -->
-  <script src="./src/config/constants.js?v=3.0"></script>
-  <script src="./src/utils/geoUtils.js?v=3.0"></script>
-  <script src="./src/utils/analysisEngine.js?v=3.0"></script>
+  <script src="./src/config/constants.js?v=3.1"></script>
+  <script src="./src/utils/geoUtils.js?v=3.1"></script>
+  <script src="./src/config/constants.js?v=3.1"></script>
+  <script src="./src/utils/geoUtils.js?v=3.1"></script>
+  <script src="./src/utils/analysisEngine.js?v=3.1"></script>
+  <!-- NEW: Data Hook -->
+  <script src="./src/hooks/useAppData.js?v=3.1" type="text/babel"></script>
+
+  <!-- DEBUG: Verify App Globals before React loads -->
+  <script>
+    console.log("DEBUG [index.html]: window.App state before components:", window.App);
+    console.log("DEBUG [index.html]: Constants loaded?", !!window.App?.Constants?.DATA_FILES);
+    console.log("DEBUG [index.html]: Utils loaded?", !!window.App?.Utils?.getBaseLayerUrl);
+  </script>
 
   <!-- ✅ COMPONENTS -->
-  <script src="./src/components/ui/Icons.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/layout/InstitutionalHeader.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/ui/ToggleSwitch.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/map/Legend.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/map/MapViewer.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/search/MobileSearchBar.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/modals/HelpModal.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/ui/SkeletonAnalysis.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/analysis/ResultsContent.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/features/PdfExportController.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/search/SearchLogicDesktop.js?v=3.0" type="text/babel"></script>
-  <script src="./src/components/layout/SidebarDesktop.js?v=3.0" type="text/babel"></script>
+  <script src="./src/components/ui/Icons.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/layout/InstitutionalHeader.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/ui/ToggleSwitch.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/map/Legend.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/map/MapViewer.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/search/MobileSearchBar.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/modals/HelpModal.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/ui/SkeletonAnalysis.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/analysis/ResultsContent.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/features/PdfExportController.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/search/SearchLogicDesktop.js?v=3.1" type="text/babel"></script>
+  <script src="./src/components/layout/SidebarDesktop.js?v=3.1" type="text/babel"></script>
 
   <!-- ✅ TU APP (JSX) -->
-  <script src="./src/App.js?v=3.0" type="text/babel"></script>
+  <script src="./src/App.js?v=3.1" type="text/babel"></script>
 </body>
 
 </html>

@@ -11,6 +11,13 @@ const Utils = AppGlobals.Utils || {};
 const Components = AppGlobals.Components || {};
 const Analysis = AppGlobals.Analysis || {};
 
+/* ------------------------------------------------ */
+/* BUNDLED CONFIGURATION (Audit Phase 1 Fix) */
+/* ------------------------------------------------ */
+/* ------------------------------------------------ */
+/* BUNDLED CONFIGURATION REMOVED - NOW IN useAppData */
+/* ------------------------------------------------ */
+
 
 
 // Componentes UI (Lazy Access)
@@ -42,102 +49,7 @@ const PdfExportController = Components.PdfExportController || (() => null);
 /* 4. LÓGICA GEOESPACIAL (GEOJSON & DATOS) */
 /* ------------------------------------------------ */
 
-let dataCache = {
-  cdmx: null,
-  alcaldias: null,
-  sc: null,
-  edomex: null,
-  morelos: null,
-  zoning: null,      // PGOEDF (Main)
-  anpInternal: null, // Zonificación interna ANP (Archivos D)
-  anp: null,         // Polígonos ANP (Archivo C)
-  rules: null
-};
-
-
-
-const loadCoreData = async () => {
-  const { DATA_FILES } = window.App?.Constants || {};
-
-  const fJ = async (u) => {
-    try {
-      if (!u) throw new Error('URL undefined');
-      const res = await fetch(u, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status} ${u}`);
-      return await res.json();
-    } catch (e) {
-      console.warn('No se pudo cargar JSON:', u, e);
-      return { type: "FeatureCollection", features: [] };
-    }
-  };
-  const [cdmx, alcaldias, sc] = await Promise.all([
-    fJ(DATA_FILES?.LIMITES_CDMX),
-    fJ(DATA_FILES?.LIMITES_ALCALDIAS),
-    fJ(DATA_FILES?.SUELO_CONSERVACION)
-  ]);
-
-  dataCache.cdmx = cdmx;
-  dataCache.alcaldias = alcaldias;
-  dataCache.sc = sc;
-
-  return true;
-};
-
-/* ===== INICIO BLOQUE NUEVO (MERGE + loadExtraData) ===== */
-
-// ✅ Merge: varios GeoJSON → 1 FeatureCollection (en memoria)
-const mergeFeatureCollections = (collections) => {
-  const out = { type: 'FeatureCollection', features: [] };
-  (collections || []).forEach(fc => {
-    if (fc?.features?.length) out.features.push(...fc.features);
-  });
-  return out;
-};
-
-const loadExtraData = async () => {
-  const fJ = async (u) => {
-    try {
-      if (!u) return { type: "FeatureCollection", features: [] }; // Silent fail for undefined
-      const res = await fetch(u, { cache: 'no-store' });
-      if (!res.ok) throw new Error(`HTTP ${res.status} ${u}`);
-      return await res.json();
-    } catch (e) {
-      console.warn('No se pudo cargar JSON:', u, e);
-      return { type: "FeatureCollection", features: [] };
-    }
-  };
-
-  const fC = async (u) =>
-    new Promise((r) =>
-      Papa.parse(u, {
-        download: true,
-        header: true,
-        skipEmptyLines: true,
-        complete: (res) => r(res.data),
-        error: () => r([])
-      })
-    );
-
-  const { DATA_FILES } = window.App?.Constants || {};
-  // ✅ Cargar zonificación MAIN + zonificaciones extra
-  const [mainZoning, anpInternalList, rules, edomex, morelos, anp] = await Promise.all([
-    fJ(DATA_FILES?.ZONIFICACION_MAIN),
-    Promise.all((DATA_FILES?.ZONIFICACION_FILES || []).map(fJ)),
-    fC(DATA_FILES?.USOS_SUELO_CSV),
-    fJ(DATA_FILES?.LIMITES_EDOMEX),
-    fJ(DATA_FILES?.LIMITES_MORELOS),
-    fJ(DATA_FILES?.ANP)
-  ]);
-
-  dataCache.zoning = mainZoning; // Solo PGOEDF
-  dataCache.anpInternal = mergeFeatureCollections(anpInternalList); // Zonificación interna unificada para búsqueda
-  dataCache.rules = rules;
-  dataCache.edomex = edomex;
-  dataCache.morelos = morelos;
-  dataCache.anp = anp;
-
-  return true;
-};
+// Data Loading Logic moved to useAppData hook
 
 /* ===== FIN BLOQUE NUEVO (MERGE + loadExtraData) ===== */
 
@@ -371,14 +283,17 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 /* ------------------------------------------------ */
 
 const App = () => {
-  // Safe Lazy Access
-  const { ZONING_ORDER } = window.App?.Constants || {};
+  // 1. DATA HOOK Integration
+  const { useAppData } = window.App?.Hooks || {};
+  const { loading, dataCache, constants, error } = useAppData ? useAppData() : { loading: true };
+
+  // Constants Access
+  const { ZONING_ORDER } = constants || {};
   const { analyzeLocation } = window.App?.Analysis || {};
 
-  // ✅ React Hooks at top level (Fixing the crash)
-  const [loading, setLoading] = useState(true);
+  // Local State
   const [analyzing, setAnalyzing] = useState(false);
-  const [extraDataLoaded, setExtraDataLoaded] = useState(false);
+  const [extraDataLoaded, setExtraDataLoaded] = useState(false); // Deprecated but kept for compatibility
   const [systemError, setSystemError] = useState(null);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
   const [analysis, setAnalysis] = useState(null);
@@ -415,7 +330,7 @@ const App = () => {
     if (typeof exportHandler === 'function') {
       exportHandler(e);
     } else {
-      alert('Aún no se puede exportar. Intenta de nuevo en un momento.');
+      alert('Aún no se puede exportar. Intenta recargar la página.');
     }
   }, [exportHandler]);
 
@@ -497,9 +412,16 @@ const App = () => {
         console.log("DEBUG: window.App?.Utils:", window.App?.Utils);
 
         const missing = [];
-        if (!window.App?.Constants?.DATA_FILES) missing.push("config/constants.js");
-        if (!window.App?.Utils?.getBaseLayerUrl) missing.push("utils/geoUtils.js");
         if (!window.Papa) missing.push("PapaParse Library");
+
+        // ✅ INLINE FIX: Restore global if missing
+        if (!window.App) window.App = {};
+        if (!window.App.Constants) window.App.Constants = BUNDLED_CONSTANTS;
+
+        // Soft check for Utils - simple warning
+        if (!window.App.Utils || !window.App.Utils.getBaseLayerUrl) {
+          console.warn("Utils missing at init - Component logic might fail later.");
+        }
 
         if (missing.length > 0) {
           console.error("CRITICAL: Missing system modules:", missing);
