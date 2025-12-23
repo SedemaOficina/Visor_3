@@ -16,7 +16,6 @@ const {
   LAYER_STYLES,
   ZONING_CAT_INFO,
   ZONING_ORDER,
-
   INITIAL_CENTER,
   INITIAL_ZOOM,
   FOCUS_ZOOM
@@ -411,7 +410,7 @@ const App = () => {
   // Categorías zonificación
   const [visibleZoningCats, setVisibleZoningCats] = useState(() => {
     const d = {};
-    ZONING_ORDER.forEach(k => (d[k] = true));
+    (ZONING_ORDER || []).forEach(k => (d[k] = true));
     return d;
   });
 
