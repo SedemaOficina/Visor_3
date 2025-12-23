@@ -645,6 +645,7 @@ const App = () => {
             analysisStatus={analysis?.status}
             visibleMapLayers={visibleMapLayers}
             setVisibleMapLayers={setVisibleMapLayers}
+            visibleZoningCats={visibleZoningCats}
             setVisibleZoningCats={setVisibleZoningCats}
             extraDataLoaded={extraDataLoaded}
             activeBaseLayer={activeBaseLayer}
