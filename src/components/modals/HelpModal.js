@@ -2,15 +2,26 @@
 const Icons = window.App.Components.Icons;
 
 const HelpModal = ({ isOpen, onClose }) => {
-    // Safe Lazy Access
+    // Safe Lazy Access at Render Time
+    const Icons = window.App?.Components?.Icons || {};
     const { CONTACT_INFO } = window.App?.Constants || {};
-    if (!CONTACT_INFO) return null;
 
+    if (!CONTACT_INFO) return null;
     if (!isOpen) return null;
 
+    // Fallback for missing icon
+    const XIcon = Icons.X || (() => <span className="text-xl">×</span>);
+    const MapPinnedIcon = Icons.MapPinned || (() => <span>📍</span>);
+
     return (
-        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in">
-            <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in">
+        <div
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+            style={{ pointerEvents: 'auto' }}
+        >
+            <div
+                className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in"
+                onClick={(e) => e.stopPropagation()}
+            >
                 {/* Header */}
                 <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-gray-50">
                     <div className="flex items-center gap-3">
@@ -23,10 +34,12 @@ const HelpModal = ({ isOpen, onClose }) => {
                         </div>
                     </div>
                     <button
-                        onClick={onClose}
-                        className="p-2 rounded-full hover:bg-gray-200 text-gray-500 transition-colors"
+                        onClick={() => { console.log('Close clicked'); onClose(); }}
+                        className="p-2 rounded-full hover:bg-gray-200 text-gray-500 transition-colors cursor-pointer"
+                        style={{ pointerEvents: 'auto' }}
+                        aria-label="Cerrar"
                     >
-                        <Icons.X className="h-6 w-6" />
+                        <XIcon className="h-6 w-6" />
                     </button>
                 </div>
 
@@ -36,7 +49,7 @@ const HelpModal = ({ isOpen, onClose }) => {
                         {/* Sección 1 */}
                         <section>
                             <h3 className="flex items-center gap-2 text-lg font-bold text-[#9d2148] mb-3">
-                                <Icons.MapPinned className="h-5 w-5" />
+                                <MapPinnedIcon className="h-5 w-5" />
                                 ¿Cómo realizar una consulta?
                             </h3>
                             <ul className="space-y-3 pl-2">
@@ -80,8 +93,9 @@ const HelpModal = ({ isOpen, onClose }) => {
                 {/* Footer */}
                 <div className="p-4 border-t border-gray-200 bg-gray-50 text-center">
                     <button
-                        onClick={onClose}
-                        className="bg-[#9d2148] text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-md hover:bg-[#7d1d3a] transition-all active:scale-95"
+                        onClick={() => { console.log('Entendido clicked'); onClose(); }}
+                        className="bg-[#9d2148] text-white px-8 py-2.5 rounded-full text-sm font-bold shadow-md hover:bg-[#7d1d3a] transition-all active:scale-95 cursor-pointer"
+                        style={{ pointerEvents: 'auto' }}
                     >
                         Entendido
                     </button>
