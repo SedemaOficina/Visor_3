@@ -284,12 +284,15 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 
 const App = () => {
   // 1. DATA HOOK Integration
-  // Safe check for hook existence
-  const HookRef = window.App?.Hooks?.useAppData;
-  if (!HookRef) console.warn("CRITICAL: window.App.Hooks.useAppData is missing at App render!");
+  // Access global directly to avoid reference issues
+  const useAppData = window.App?.Hooks?.useAppData;
 
-  const { useAppData } = window.App?.Hooks || {};
-  const hookResult = useAppData ? useAppData() : { loading: true };
+  if (!useAppData) {
+    console.error("CRITICAL: useAppData Hook not found in window.App.Hooks!", window.App);
+    // Force a re-render/retry or show error? For now, let's fall back gracefully or crash visibly.
+  }
+
+  const hookResult = useAppData ? useAppData() : { loading: true, error: "Hook Missing" };
   const { loading, dataCache, constants, error } = hookResult;
 
   // Constants Access
