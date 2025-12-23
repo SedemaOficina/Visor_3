@@ -1,7 +1,11 @@
-const { CONTACT_INFO } = window.App.Constants;
+// Safe Lazy Access
 const Icons = window.App.Components.Icons;
 
 const HelpModal = ({ isOpen, onClose }) => {
+    // Safe Lazy Access
+    const { CONTACT_INFO } = window.App?.Constants || {};
+    if (!CONTACT_INFO) return null;
+
     if (!isOpen) return null;
 
     return (

@@ -1,11 +1,11 @@
 const { useState, useEffect, useRef } = window.React;
-const {
-    searchMapboxPlaces,
-    parseCoordinateInput
-} = window.App.Utils;
+// Safe Lazy Access
 const Icons = window.App.Components.Icons;
 
 const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
+    // Safe Lazy Access
+    const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils || {};
+
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);

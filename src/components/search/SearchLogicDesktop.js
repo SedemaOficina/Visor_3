@@ -1,8 +1,12 @@
 const { useState, useEffect, useRef } = window.React;
-const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils;
+// Safe Lazy Access implementation
+const Icons = window.App.Components.Icons;
 const Icons = window.App.Components.Icons;
 
 const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
+    // Safe Lazy Access
+    const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils || {};
+
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
