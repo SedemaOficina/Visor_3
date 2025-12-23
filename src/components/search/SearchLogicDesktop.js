@@ -1,7 +1,6 @@
 const { useState, useEffect, useRef } = window.React;
 // Safe Lazy Access implementation
 const Icons = window.App.Components.Icons;
-const Icons = window.App.Components.Icons;
 
 const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
     // Safe Lazy Access
