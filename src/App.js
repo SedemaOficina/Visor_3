@@ -497,288 +497,251 @@ const App = () => {
 
   useEffect(() => {
     const initApp = async () => {
-      // ⏳ Polling: Esperar hasta 5s a que carguen las constantes
-      let attempts = 0;
-      while (!window.App?.Constants?.DATA_FILES && attempts < 50) {
-        await new Promise(r => setTimeout(r, 100));
-        attempts++;
+      // ✅ Estado de Integridad del Sistema
+      const [systemError, setSystemError] = useState(null);
+
+      useEffect(() => {
+        // 🔍 Pre-flight System Check (Fail Fast)
+        const checkIntegrity = () => {
+          const missing = [];
+          if (!window.App?.Constants?.DATA_FILES) missing.push("config/constants.js");
+          if (!window.App?.Utils?.getBaseLayerUrl) missing.push("utils/geoUtils.js");
+          if (!window.Papa) missing.push("PapaParse Library (CDN)");
+          // if (!window.App?.Analysis?.analyzeLocation) missing.push("utils/analysisEngine.js"); // Opcional, pero bueno tenerlo
+
+          if (missing.length > 0) {
+            console.error("CRITICAL: Missing system modules:", missing);
+            setSystemError(`Error crítico de carga. Faltan módulos: ${missing.join(', ')}. Verifica tu conexión o recarga la página.`);
+            return false;
+          }
+          return true;
+        };
+
+        if (checkIntegrity()) {
+          loadCoreData()
+            .then(() => {
+              setLoading(false);
+
+              const params = new URLSearchParams(window.location.search);
+              const lat = parseFloat(params.get("lat"));
+              const lng = parseFloat(params.get("lng"));
+              const hasCoords = !isNaN(lat) && !isNaN(lng);
+
+              if (!hasCoords) setIsHelpOpen(true);
+              if (hasCoords) handleLocationSelect({ lat, lng });
+
+              loadExtraData().then(() => setExtraDataLoaded(true));
+            })
+            .catch(err => {
+              console.error("Error loading initial data:", err);
+              setSystemError(`Error cargando datos geográficos: ${err.message}`);
+              setLoading(false);
+            });
+        }
+      }, []);
+
+      if (systemError) {
+        return (
+          <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 text-center p-4">
+            <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md border-l-4 border-red-600">
+              <Icons.AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
+              <h1 className="text-xl font-bold text-gray-900 mb-2">Error de Inicialización</h1>
+              <p className="text-sm text-gray-600 mb-6">{systemError}</p>
+              <button
+                onClick={() => window.location.reload()}
+                className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition-colors"
+              >
+                Recargar Página
+              </button>
+            </div>
+          </div>
+        );
       }
 
-      if (!window.App?.Constants?.DATA_FILES) {
-        console.warn("Timeout: Loading BACKUP configuration...");
-        window.App = window.App || {};
-        window.App.Constants = window.App.Constants || {};
-
-        // 🚨 EMERGENCY BACKUP CONFIGURATION 🚨
-        window.App.Constants.DATA_FILES = {
-          LIMITES_CDMX: './data/cdmx.geojson',
-          LIMITES_ALCALDIAS: './data/alcaldias.geojson',
-          SUELO_CONSERVACION: './data/suelo-de-conservacion-2020.geojson',
-          ZONIFICACION_MAIN: './data/zoonificacion_pgoedf_2000_sin_anp.geojson',
-          ZONIFICACION_FILES: [
-            './data/Zon_Bosque_de_Tlalpan.geojson',
-            './data/Zon_Cerro_de_la_Estrella.geojson',
-            './data/Zon_Desierto_de_los_Leones.geojson',
-            './data/Zon_Ejidos_de_Xochimilco.geojson',
-            './data/Zon_La_Loma.geojson',
-            './data/Zon_Sierra_de_Guadalupe.geojson',
-            './data/Zon_Sierra_de_Santa_Catarina.geojson'
-          ],
-          USOS_SUELO_CSV: './data/tabla_actividades_pgoedf.csv',
-          LIMITES_EDOMEX: './data/edomex.geojson',
-          LIMITES_MORELOS: './data/morelos.geojson',
-          ANP: './data/anp_consolidada.geojson'
-        };
-        window.App.Constants.LAYER_STYLES = {
-          sc: { color: '#3B7D23', fill: '#3B7D23', label: 'Suelo de Conservación' },
-          anp: { color: '#a855f7', fill: '#a855f7', label: 'Áreas Naturales Protegidas' },
-          alcaldias: { color: '#FFFFFF', border: '#555', label: 'Límite Alcaldías' },
-          edomex: { color: '#FFD86B', label: 'Estado de México' },
-          morelos: { color: '#B8A1FF', label: 'Estado de Morelos' }
-        };
-        window.App.Constants.ZONING_ORDER = [
-          'FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE',
-          'PDU_PP', 'PDU_PR', 'PDU_ZU', 'PDU_ER'
-        ];
-        window.App.Constants.ZONING_CAT_INFO = {
-          FC: { color: '#15803d', label: 'Forestal Conservación' },
-          FCE: { color: '#4ade80', label: 'Forestal Conservación Especial' },
-          FP: { color: '#0e7490', label: 'Forestal Protección' },
-          FPE: { color: '#0284c7', label: 'Forestal Protección Especial' },
-          AF: { color: '#65a30d', label: 'Agroforestal' },
-          AFE: { color: '#a3e635', label: 'Agroforestal Especial' },
-          AE: { color: '#fbbf24', label: 'Agroecológico' },
-          AEE: { color: '#eab308', label: 'Agroecológico Especial' },
-          PDU_PP: { color: '#e11d48', label: 'Programas Parciales' },
-          PDU_PR: { color: '#d97706', label: 'Poblados Rurales' },
-          PDU_ZU: { color: '#94a3b8', label: 'Zona Urbana' },
-          PDU_ER: { color: '#3b82f6', label: 'Equipamiento Rural' },
-          ANP_ZON: { color: '#7e22ce', label: 'Zonificación ANP (interna)' }
-        };
+      if (loading) {
+        return (
+          <div className="h-screen flex items-center justify-center text-[#9d2148] flex-col gap-3">
+            <Icons.Loader2 className="animate-spin h-10 w-10" />
+            <span className="text-sm font-medium animate-pulse">Cargando visor...</span>
+          </div>
+        );
       }
 
-      // Ahora seguro procedemos
-      loadCoreData()
-        .then(() => {
-          setLoading(false);
-
-          const params = new URLSearchParams(window.location.search);
-          const lat = parseFloat(params.get("lat"));
-          const lng = parseFloat(params.get("lng"));
-          const hasCoords = !isNaN(lat) && !isNaN(lng);
-
-          if (!hasCoords) setIsHelpOpen(true);
-          if (hasCoords) handleLocationSelect({ lat, lng });
-
-          loadExtraData().then(() => setExtraDataLoaded(true));
-        })
-        .catch(err => {
-          console.error("Error loading initial data:", err);
-          setLoading(false);
-        });
-    };
-
-    initApp();
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => invalidateMapRef.current?.(), 120);
-    setTimeout(() => invalidateMapRef.current?.(), 600);
-  }, [isHelpOpen]);
-
-  useEffect(() => {
-    setTimeout(() => invalidateMapRef.current?.(), 200);
-  }, [isSidebarOpen]);
-
-  useEffect(() => {
-    if (location && extraDataLoaded) {
-      analyzeLocation(location, dataCache).then(setAnalysis);
-    }
-  }, [location, extraDataLoaded]);
-
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center text-[#9d2148]">
-        <Icons.Loader2 className="animate-spin h-10 w-10" />
-      </div>
-    );
-  }
-
-  return (
-    <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
+      return (
+        <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
 
 
-      {/* ✅ HEADER INSTITUCIONAL (Desktop only, or responsive?) - User asked for "start of page" */}
-      <InstitutionalHeader />
+          {/* ✅ HEADER INSTITUCIONAL (Desktop only, or responsive?) - User asked for "start of page" */}
+          <InstitutionalHeader />
 
-      {/* ✅ CONTENEDOR PRINCIPAL (Flex Row en Desktop, Col en Mobile) */}
-      <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden">
+          {/* ✅ CONTENEDOR PRINCIPAL (Flex Row en Desktop, Col en Mobile) */}
+          <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden">
 
-        {/* ✅ BARRA SUPERIOR MÓVIL (APP HEADER) */}
-        <div className="md:hidden absolute top-0 left-0 right-0 z-[1045] p-3 pointer-events-none">
-          <MobileSearchBar
-            onLocationSelect={handleLocationSelect}
-            onReset={handleReset}
-            setInputRef={mobileSearchInputRef}
-            initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
-          />
-        </div>
+            {/* ✅ BARRA SUPERIOR MÓVIL (APP HEADER) */}
+            <div className="md:hidden absolute top-0 left-0 right-0 z-[1045] p-3 pointer-events-none">
+              <MobileSearchBar
+                onLocationSelect={handleLocationSelect}
+                onReset={handleReset}
+                setInputRef={mobileSearchInputRef}
+                initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
+              />
+            </div>
 
-        {/* Sidebar Desktop */}
-        <SidebarDesktop
-          analysis={analysis}
-          onLocationSelect={handleLocationSelect}
-          onReset={handleReset}
-          isOpen={isSidebarOpen}
-          onToggle={() => setIsSidebarOpen(v => !v)}
-          onExportPDF={handleExportClick}
-          desktopSearchSetRef={desktopSearchInputRef}
-          isLoading={analyzing}
-          onOpenHelp={() => setIsHelpOpen(true)} // ✅ Pasar handler
-        />
+            {/* Sidebar Desktop */}
+            <SidebarDesktop
+              analysis={analysis}
+              onLocationSelect={handleLocationSelect}
+              onReset={handleReset}
+              isOpen={isSidebarOpen}
+              onToggle={() => setIsSidebarOpen(v => !v)}
+              onExportPDF={handleExportClick}
+              desktopSearchSetRef={desktopSearchInputRef}
+              isLoading={analyzing}
+              onOpenHelp={() => setIsHelpOpen(true)} // ✅ Pasar handler
+            />
 
-        {/* Main Map Area */}
-        <div className="relative flex-1 h-full w-full">
-          <MapViewer
-            location={location}
-            onLocationSelect={handleLocationSelect}
-            analysisStatus={analysis?.status}
-            visibleMapLayers={visibleMapLayers}
-            setVisibleMapLayers={setVisibleMapLayers}
-            visibleZoningCats={visibleZoningCats}
-            setVisibleZoningCats={setVisibleZoningCats}
-            extraDataLoaded={extraDataLoaded}
-            activeBaseLayer={activeBaseLayer}
-            setActiveBaseLayer={setActiveBaseLayer}
-            invalidateMapRef={invalidateMapRef} // ✅ Pass REF
-            resetMapViewRef={resetMapViewRef}     // ✅ Pass REF
-            selectedAnpId={analysis?.anpId} // ✅ Pass ANP ID
-            dataCache={dataCache}
-          />
+            {/* Main Map Area */}
+            <div className="relative flex-1 h-full w-full">
+              <MapViewer
+                location={location}
+                onLocationSelect={handleLocationSelect}
+                analysisStatus={analysis?.status}
+                visibleMapLayers={visibleMapLayers}
+                setVisibleMapLayers={setVisibleMapLayers}
+                visibleZoningCats={visibleZoningCats}
+                setVisibleZoningCats={setVisibleZoningCats}
+                extraDataLoaded={extraDataLoaded}
+                activeBaseLayer={activeBaseLayer}
+                setActiveBaseLayer={setActiveBaseLayer}
+                invalidateMapRef={invalidateMapRef} // ✅ Pass REF
+                resetMapViewRef={resetMapViewRef}     // ✅ Pass REF
+                selectedAnpId={analysis?.anpId} // ✅ Pass ANP ID
+                dataCache={dataCache}
+              />
 
-          {/* Loading Overlay - Only on initial data load, NOT analysis */}
-          {loading && (
-            <div className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
-              <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-                <div className="w-10 h-10 border-4 border-gray-200 border-l-[#9d2148] rounded-full animate-spin mb-3"></div>
-                <span className="text-gray-800 font-bold text-sm">Cargando mapa base...</span>
+              {/* Loading Overlay - Only on initial data load, NOT analysis */}
+              {loading && (
+                <div className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+                  <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
+                    <div className="w-10 h-10 border-4 border-gray-200 border-l-[#9d2148] rounded-full animate-spin mb-3"></div>
+                    <span className="text-gray-800 font-bold text-sm">Cargando mapa base...</span>
+                  </div>
+                </div>
+              )}
+
+              {/* Legend */}
+              <Legend
+                visibleMapLayers={visibleMapLayers}
+                toggleLayer={toggleLayer}
+                isOpen={isLegendOpen}
+                setIsOpen={setIsLegendOpen}
+                visibleZoningCats={visibleZoningCats}
+                toggleZoningGroup={toggleZoningGroup}
+                setVisibleZoningCats={setVisibleZoningCats}
+                activeBaseLayer={activeBaseLayer}
+                setActiveBaseLayer={setActiveBaseLayer}
+                selectedAnpId={analysis?.anpId}
+                anpName={analysis?.anpNombre}
+                anpGeneralVisible={visibleMapLayers.anp}
+              />
+
+              {/* Nota inicial desktop */}
+              {!analysis?.status && (
+                <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
+                  <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
+                    Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
+                  </div>
+                </div>
+              )}
+
+              {/* CONTROLES DE MAPA (NUEVA UI UNIFICADA) */}
+              <div className="absolute top-20 md:top-24 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
+
+                {/* 1. Ayuda */}
+                <button
+                  type="button"
+                  onClick={() => setIsHelpOpen(true)}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                  title="Ayuda"
+                  aria-label="Ayuda"
+                >
+                  <span className="font-bold text-lg">?</span>
+                </button>
+
+                {/* 2. Capas */}
+                <button
+                  type="button"
+                  onClick={() => setIsLegendOpen(v => !v)}
+                  className={`w-10 h-10 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
+                  title="Capas y Simbología"
+                  aria-label="Capas"
+                >
+                  <Icons.Layers className="h-5 w-5" />
+                </button>
+
+                {/* 3. Reset View (Siempre visible) */}
+                <button
+                  type="button"
+                  onClick={() => resetMapViewRef.current?.()}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                  title="Restablecer vista"
+                  aria-label="Restablecer vista"
+                >
+                  <Icons.RotateCcw className="h-5 w-5" />
+                </button>
+
+                {/* 4. Mi Ubicación */}
+                <button
+                  type="button"
+                  onClick={handleUserLocation}
+                  className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+                  title="Mi ubicación"
+                  aria-label="Usar mi ubicación actual"
+                >
+                  <Icons.Navigation className="h-5 w-5" />
+                </button>
+
               </div>
             </div>
-          )}
 
-          {/* Legend */}
-          <Legend
-            visibleMapLayers={visibleMapLayers}
-            toggleLayer={toggleLayer}
-            isOpen={isLegendOpen}
-            setIsOpen={setIsLegendOpen}
-            visibleZoningCats={visibleZoningCats}
-            toggleZoningGroup={toggleZoningGroup}
-            setVisibleZoningCats={setVisibleZoningCats}
-            activeBaseLayer={activeBaseLayer}
-            setActiveBaseLayer={setActiveBaseLayer}
-            selectedAnpId={analysis?.anpId}
-            anpName={analysis?.anpNombre}
-            anpGeneralVisible={visibleMapLayers.anp}
-          />
+            {/* Mobile Bottom Sheet */}
+            <BottomSheetMobile
+              analysis={analysis}
+              onLocationSelect={handleLocationSelect}
+              onReset={handleReset}
+              onStateChange={setMobileSheetState}
+              onClose={() => {
+                // Close logic if needed, usually just collapsing
+                handleReset();
+              }}
+              onExportPDF={handleExportClick} // pass the handler that calls the state func
+            />
 
-          {/* Nota inicial desktop */}
-          {!analysis?.status && (
-            <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
-              <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
-                Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
-              </div>
-            </div>
-          )}
+            {/* ✅ MODAL DE AYUDA (Restaurado) */}
+            <HelpModal
+              isOpen={isHelpOpen}
+              onClose={() => setIsHelpOpen(false)}
+            />
 
-          {/* CONTROLES DE MAPA (NUEVA UI UNIFICADA) */}
-          <div className="absolute top-20 md:top-24 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
-
-            {/* 1. Ayuda */}
-            <button
-              type="button"
-              onClick={() => setIsHelpOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-              title="Ayuda"
-              aria-label="Ayuda"
-            >
-              <span className="font-bold text-lg">?</span>
-            </button>
-
-            {/* 2. Capas */}
-            <button
-              type="button"
-              onClick={() => setIsLegendOpen(v => !v)}
-              className={`w-10 h-10 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
-              title="Capas y Simbología"
-              aria-label="Capas"
-            >
-              <Icons.Layers className="h-5 w-5" />
-            </button>
-
-            {/* 3. Reset View (Siempre visible) */}
-            <button
-              type="button"
-              onClick={() => resetMapViewRef.current?.()}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-              title="Restablecer vista"
-              aria-label="Restablecer vista"
-            >
-              <Icons.RotateCcw className="h-5 w-5" />
-            </button>
-
-            {/* 4. Mi Ubicación */}
-            <button
-              type="button"
-              onClick={handleUserLocation}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-              title="Mi ubicación"
-              aria-label="Usar mi ubicación actual"
-            >
-              <Icons.Navigation className="h-5 w-5" />
-            </button>
-
+            {/* ✅ PDF EXPORT CONTROLLER (Singleton) */}
+            <PdfExportController
+              analysis={analysis}
+              onExportReady={setExportHandler}
+              dataCache={dataCache}
+              visibleMapLayers={visibleMapLayers}
+              activeBaseLayer={activeBaseLayer}
+              visibleZoningCats={visibleZoningCats}
+            />
           </div>
         </div>
-
-        {/* Mobile Bottom Sheet */}
-        <BottomSheetMobile
-          analysis={analysis}
-          onLocationSelect={handleLocationSelect}
-          onReset={handleReset}
-          onStateChange={setMobileSheetState}
-          onClose={() => {
-            // Close logic if needed, usually just collapsing
-            handleReset();
-          }}
-          onExportPDF={handleExportClick} // pass the handler that calls the state func
-        />
-
-        {/* ✅ MODAL DE AYUDA (Restaurado) */}
-        <HelpModal
-          isOpen={isHelpOpen}
-          onClose={() => setIsHelpOpen(false)}
-        />
-
-        {/* ✅ PDF EXPORT CONTROLLER (Singleton) */}
-        <PdfExportController
-          analysis={analysis}
-          onExportReady={setExportHandler}
-          dataCache={dataCache}
-          visibleMapLayers={visibleMapLayers}
-          activeBaseLayer={activeBaseLayer}
-          visibleZoningCats={visibleZoningCats}
-        />
-      </div>
-    </div>
-  );
-};
+      );
+    };
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <ToastProvider>
-    <App />
-  </ToastProvider>
-);
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(
+      <ToastProvider>
+        <App />
+      </ToastProvider>
+    );
 

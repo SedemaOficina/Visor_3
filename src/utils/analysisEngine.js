@@ -1,5 +1,7 @@
 (function () {
+    window.App = window.App || {};
     window.App.Analysis = window.App.Analysis || {};
+
 
     const { findFeature } = window.App.Utils;
     // We assume dataCache is passed as argument, avoiding global dependency
@@ -186,5 +188,8 @@
         return r;
     };
 
-    window.App.Analysis.analyzeLocation = analyzeLocation;
+    Object.assign(window.App.Analysis, {
+        analyzeLocation
+    });
+    console.log('✅ Analysis loaded (analysisEngine.js)');
 })();

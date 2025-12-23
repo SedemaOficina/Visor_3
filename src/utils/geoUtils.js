@@ -1,6 +1,8 @@
 (function () {
+    // Inicializar namespace de forma segura
     window.App = window.App || {};
-    window.App.Utils = window.App.Utils || {}; // Use existing or create new
+    window.App.Utils = window.App.Utils || {};
+
 
     // Dependencias
     // Dependencias
@@ -254,15 +256,19 @@
     };
 
     // EXPORTACIÓN FINAL A WINDOW
-    window.App.Utils.isPointInPolygon = isPointInPolygon;
-    window.App.Utils.findFeature = findFeature;
-    window.App.Utils.getZoningColor = getZoningColor;
-    window.App.Utils.getAnpZoningColor = getAnpZoningColor;
-    window.App.Utils.getZoningStyle = getZoningStyle;
-    window.App.Utils.getSectorStyle = getSectorStyle;
-    window.App.Utils.isStrictNumber = isStrictNumber;
-    window.App.Utils.parseCoordinateInput = parseCoordinateInput;
-    window.App.Utils.searchMapboxPlaces = searchMapboxPlaces;
-    window.App.Utils.getBaseLayerUrl = getBaseLayerUrl;
+    // EXPORTACIÓN FINAL A WINDOW USANDO OBJECT.ASSIGN
+    Object.assign(window.App.Utils, {
+        isPointInPolygon,
+        findFeature,
+        getZoningColor,
+        getAnpZoningColor,
+        getZoningStyle,
+        getSectorStyle,
+        isStrictNumber,
+        parseCoordinateInput,
+        searchMapboxPlaces,
+        getBaseLayerUrl
+    });
+    console.log('✅ Utils loaded (geoUtils.js)');
 
 })();
