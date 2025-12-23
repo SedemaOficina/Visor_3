@@ -516,9 +516,42 @@ const App = () => {
       }
 
       if (!window.App?.Constants?.DATA_FILES) {
-        console.error("Timeout: Constants.DATA_FILES never loaded.");
-        setLoading(false);
-        return;
+        console.warn("Timeout: Loading BACKUP configuration...");
+        window.App = window.App || {};
+        window.App.Constants = window.App.Constants || {};
+
+        // 🚨 EMERGENCY BACKUP CONFIGURATION 🚨
+        window.App.Constants.DATA_FILES = {
+          LIMITES_CDMX: './data/cdmx.geojson',
+          LIMITES_ALCALDIAS: './data/alcaldias.geojson',
+          SUELO_CONSERVACION: './data/suelo-de-conservacion-2020.geojson',
+          ZONIFICACION_MAIN: './data/zoonificacion_pgoedf_2000_sin_anp.geojson',
+          ZONIFICACION_FILES: [
+            './data/Zon_Bosque_de_Tlalpan.geojson',
+            './data/Zon_Cerro_de_la_Estrella.geojson',
+            './data/Zon_Desierto_de_los_Leones.geojson',
+            './data/Zon_Ejidos_de_Xochimilco.geojson',
+            './data/Zon_La_Loma.geojson',
+            './data/Zon_Sierra_de_Guadalupe.geojson',
+            './data/Zon_Sierra_de_Santa_Catarina.geojson'
+          ],
+          USOS_SUELO_CSV: './data/tabla_actividades_pgoedf.csv',
+          LIMITES_EDOMEX: './data/edomex.geojson',
+          LIMITES_MORELOS: './data/morelos.geojson',
+          ANP: './data/anp_consolidada.geojson'
+        };
+        window.App.Constants.LAYER_STYLES = {
+          sc: { color: '#3B7D23', fill: '#3B7D23', label: 'Suelo de Conservación' },
+          anp: { color: '#a855f7', fill: '#a855f7', label: 'Áreas Naturales Protegidas' },
+          alcaldias: { color: '#FFFFFF', border: '#555', label: 'Límite Alcaldías' },
+          edomex: { color: '#FFD86B', label: 'Estado de México' },
+          morelos: { color: '#B8A1FF', label: 'Estado de Morelos' }
+        };
+        window.App.Constants.ZONING_ORDER = [
+          'FC', 'FCE', 'FP', 'FPE', 'AF', 'AFE', 'AE', 'AEE',
+          'PDU_PP', 'PDU_PR', 'PDU_ZU', 'PDU_ER'
+        ];
+        // ... (ZONING_CAT_INFO could be added here too if critical)
       }
 
       // Ahora seguro procedemos
