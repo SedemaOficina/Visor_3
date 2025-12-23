@@ -3,7 +3,8 @@
     window.App.Utils = window.App.Utils || {}; // Use existing or create new
 
     // Dependencias
-    const Constants = window.App.Constants;
+    // Dependencias
+    // const Constants = window.App.Constants; // REMOVED: Unsafe immediate access
 
     /* ------------------------------------------------ */
     /* HELPERS GEOESPACIALES (DEFINER LOCALES) */
@@ -72,7 +73,7 @@
         if (!key) return '#ccc';
         const k = key.toString().toUpperCase();
         // Busca parcial (ej: "FCE 2" -> match "FCE")
-        const catInfo = Constants?.ZONING_CAT_INFO || {};
+        const catInfo = window.App?.Constants?.ZONING_CAT_INFO || {};
         const cat = Object.keys(catInfo).find(c => k.startsWith(c));
         return cat ? catInfo[cat].color : '#9ca3af';
     };
@@ -213,7 +214,7 @@
 
     const searchMapboxPlaces = async (query) => {
         if (!query) return [];
-        const token = Constants.MAPBOX_TOKEN;
+        const token = window.App?.Constants?.MAPBOX_TOKEN;
         const bbox = '-99.3649,19.0482,-98.9403,19.5927';
         const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(query)}.json?access_token=${token}&bbox=${bbox}&country=mx&limit=5&language=es`;
 
@@ -235,7 +236,7 @@
     };
 
     const getBaseLayerUrl = (name) => {
-        const token = Constants.MAPBOX_TOKEN;
+        const token = window.App?.Constants?.MAPBOX_TOKEN;
         if (name === 'STREETS') {
             return `https://api.mapbox.com/styles/v1/mapbox/light-v11/tiles/256/{z}/{x}/{y}?access_token=${token}`;
         }

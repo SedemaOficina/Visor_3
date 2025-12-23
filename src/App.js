@@ -13,11 +13,7 @@ const Analysis = AppGlobals.Analysis || {};
 
 
 
-// Namespaces (Lazy access preferred)
-// const AppGlobals = window.App || {}; 
-// Removed unsafe top-level destructurings to prevent race conditions
-
-// Componentes UI
+// Componentes UI (Lazy Access)
 const Icons = Components.Icons || new Proxy({}, { get: () => () => null });
 const InstitutionalHeader = Components.InstitutionalHeader || (() => null);
 const ToggleSwitch = Components.ToggleSwitch || (() => null);
@@ -35,15 +31,8 @@ const SidebarDesktop = Components.SidebarDesktop || (() => null);
 
 const PdfExportController = Components.PdfExportController || (() => null);
 
-
 /* ------------------------------------------------ */
-/* 2. UTILIDADES GEOESPACIALES Y GENERALES */
-/* ------------------------------------------------ */
-
-
-
-/* ------------------------------------------------ */
-/* 3. ICONOS (SVG) */
+/* 3. LÓGICA GEOESPACIAL (GEOJSON & DATOS) */
 /* ------------------------------------------------ */
 
 

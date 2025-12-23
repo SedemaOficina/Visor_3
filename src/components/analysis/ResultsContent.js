@@ -1,8 +1,6 @@
 const { useState } = window.React;
-const { ZONING_CAT_INFO, CONTACT_INFO, REGULATORY_NOTES } = window.App.Constants || {};
-const COLORS = (window.App?.Constants?.COLORS) ? window.App.Constants.COLORS : {};
-const { getZoningColor, getSectorStyle, getAnpZoningColor } = window.App.Utils;
-const Icons = window.App.Components.Icons;
+// REMOVED top-level destructuring to safe-guard against loading order.
+// Access happens inside components now.
 
 /* Helpers */
 const getZoningDisplay = (analysis) => {
@@ -75,7 +73,7 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
 
             <div className="px-3 py-2 bg-white border-t border-gray-100 space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
                 {Object.entries(groups).map(([sector, generals], i) => {
-                    const st = getSectorStyle(sector);
+                    const st = window.App.Utils.getSectorStyle(sector);
                     // Use sector style always for consistency, or override for prohibited/allowed context
                     // User feedback: "GroupedActivities UX is fine". We just needed to close internal details.
 
@@ -138,6 +136,7 @@ const LegalDisclaimer = () => (
 );
 
 const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
+    const COLORS = window.App?.Constants?.COLORS || {};
     // Definimos estilo base y estados hover usando style para evitar problemas de purga
     const btnClass = "flex flex-col items-center justify-center p-2 bg-white border border-gray-200 rounded text-gray-600 transition-all hover:shadow-sm";
 
@@ -262,11 +261,11 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
 
     let zoningColor = '#9ca3af';
     if (analysis.zoningKey === 'ANP') {
-        zoningColor = COLORS.anp;
+        zoningColor = window.App?.Constants?.COLORS?.anp || '#9333ea';
     } else if (analysis.zoningKey === 'NODATA') {
         zoningColor = '#9ca3af';
     } else if (analysis.zoningKey) {
-        zoningColor = getZoningColor(analysis.zoningKey);
+        zoningColor = window.App.Utils.getZoningColor(analysis.zoningKey);
     }
 
     const showZoningBlock = !isOutside && !isUrban;
@@ -343,6 +342,11 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     const [activeTab, setActiveTab] = useState('prohibidas');
     const [showDetails, setShowDetails] = useState(true);
     const [showNotes, setShowNotes] = useState(false);
+
+    // Globals access
+    const { REGULATORY_NOTES } = window.App?.Constants || {};
+    const COLORS = window.App?.Constants?.COLORS || {};
+    const Icons = window.App?.Components?.Icons || {};
 
     // Calcular el display name unificado
     const zoningDisplay = getZoningDisplay(analysis);
@@ -444,7 +448,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                                     {showNotes && (
                                         <div className="p-4 bg-white border-t border-gray-200">
                                             <ul className="space-y-2 list-disc pl-4 marker:text-gray-400">
-                                                {REGULATORY_NOTES.map((note, idx) => (
+                                                {(REGULATORY_NOTES || []).map((note, idx) => (
                                                     <li key={idx} className="text-[10px] text-gray-600 leading-relaxed text-justify">
                                                         {note}
                                                     </li>

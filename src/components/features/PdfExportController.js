@@ -722,7 +722,7 @@
                                     backgroundColor: '#fbfbfc'
                                 }}>
                                     <ul style={{ margin: 0, paddingLeft: '16px', listStyleType: 'disc' }}>
-                                        {(window.App?.Constants?.PROVISIONS_NOTES || []).map((note, idx) => (
+                                        {(window.App?.Constants?.REGULATORY_NOTES || []).map((note, idx) => (
                                             <li key={idx} style={{
                                                 fontSize: `${T.base}px`,
                                                 marginBottom: '6px',
