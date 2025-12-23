@@ -1,17 +1,4 @@
 const { useState, useEffect, useRef } = window.React;
-const {
-    LAYER_STYLES,
-    ZONING_ORDER,
-    ZONING_CAT_INFO,
-    INITIAL_CENTER,
-    INITIAL_ZOOM,
-    FOCUS_ZOOM
-} = window.App.Constants;
-const {
-    getBaseLayerUrl,
-    getZoningStyle
-} = window.App.Utils;
-const Icons = window.App.Components.Icons;
 
 const MapViewer = ({
     location,
@@ -27,8 +14,24 @@ const MapViewer = ({
     invalidateMapRef,
     resetMapViewRef,
     selectedAnpId,
-    dataCache // ✅ Recibido como prop
+    dataCache
 }) => {
+    // Access Constants lazily to ensure they are loaded
+    const {
+        LAYER_STYLES,
+        ZONING_ORDER,
+        ZONING_CAT_INFO,
+        INITIAL_CENTER,
+        INITIAL_ZOOM,
+        FOCUS_ZOOM
+    } = window.App.Constants || {};
+
+    const {
+        getBaseLayerUrl,
+        getZoningStyle
+    } = window.App.Utils || {};
+
+    const Icons = window.App.Components.Icons;
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const layersRef = useRef({});          // sc, alcaldias, edomex, morelos, base
