@@ -23,10 +23,9 @@ const {
 } = Constants;
 
 const {
-  const {
-    getZoningStyle,
-    getBaseLayerUrl
-  } = Utils;
+  getZoningStyle,
+  getBaseLayerUrl
+} = Utils;
 
 // Componentes UI
 const Icons = Components.Icons || (() => null);
@@ -510,227 +509,226 @@ const App = () => {
   }, []);
 
   useEffect(() => {
-    useEffect(() => {
-      loadCoreData()
-        .then(() => {
-          setLoading(false);
+    loadCoreData()
+      .then(() => {
+        setLoading(false);
 
-          const params = new URLSearchParams(window.location.search);
-          const lat = parseFloat(params.get("lat"));
-          const lng = parseFloat(params.get("lng"));
-          const hasCoords = !isNaN(lat) && !isNaN(lng);
+        const params = new URLSearchParams(window.location.search);
+        const lat = parseFloat(params.get("lat"));
+        const lng = parseFloat(params.get("lng"));
+        const hasCoords = !isNaN(lat) && !isNaN(lng);
 
-          if (!hasCoords) setIsHelpOpen(true);
-          if (hasCoords) handleLocationSelect({ lat, lng });
+        if (!hasCoords) setIsHelpOpen(true);
+        if (hasCoords) handleLocationSelect({ lat, lng });
 
-          loadExtraData().then(() => setExtraDataLoaded(true));
-        })
-        .catch(err => {
-          console.error("Error loading initial data:", err);
-          setLoading(false); // Stop loading spinner so user isn't stuck
-        });
-    }, []);
+        loadExtraData().then(() => setExtraDataLoaded(true));
+      })
+      .catch(err => {
+        console.error("Error loading initial data:", err);
+        setLoading(false); // Stop loading spinner so user isn't stuck
+      });
+  }, []);
 
-    useEffect(() => {
-      setTimeout(() => invalidateMapRef.current?.(), 120);
-      setTimeout(() => invalidateMapRef.current?.(), 600);
-    }, [isHelpOpen]);
+  useEffect(() => {
+    setTimeout(() => invalidateMapRef.current?.(), 120);
+    setTimeout(() => invalidateMapRef.current?.(), 600);
+  }, [isHelpOpen]);
 
-    useEffect(() => {
-      setTimeout(() => invalidateMapRef.current?.(), 200);
-    }, [isSidebarOpen]);
+  useEffect(() => {
+    setTimeout(() => invalidateMapRef.current?.(), 200);
+  }, [isSidebarOpen]);
 
-    useEffect(() => {
-      if (location && extraDataLoaded) {
-        analyzeLocation(location, dataCache).then(setAnalysis);
-      }
-    }, [location, extraDataLoaded]);
-
-    if (loading) {
-      return (
-        <div className="h-screen flex items-center justify-center text-[#9d2148]">
-          <Icons.Loader2 className="animate-spin h-10 w-10" />
-        </div>
-      );
+  useEffect(() => {
+    if (location && extraDataLoaded) {
+      analyzeLocation(location, dataCache).then(setAnalysis);
     }
+  }, [location, extraDataLoaded]);
 
+  if (loading) {
     return (
-      <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
-
-
-        {/* ✅ HEADER INSTITUCIONAL (Desktop only, or responsive?) - User asked for "start of page" */}
-        <InstitutionalHeader />
-
-        {/* ✅ CONTENEDOR PRINCIPAL (Flex Row en Desktop, Col en Mobile) */}
-        <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden">
-
-          {/* ✅ BARRA SUPERIOR MÓVIL (APP HEADER) */}
-          <div className="md:hidden absolute top-0 left-0 right-0 z-[1045] p-3 pointer-events-none">
-            <MobileSearchBar
-              onLocationSelect={handleLocationSelect}
-              onReset={handleReset}
-              setInputRef={mobileSearchInputRef}
-              initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
-            />
-          </div>
-
-          {/* Sidebar Desktop */}
-          <SidebarDesktop
-            analysis={analysis}
-            onLocationSelect={handleLocationSelect}
-            onReset={handleReset}
-            isOpen={isSidebarOpen}
-            onToggle={() => setIsSidebarOpen(v => !v)}
-            onExportPDF={handleExportClick}
-            desktopSearchSetRef={desktopSearchInputRef}
-            isLoading={analyzing}
-            onOpenHelp={() => setIsHelpOpen(true)} // ✅ Pasar handler
-          />
-
-          {/* Main Map Area */}
-          <div className="relative flex-1 h-full w-full">
-            <MapViewer
-              location={location}
-              onLocationSelect={handleLocationSelect}
-              analysisStatus={analysis?.status}
-              visibleMapLayers={visibleMapLayers}
-              setVisibleMapLayers={setVisibleMapLayers}
-              visibleZoningCats={visibleZoningCats}
-              setVisibleZoningCats={setVisibleZoningCats}
-              // isLegendOpen={isLegendOpen} // Removed, Legend handles its own visibility
-              // setIsLegendOpen={setIsLegendOpen} // Removed
-              extraDataLoaded={extraDataLoaded}
-              activeBaseLayer={activeBaseLayer}
-              setActiveBaseLayer={setActiveBaseLayer}
-              invalidateMapRef={invalidateMapRef} // ✅ Pass REF
-              resetMapViewRef={resetMapViewRef}     // ✅ Pass REF
-              selectedAnpId={analysis?.anpId} // ✅ Pass ANP ID
-              dataCache={dataCache}
-            />
-
-            {/* Loading Overlay - Only on initial data load, NOT analysis */}
-            {loading && (
-              <div className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
-                <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
-                  <div className="w-10 h-10 border-4 border-gray-200 border-l-[#9d2148] rounded-full animate-spin mb-3"></div>
-                  <span className="text-gray-800 font-bold text-sm">Cargando mapa base...</span>
-                </div>
-              </div>
-            )}
-
-            {/* Legend */}
-            <Legend
-              visibleMapLayers={visibleMapLayers}
-              toggleLayer={toggleLayer}
-              isOpen={isLegendOpen}
-              setIsOpen={setIsLegendOpen}
-              visibleZoningCats={visibleZoningCats}
-              toggleZoningGroup={toggleZoningGroup}
-              setVisibleZoningCats={setVisibleZoningCats}
-              activeBaseLayer={activeBaseLayer}
-              setActiveBaseLayer={setActiveBaseLayer}
-              selectedAnpId={analysis?.anpId}
-              anpName={analysis?.anpNombre}
-              anpGeneralVisible={visibleMapLayers.anp}
-            />
-
-            {/* Nota inicial desktop */}
-            {!analysis?.status && (
-              <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
-                <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
-                  Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
-                </div>
-              </div>
-            )}
-
-            {/* CONTROLES DE MAPA (NUEVA UI UNIFICADA) */}
-            <div className="absolute top-20 md:top-24 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
-
-              {/* 1. Ayuda */}
-              <button
-                type="button"
-                onClick={() => setIsHelpOpen(true)}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-                title="Ayuda"
-                aria-label="Ayuda"
-              >
-                <span className="font-bold text-lg">?</span>
-              </button>
-
-              {/* 2. Capas */}
-              <button
-                type="button"
-                onClick={() => setIsLegendOpen(v => !v)}
-                className={`w-10 h-10 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
-                title="Capas y Simbología"
-                aria-label="Capas"
-              >
-                <Icons.Layers className="h-5 w-5" />
-              </button>
-
-              {/* 3. Reset View (Siempre visible) */}
-              <button
-                type="button"
-                onClick={() => resetMapViewRef.current?.()}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-                title="Restablecer vista"
-                aria-label="Restablecer vista"
-              >
-                <Icons.RotateCcw className="h-5 w-5" />
-              </button>
-
-              {/* 4. Mi Ubicación */}
-              <button
-                type="button"
-                onClick={handleUserLocation}
-                className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-                title="Mi ubicación"
-                aria-label="Usar mi ubicación actual"
-              >
-                <Icons.Navigation className="h-5 w-5" />
-              </button>
-
-            </div>
-          </div>
-
-          {/* Mobile Bottom Sheet */}
-          <BottomSheetMobile
-            analysis={analysis}
-            onLocationSelect={handleLocationSelect}
-            onReset={handleReset}
-            onStateChange={setMobileSheetState}
-            onClose={() => {
-              // Close logic if needed, usually just collapsing
-              handleReset();
-            }}
-            onExportPDF={handleExportClick} // pass the handler that calls the state func
-          />
-
-          {/* ✅ MODAL DE AYUDA (Restaurado) */}
-          <HelpModal
-            isOpen={isHelpOpen}
-            onClose={() => setIsHelpOpen(false)}
-          />
-
-          {/* ✅ PDF EXPORT CONTROLLER (Singleton) */}
-          <PdfExportController
-            analysis={analysis}
-            onExportReady={setExportHandler}
-            dataCache={dataCache}
-            visibleMapLayers={visibleMapLayers}
-            activeBaseLayer={activeBaseLayer}
-            visibleZoningCats={visibleZoningCats}
-          />
-        </div>
+      <div className="h-screen flex items-center justify-center text-[#9d2148]">
+        <Icons.Loader2 className="animate-spin h-10 w-10" />
       </div>
     );
-  };
+  }
+
+  return (
+    <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
 
 
-  const root = ReactDOM.createRoot(document.getElementById('root'));
-  root.render(
-    <ToastProvider>
-      <App />
-    </ToastProvider>
+      {/* ✅ HEADER INSTITUCIONAL (Desktop only, or responsive?) - User asked for "start of page" */}
+      <InstitutionalHeader />
+
+      {/* ✅ CONTENEDOR PRINCIPAL (Flex Row en Desktop, Col en Mobile) */}
+      <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden">
+
+        {/* ✅ BARRA SUPERIOR MÓVIL (APP HEADER) */}
+        <div className="md:hidden absolute top-0 left-0 right-0 z-[1045] p-3 pointer-events-none">
+          <MobileSearchBar
+            onLocationSelect={handleLocationSelect}
+            onReset={handleReset}
+            setInputRef={mobileSearchInputRef}
+            initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
+          />
+        </div>
+
+        {/* Sidebar Desktop */}
+        <SidebarDesktop
+          analysis={analysis}
+          onLocationSelect={handleLocationSelect}
+          onReset={handleReset}
+          isOpen={isSidebarOpen}
+          onToggle={() => setIsSidebarOpen(v => !v)}
+          onExportPDF={handleExportClick}
+          desktopSearchSetRef={desktopSearchInputRef}
+          isLoading={analyzing}
+          onOpenHelp={() => setIsHelpOpen(true)} // ✅ Pasar handler
+        />
+
+        {/* Main Map Area */}
+        <div className="relative flex-1 h-full w-full">
+          <MapViewer
+            location={location}
+            onLocationSelect={handleLocationSelect}
+            analysisStatus={analysis?.status}
+            visibleMapLayers={visibleMapLayers}
+            setVisibleMapLayers={setVisibleMapLayers}
+            visibleZoningCats={visibleZoningCats}
+            setVisibleZoningCats={setVisibleZoningCats}
+            // isLegendOpen={isLegendOpen} // Removed, Legend handles its own visibility
+            // setIsLegendOpen={setIsLegendOpen} // Removed
+            extraDataLoaded={extraDataLoaded}
+            activeBaseLayer={activeBaseLayer}
+            setActiveBaseLayer={setActiveBaseLayer}
+            invalidateMapRef={invalidateMapRef} // ✅ Pass REF
+            resetMapViewRef={resetMapViewRef}     // ✅ Pass REF
+            selectedAnpId={analysis?.anpId} // ✅ Pass ANP ID
+            dataCache={dataCache}
+          />
+
+          {/* Loading Overlay - Only on initial data load, NOT analysis */}
+          {loading && (
+            <div className="absolute inset-0 z-[2000] bg-white/60 backdrop-blur-sm flex items-center justify-center animate-fade-in">
+              <div className="bg-white p-6 rounded-2xl shadow-xl flex flex-col items-center">
+                <div className="w-10 h-10 border-4 border-gray-200 border-l-[#9d2148] rounded-full animate-spin mb-3"></div>
+                <span className="text-gray-800 font-bold text-sm">Cargando mapa base...</span>
+              </div>
+            </div>
+          )}
+
+          {/* Legend */}
+          <Legend
+            visibleMapLayers={visibleMapLayers}
+            toggleLayer={toggleLayer}
+            isOpen={isLegendOpen}
+            setIsOpen={setIsLegendOpen}
+            visibleZoningCats={visibleZoningCats}
+            toggleZoningGroup={toggleZoningGroup}
+            setVisibleZoningCats={setVisibleZoningCats}
+            activeBaseLayer={activeBaseLayer}
+            setActiveBaseLayer={setActiveBaseLayer}
+            selectedAnpId={analysis?.anpId}
+            anpName={analysis?.anpNombre}
+            anpGeneralVisible={visibleMapLayers.anp}
+          />
+
+          {/* Nota inicial desktop */}
+          {!analysis?.status && (
+            <div className="hidden md:flex absolute top-20 right-20 z-[1100]">
+              <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
+                Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
+              </div>
+            </div>
+          )}
+
+          {/* CONTROLES DE MAPA (NUEVA UI UNIFICADA) */}
+          <div className="absolute top-20 md:top-24 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
+
+            {/* 1. Ayuda */}
+            <button
+              type="button"
+              onClick={() => setIsHelpOpen(true)}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              title="Ayuda"
+              aria-label="Ayuda"
+            >
+              <span className="font-bold text-lg">?</span>
+            </button>
+
+            {/* 2. Capas */}
+            <button
+              type="button"
+              onClick={() => setIsLegendOpen(v => !v)}
+              className={`w-10 h-10 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
+              title="Capas y Simbología"
+              aria-label="Capas"
+            >
+              <Icons.Layers className="h-5 w-5" />
+            </button>
+
+            {/* 3. Reset View (Siempre visible) */}
+            <button
+              type="button"
+              onClick={() => resetMapViewRef.current?.()}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              title="Restablecer vista"
+              aria-label="Restablecer vista"
+            >
+              <Icons.RotateCcw className="h-5 w-5" />
+            </button>
+
+            {/* 4. Mi Ubicación */}
+            <button
+              type="button"
+              onClick={handleUserLocation}
+              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              title="Mi ubicación"
+              aria-label="Usar mi ubicación actual"
+            >
+              <Icons.Navigation className="h-5 w-5" />
+            </button>
+
+          </div>
+        </div>
+
+        {/* Mobile Bottom Sheet */}
+        <BottomSheetMobile
+          analysis={analysis}
+          onLocationSelect={handleLocationSelect}
+          onReset={handleReset}
+          onStateChange={setMobileSheetState}
+          onClose={() => {
+            // Close logic if needed, usually just collapsing
+            handleReset();
+          }}
+          onExportPDF={handleExportClick} // pass the handler that calls the state func
+        />
+
+        {/* ✅ MODAL DE AYUDA (Restaurado) */}
+        <HelpModal
+          isOpen={isHelpOpen}
+          onClose={() => setIsHelpOpen(false)}
+        />
+
+        {/* ✅ PDF EXPORT CONTROLLER (Singleton) */}
+        <PdfExportController
+          analysis={analysis}
+          onExportReady={setExportHandler}
+          dataCache={dataCache}
+          visibleMapLayers={visibleMapLayers}
+          activeBaseLayer={activeBaseLayer}
+          visibleZoningCats={visibleZoningCats}
+        />
+      </div>
+    </div>
   );
+};
+
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
+  <ToastProvider>
+    <App />
+  </ToastProvider>
+);
 
