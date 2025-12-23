@@ -31,6 +31,8 @@ const Legend = ({
         morelos: { color: '#64748b' }
     };
 
+    if (!isOpen) return null;
+
     const toggleZoningCat = (catId) => {
         setVisibleZoningCats(prev => ({
             ...prev,
