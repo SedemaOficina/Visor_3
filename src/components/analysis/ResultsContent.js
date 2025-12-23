@@ -3,7 +3,7 @@ const { useState } = window.React;
 /**
  * Safe Lazy Access Helpers
  */
-const getIcons = () => window.App?.Components?.Icons || {};
+const getIcons = () => window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
 const getColors = () => window.App?.Constants?.COLORS || {};
 const getUtils = () => window.App?.Utils || {};
 const getConstants = () => window.App?.Constants || {};
@@ -145,19 +145,21 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
     return (
         <div className="hidden md:grid grid-cols-2 gap-2 w-full">
             {/* Google Maps */}
-            <a
-                href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                target="_blank"
-                rel="noreferrer"
-                className={btnClass}
-                style={{ '--hover-color': COLORS.primary }}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
-                title="Ver ubicación en Google Maps"
-            >
-                {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1" />}
-                <span className="text-[9px] font-bold">Google Maps</span>
-            </a>
+            {analysis?.coordinate && (
+                <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className={btnClass}
+                    style={{ '--hover-color': COLORS.primary }}
+                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
+                    title="Ver ubicación en Google Maps"
+                >
+                    {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1" />}
+                    <span className="text-[9px] font-bold">Google Maps</span>
+                </a>
+            )}
 
             {/* Exportar PDF */}
             <button

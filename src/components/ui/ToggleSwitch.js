@@ -17,4 +17,6 @@ const ToggleSwitch = ({ checked, onChange, disabled, activeColor, title }) => (
     </div>
 );
 
+window.App = window.App || {};
+window.App.Components = window.App.Components || {};
 window.App.Components.ToggleSwitch = ToggleSwitch;

@@ -3,7 +3,19 @@
     window.App.Analysis = window.App.Analysis || {};
 
 
-    const { findFeature } = window.App.Utils;
+    const findFeature = window.App?.Utils?.findFeature;
+
+    if (typeof findFeature !== "function") {
+        console.error("CRITICAL: Utils.findFeature no está disponible. Revisa geoUtils.js y el orden de carga.", window.App?.Utils);
+        window.App.Analysis.analyzeLocation = async (c) => ({
+            status: "NO_DATA",
+            error: "findFeature missing",
+            timestamp: new Date().toLocaleString(),
+            coordinate: c
+        });
+        return;
+    }
+
     // We assume dataCache is passed as argument, avoiding global dependency
 
     /**
@@ -13,7 +25,7 @@
      */
     const analyzeLocation = async (c, dataCache) => {
         const r = {
-            status: 'LOADING',
+            status: 'NO_DATA',
             isRestricted: false,
             allowedActivities: [],
             prohibitedActivities: [],
@@ -25,8 +37,12 @@
         // 1. Validar si está fuera de CDMX
         // ---------------------------------------------------
         // Safety check for empty/missing cache
-        if (!dataCache) return r;
-        if (!dataCache.cdmx) return r;
+        // Safety check for empty/missing cache
+        if (!dataCache || !dataCache.cdmx) {
+            r.status = 'NO_DATA';
+            r.error = 'Data cache incompleto';
+            return r;
+        }
 
         if (dataCache.cdmx?.features.length && !findFeature(c, dataCache.cdmx)) {
             r.status = 'OUTSIDE_CDMX';

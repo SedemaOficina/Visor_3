@@ -13,6 +13,7 @@
     /* ------------------------------------------------ */
 
     const isPointInPolygon = (point, feature) => {
+        if (!point || typeof point.lat !== 'number' || typeof point.lng !== 'number') return false;
         if (!feature?.geometry?.type || !feature?.geometry?.coordinates) return false;
         const x = point.lng; // GeoJSON: X = longitud
         const y = point.lat; // GeoJSON: Y = latitud
@@ -28,9 +29,11 @@
                 const xj = ring[j][0]; // lng
                 const yj = ring[j][1]; // lat
 
+                const denom = (yj - yi);
+                if (denom === 0) continue;
                 const intersect =
-                    yi > y !== yj > y &&
-                    x < ((xj - xi) * (y - yi)) / (yj - yi) + xi;
+                    ((yi > y) !== (yj > y)) &&
+                    (x < ((xj - xi) * (y - yi)) / denom + xi);
 
                 if (intersect) inside = !inside;
             }
@@ -161,7 +164,7 @@
     };
 
     const parseCoordinateInput = (input) => {
-        if (!input) return null;
+        if (!input || typeof input !== 'string') return null;
         const s = input.trim();
 
         // ------------ 1) Intento Decimal: "19.41, -99.14" ------------

@@ -385,6 +385,9 @@ const MapViewer = ({
                 });
 
                 zoningLayersRef.current[k] = layer;
+
+                const shouldShow = !!visibleMapLayers.zoning && (visibleZoningCats[k] !== false);
+                if (shouldShow) mapInstance.current.addLayer(layer);
             });
         }
     }, [extraDataLoaded, dataCache]);
@@ -400,9 +403,10 @@ const MapViewer = ({
 
         if (!selectedAnpId || !visibleMapLayers.selectedAnpZoning) return;
 
+        const sel = (selectedAnpId ?? '').toString().trim();
         const candidates = dataCache.anpInternal.features.filter(f => {
-            if (f.properties?.ANP_ID === selectedAnpId) return true;
-            return false;
+            const id = (f.properties?.ANP_ID ?? '').toString().trim();
+            return id && id === sel;
         });
 
         if (candidates.length) {

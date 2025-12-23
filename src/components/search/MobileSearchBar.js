@@ -1,10 +1,14 @@
 const { useState, useEffect, useRef } = window.React;
 // Safe Lazy Access
-const Icons = window.App.Components.Icons;
+// Safe Lazy Access
+const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
 
 const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
-    // Safe Lazy Access
+    // Safe Lazy Access with Wrappers
     const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils || {};
+
+    const safeSearch = async (q) => (typeof searchMapboxPlaces === 'function' ? await searchMapboxPlaces(q) : []);
+    const safeParse = (q) => (typeof parseCoordinateInput === 'function' ? parseCoordinateInput(q) : null);
 
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -22,7 +26,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
         if (!setInputRef) return;
         setInputRef.current = (text) => {
             setQuery(text || '');
-            // setSuggestions([]); // No limpiar sugerencias al setear externo, o sí? Mejor solo update texto
+            setSuggestions([]);
         };
         return () => { setInputRef.current = null; };
     }, [setInputRef]);
@@ -39,7 +43,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
 
         debounceRef.current = setTimeout(async () => {
             setIsSearching(true);
-            const res = await searchMapboxPlaces(value);
+            const res = await safeSearch(value);
             setSuggestions(res);
             setIsSearching(false);
         }, 300);
@@ -49,7 +53,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
         e.preventDefault();
         if (!query.trim()) return;
 
-        const coord = parseCoordinateInput(query);
+        const coord = safeParse(query);
         if (coord) {
             onLocationSelect(coord);
             setSuggestions([]);
@@ -65,7 +69,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
         }
 
         setIsSearching(true);
-        const res = await searchMapboxPlaces(query);
+        const res = await safeSearch(query);
         setIsSearching(false);
 
         if (res.length > 0) {

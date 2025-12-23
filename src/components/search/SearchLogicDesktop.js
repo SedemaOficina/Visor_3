@@ -1,10 +1,14 @@
 const { useState, useEffect, useRef } = window.React;
 // Safe Lazy Access implementation
-const Icons = window.App.Components.Icons;
+// Safe Lazy Access implementation
+const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
 
 const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
-    // Safe Lazy Access
+    // Safe Lazy Access with Wrappers
     const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils || {};
+
+    const safeSearch = async (q) => (typeof searchMapboxPlaces === 'function' ? await searchMapboxPlaces(q) : []);
+    const safeParse = (q) => (typeof parseCoordinateInput === 'function' ? parseCoordinateInput(q) : null);
 
     const [query, setQuery] = useState('');
     const [suggestions, setSuggestions] = useState([]);
@@ -41,7 +45,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
 
         debounceRef.current = setTimeout(async () => {
             setIsSearching(true);
-            const res = await searchMapboxPlaces(value);
+            const res = await safeSearch(value);
             setSuggestions(res);
             setIsSearching(false);
         }, 300);
@@ -52,7 +56,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
         const value = query.trim();
         if (!value) return;
 
-        const coord = parseCoordinateInput(value);
+        const coord = safeParse(value);
         if (coord) {
             onLocationSelect(coord);
             setSuggestions([]);
@@ -68,7 +72,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
         }
 
         setIsSearching(true);
-        const res = await searchMapboxPlaces(value);
+        const res = await safeSearch(value);
         setIsSearching(false);
 
         if (res.length > 0) {

@@ -1,7 +1,7 @@
-const Icons = window.App.Components.Icons;
-const SearchLogicDesktop = window.App.Components.SearchLogicDesktop;
-const SkeletonAnalysis = window.App.Components.SkeletonAnalysis;
-const ResultsContent = window.App.Components.ResultsContent;
+const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
+const SearchLogicDesktop = window.App?.Components?.SearchLogicDesktop || (() => null);
+const SkeletonAnalysis = window.App?.Components?.SkeletonAnalysis || (() => null);
+const ResultsContent = window.App?.Components?.ResultsContent || (() => null);
 
 const SidebarDesktop = ({
     analysis,
@@ -75,7 +75,7 @@ const SidebarDesktop = ({
                         onLocationSelect={onLocationSelect}
                         onReset={onReset}
                         setInputRef={desktopSearchSetRef}
-                        initialValue={analysis ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
+                        initialValue={analysis?.coordinate ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
                     />
 
                     {!analysis && !isLoading && (

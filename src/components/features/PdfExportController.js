@@ -13,6 +13,8 @@
         const overlay = `pin-s+9d2449(${lng},${lat})`;
         const token = getConstants().MAPBOX_TOKEN;
 
+        if (!token) return '';
+
         return (
             `https://api.mapbox.com/styles/v1/mapbox/satellite-streets-v12/static/` +
             `${overlay}/${lng},${lat},${zoom}/${clampedW}x${clampedH}` +
@@ -29,6 +31,7 @@
             img.onerror = () => resolve(false);
             img.src = src;
         });
+
 
     /* ------------------------------------------------ */
     /* COMPONENTES DE APOYO */
@@ -138,7 +141,7 @@
             zoningColor = COLORS?.anp || '#9d2148';
         } else if (analysis.zoningKey === 'NODATA') {
             zoningColor = '#9ca3af';
-        } else if (analysis.zoningKey && getZoningColor) {
+        } else if (analysis.zoningKey && typeof getZoningColor === 'function') {
             zoningColor = getZoningColor(analysis.zoningKey);
         }
 
@@ -728,136 +731,146 @@
 
         const buildExportMapImage = ({ lat, lng, zoom = 14, analysisStatus }) => {
             return new Promise((resolve) => {
-                const L = window.L;
-                const leafletImageFn = window.leafletImage || window.leafletImage?.default;
+                try {
+                    const L = window.L;
+                    const leafletImageFn = window.leafletImage || window.leafletImage?.default;
 
-                if (!L || typeof leafletImageFn !== 'function') {
-                    console.warn('leaflet-image no disponible');
-                    return resolve(null);
-                }
+                    if (!L || typeof leafletImageFn !== 'function') {
+                        return resolve(null);
+                    }
 
-                const el = document.getElementById('export-map');
-                if (!el) return resolve(null);
+                    const el = document.getElementById('export-map');
+                    if (!el) return resolve(null);
 
-                el.innerHTML = '';
-                const m = L.map(el, {
-                    zoomControl: false,
-                    attributionControl: false,
-                    preferCanvas: true
-                }).setView([lat, lng], zoom);
+                    el.innerHTML = '';
+                    const m = L.map(el, {
+                        zoomControl: false,
+                        attributionControl: false,
+                        preferCanvas: true,
+                        // Fix: Evitar animaciones que pueden causar race conditions
+                        fadeAnimation: false,
+                        zoomAnimation: false,
+                        markerZoomAnimation: false
+                    }).setView([lat, lng], zoom);
 
-                // ✅ FIX: Define base layer first
-                const base = L.tileLayer(getBaseLayerUrl ? getBaseLayerUrl(activeBaseLayer || 'SATELLITE') : '', {
-                    crossOrigin: 'anonymous',
-                    maxZoom: 19
-                });
+                    // Definir base layer
+                    const baseLayerUrl = (typeof getBaseLayerUrl === 'function')
+                        ? getBaseLayerUrl(activeBaseLayer || 'SATELLITE')
+                        : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
-                // ✅ FIX: Attach listeners BEFORE adding to map
-                let tileCount = 0;
-                base.on('tileloadstart', () => { tileCount++; });
-                base.on('load', () => {
-                    // Explicit load complete
-                });
+                    const base = L.tileLayer(baseLayerUrl, {
+                        crossOrigin: 'anonymous',
+                        maxZoom: 19
+                    });
 
-                base.addTo(m);
+                    base.addTo(m);
 
-                // GeoJSON Helper
-                const addGeoJson = (fc, style, paneZ = 400) => {
-                    if (!fc?.features?.length) return null;
-                    const paneName = `p${paneZ}`;
-                    if (!m.getPane(paneName)) m.createPane(paneName);
-                    m.getPane(paneName).style.zIndex = paneZ;
-                    return L.geoJSON(fc, { pane: paneName, style, interactive: false }).addTo(m);
-                };
-
-                // Add Layers with fallback checks
-                if (visibleMapLayers?.sc && dataCache?.sc) {
-                    addGeoJson(dataCache.sc, { color: LAYER_STYLES?.sc?.color || 'green', weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES?.sc?.fill, fillOpacity: 0.18 }, 410);
-                }
-                if (visibleMapLayers?.alcaldias && dataCache?.alcaldias) {
-                    addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, 420);
-                }
-
-                // Zoning
-                if (visibleMapLayers?.zoning && dataCache?.zoning?.features?.length) {
-                    const byKey = {};
-                    (ZONING_ORDER || []).forEach(k => (byKey[k] = []));
-                    dataCache.zoning.features.forEach(f => {
-                        let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
-                        if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
-                            const desc = (f.properties?.PGOEDF || '').toLowerCase();
-                            if (desc.includes('equipamiento')) k = 'PDU_ER';
-                            else if (desc.includes('parcial')) k = 'PDU_PP';
-                            else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
-                            else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
+                    // GeoJSON Helper
+                    const addGeoJson = (fc, style, paneZ = 400) => {
+                        try {
+                            if (!fc?.features?.length) return null;
+                            const paneName = `p${paneZ}`;
+                            if (!m.getPane(paneName)) m.createPane(paneName);
+                            m.getPane(paneName).style.zIndex = paneZ;
+                            return L.geoJSON(fc, { pane: paneName, style, interactive: false }).addTo(m);
+                        } catch (err) {
+                            return null;
                         }
-                        if (byKey[k]) byKey[k].push(f);
-                    });
+                    };
 
-                    (ZONING_ORDER || []).forEach((k, idx) => {
-                        const isOn = (visibleZoningCats?.[k] !== false);
-                        if (!isOn) return;
-                        const feats = byKey[k];
-                        if (!feats?.length) return;
+                    // Add Layers
+                    if (visibleMapLayers?.sc && dataCache?.sc) {
+                        addGeoJson(dataCache.sc, { color: LAYER_STYLES?.sc?.color || 'green', weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES?.sc?.fill, fillOpacity: 0.18 }, 410);
+                    }
+                    if (visibleMapLayers?.alcaldias && dataCache?.alcaldias) {
+                        addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, 420);
+                    }
 
-                        const color = ZONING_CAT_INFO?.[k]?.color || '#9ca3af';
-                        addGeoJson({ type: 'FeatureCollection', features: feats }, {
-                            color,
-                            weight: 1.5,
-                            opacity: 0.9,
-                            fillColor: color,
-                            fillOpacity: 0.2,
-                            interactive: false
-                        }, 430 + idx);
-                    });
-                }
+                    // Zoning logic
+                    if (visibleMapLayers?.zoning && dataCache?.zoning?.features?.length) {
+                        const byKey = {};
+                        (ZONING_ORDER || []).forEach(k => (byKey[k] = []));
+                        dataCache.zoning.features.forEach(f => {
+                            let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+                            if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                                const desc = (f.properties?.PGOEDF || '').toLowerCase();
+                                if (desc.includes('equipamiento')) k = 'PDU_ER';
+                                else if (desc.includes('parcial')) k = 'PDU_PP';
+                                else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
+                                else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
+                            }
+                            if (byKey[k]) byKey[k].push(f);
+                        });
 
-                // Pin
-                const isSC = (analysisStatus === 'CONSERVATION_SOIL');
-                const isSU = (analysisStatus === 'URBAN_SOIL');
-                const pinFill = isSC ? (LAYER_STYLES?.sc?.color || 'green') : isSU ? '#3b82f6' : '#9d2148';
+                        (ZONING_ORDER || []).forEach((k, idx) => {
+                            const isOn = (visibleZoningCats?.[k] !== false);
+                            if (!isOn) return;
+                            const feats = byKey[k];
+                            if (!feats?.length) return;
+                            const color = ZONING_CAT_INFO?.[k]?.color || '#9ca3af';
+                            addGeoJson({ type: 'FeatureCollection', features: feats }, {
+                                color, weight: 1.5, opacity: 0.9, fillColor: color, fillOpacity: 0.2, interactive: false
+                            }, 430 + idx);
+                        });
+                    }
 
-                if (!m.getPane('pointPane')) {
-                    m.createPane('pointPane');
-                    m.getPane('pointPane').style.zIndex = 600;
-                }
+                    // Pin
+                    const isSC = (analysisStatus === 'CONSERVATION_SOIL');
+                    const isSU = (analysisStatus === 'URBAN_SOIL');
+                    const pinFill = isSC ? (LAYER_STYLES?.sc?.color || 'green') : isSU ? '#3b82f6' : '#9d2148';
 
-                L.circleMarker([lat, lng], {
-                    radius: 8,
-                    color: '#ffffff',
-                    weight: 3,
-                    fillColor: pinFill,
-                    fillOpacity: 1,
-                    pane: 'pointPane'
-                }).addTo(m);
+                    if (!m.getPane('pointPane')) {
+                        m.createPane('pointPane');
+                        m.getPane('pointPane').style.zIndex = 600;
+                    }
 
-                /* Capture Logic */
-                let settled = false;
-                const done = (img) => {
-                    if (settled) return;
-                    settled = true;
-                    try { m.remove(); } catch { }
-                    resolve(img || null);
-                };
+                    L.circleMarker([lat, lng], {
+                        radius: 8, color: '#ffffff', weight: 3, fillColor: pinFill, fillOpacity: 1, pane: 'pointPane'
+                    }).addTo(m);
 
-                const capture = () => {
-                    leafletImageFn(m, (err, canvas) => {
-                        if (err || !canvas) return done(null);
-                        done(canvas.toDataURL('image/png'));
-                    });
-                };
+                    /* Capture Logic Segura */
+                    let settled = false;
+                    const done = (img) => {
+                        if (settled) return;
+                        settled = true;
+                        try { m.remove(); } catch { }
+                        resolve(img || null);
+                    };
 
-                const safetyTimeout = setTimeout(() => {
-                    console.warn('Capture timeout');
-                    capture();
-                }, 3000);
+                    const capture = () => {
+                        try {
+                            leafletImageFn(m, (err, canvas) => {
+                                if (err || !canvas) return done(null);
+                                done(canvas.toDataURL('image/png'));
+                            });
+                        } catch (err) {
+                            done(null);
+                        }
+                    };
 
-                base.once('load', () => {
-                    setTimeout(() => {
-                        clearTimeout(safetyTimeout);
+                    const safetyTimeout = setTimeout(() => {
+                        console.warn('Capture timeout');
                         capture();
-                    }, 500);
-                });
+                    }, 4000); // Dar más tiempo (4s)
+
+                    // Esperar a que tiles carguen un poco
+                    base.once('load', () => {
+                        setTimeout(() => {
+                            clearTimeout(safetyTimeout);
+                            capture();
+                        }, 500);
+                    });
+
+                    // Failsafe por si load nunca dispara
+                    setTimeout(() => {
+                        if (!settled) capture();
+                    }, 5000);
+
+                } catch (e) {
+                    // Critical catch para evitar crash de hilo
+                    console.error('Error crítico en buildExportMapImage', e);
+                    resolve(null);
+                }
             });
         };
 
@@ -867,30 +880,41 @@
 
             if (!analysis || !pdfRef.current) return;
 
-            if (!window.jspdf?.jsPDF) {
-                alert('Error: Librería PDF no cargada.');
+            if (!window.jspdf?.jsPDF || typeof window.html2canvas !== 'function') {
+                alert('Error: Librerías PDF/Canvas no cargadas.');
                 return;
             }
             const { jsPDF } = window.jspdf;
 
             try {
-                const img = await buildExportMapImage({
+                // 1) Intentar Mapbox Static primero (Estrategia Prioritaria)
+                const staticUrl = getStaticMapUrl({
                     lat: analysis.coordinate.lat,
                     lng: analysis.coordinate.lng,
-                    zoom: 14,
-                    analysisStatus: analysis.status
+                    zoom: 14
                 });
 
-                // Fallback attempt
-                if (img) setMapImage(img);
-                else {
-                    const url = getStaticMapUrl({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng });
-                    const ok = await preloadImage(url);
-                    setMapImage(ok ? url : null);
+                let img = null;
+                const staticOk = await preloadImage(staticUrl);
+
+                if (staticOk) {
+                    img = staticUrl;
+                } else {
+                    // 2) Fallback: leaflet-image (Opción Secundaria)
+                    // Solo si falló el estático intentamos el render cliente
+                    console.warn('Mapbox Static falló, intentando leaflet-image fallback...');
+                    img = await buildExportMapImage({
+                        lat: analysis.coordinate.lat,
+                        lng: analysis.coordinate.lng,
+                        zoom: 14,
+                        analysisStatus: analysis.status
+                    });
                 }
 
+                setMapImage(img); // Puede ser null, no pasa nada
                 await new Promise(r => setTimeout(r, 150)); // Render wait
             } catch (e) {
+                console.error('Error generando imagen de mapa', e);
                 setMapImage(null);
             }
 
@@ -929,6 +953,7 @@
 
         useEffect(() => {
             if (!onExportReady) return;
+            // FIX: Wrap in function to avoid React functional update behavior
             onExportReady(() => requestExportPDF);
             return () => onExportReady(null);
         }, [onExportReady, requestExportPDF]);

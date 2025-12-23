@@ -32,7 +32,7 @@ window.App.Components.InstitutionalHeader = () => (
 
                     {/* Subtitle (Desktop only for space) */}
                     <span className="hidden md:block text-xs text-gray-500 font-medium tracking-wide mt-0.5">
-                        Consulta normavita de Catgegorías de Proteccion Ambiental
+                        Consulta normativa de Categorías de Protección Ambiental
                     </span>
                 </div>
             </div>
