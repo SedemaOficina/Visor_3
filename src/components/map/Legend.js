@@ -42,6 +42,7 @@ const Legend = ({
         // Prevent toggling locked layers if UI somehow exposes them
         if (layerKey === 'edomex' || layerKey === 'morelos') return;
 
+        console.log('Toggling layer:', layerKey);
         setVisibleMapLayers(prev => ({
             ...prev,
             [layerKey]: !prev[layerKey]
@@ -59,9 +60,9 @@ const Legend = ({
                 <button
                     onClick={() => setIsOpen(false)}
                     className="p-1 hover:bg-gray-100 rounded-md transition-colors"
-                    title="Ocultar leyenda"
+                    title="Cerrar"
                 >
-                    {Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-500" /> : <span>-</span>}
+                    {Icons.X ? <Icons.X className="h-4 w-4 text-gray-500" /> : <span>x</span>}
                 </button>
             </div>
 
