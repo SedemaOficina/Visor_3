@@ -27,7 +27,7 @@ const {
 } = Utils;
 
 // Componentes UI
-const Icons = Components.Icons || (() => null);
+const Icons = Components.Icons || new Proxy({}, { get: () => () => null });
 const InstitutionalHeader = Components.InstitutionalHeader || (() => null);
 const ToggleSwitch = Components.ToggleSwitch || (() => null);
 const Legend = Components.Legend || (() => null);

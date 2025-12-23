@@ -31,7 +31,7 @@ const MapViewer = ({
         getZoningStyle
     } = window.App.Utils || {};
 
-    const Icons = window.App?.Components?.Icons || (() => null);
+    const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
     const mapRef = useRef(null);
     const mapInstance = useRef(null);
     const layersRef = useRef({});          // sc, alcaldias, edomex, morelos, base
