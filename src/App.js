@@ -432,7 +432,7 @@ const VisorApp = () => {
 
     initUrlParams();
 
-  }, [loading, error, handleLocationSelect]);
+  }, [loading]);
 
   if (systemError) {
     return (
