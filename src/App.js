@@ -531,15 +531,8 @@ const VisorApp = () => {
             anpGeneralVisible={visibleMapLayers.anp}
           />
 
-          {!analysis?.status && !isLegendOpen && (
-            <div className="hidden md:flex absolute top-20 left-20 z-[1100]">
-              <div className="bg-white/95 border border-gray-200 rounded-lg shadow-md px-3 py-2 text-[11px] text-gray-700 max-w-xs">
-                Haz clic en el mapa o busca una dirección para iniciar la consulta de zonificación.
-              </div>
-            </div>
-          )}
 
-          <div className="absolute top-20 md:top-24 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
+          <div className="absolute top-4 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
 
             <button
               type="button"
