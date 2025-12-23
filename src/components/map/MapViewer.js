@@ -21,9 +21,9 @@ const MapViewer = ({
         LAYER_STYLES,
         ZONING_ORDER,
         ZONING_CAT_INFO,
-        INITIAL_CENTER,
-        INITIAL_ZOOM,
-        FOCUS_ZOOM
+        INITIAL_CENTER = [19.32, -99.15], // CDMX Center default
+        INITIAL_ZOOM = 11,
+        FOCUS_ZOOM = 16
     } = window.App.Constants || {};
 
     const {
