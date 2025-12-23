@@ -125,7 +125,7 @@
             }
 
             r.zoningKey = k;
-            r.zoningName = z.properties.PGOEDF || r.zoningKey; // El nombre legible viene del campo PGOEDF
+            r.zoningName = z.properties.PGOEDF || r.zoningKey;
         } else {
             // Fallbacks si NO se encuentra polígono de zonificación
             if (r.status === 'CONSERVATION_SOIL') {

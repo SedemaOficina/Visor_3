@@ -158,118 +158,93 @@
             const T = {
                 font: 'Roboto, Arial, sans-serif',
                 mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-                base: 10.8,
-                small: 9.2,
-                micro: 8,
-                h1: 13.5,
-                h2: 11.2,
+                base: 10,       // Reduced slightly for density
+                small: 8.5,
+                micro: 7.5,
+                h1: 15,         // Larger Header
+                h2: 12,
                 lead: 10,
-                lh: 1.15
+                lh: 1.2
             };
 
             const S = {
                 pageW: 794,
-                pagePad: 20,
-                gap1: 4,
-                gap2: 8,
-                gap3: 10,
-                radius: 6,
-                hair: '1px solid #e5e7eb'
+                pagePad: 30,    // Increased margins
+                gap1: 5,
+                gap2: 12,
+                gap3: 20,
+                radius: 4,
+                hair: '1px solid #d1d5db' // Slightly darker hair
             };
 
+            // OFFICIAL PALETTE (Based on InstitutionalHeader)
             const C = {
-                ink: COLORS?.text || '#111827',
-                sub: COLORS?.subtext || '#4b5563',
-                mute: '#9ca3af',
-                hair: '#e5e7eb',
-                panel: '#f9fafb',
-                guinda: COLORS?.primary || '#9d2148',
-                sc: COLORS?.sc || '#3B7D23',
-                su: COLORS?.su || '#3b82f6',
-                anp: COLORS?.anp || '#7e22ce',
-                red: COLORS?.error || '#b91c1c',
-                green: COLORS?.success || '#15803d',
-                warning: COLORS?.warning || '#f59e0b',
-                edomex: '#FFD86B',
-                morelos: '#B8A1FF'
+                ink: '#333333',     // Dark Gray (Gris Oscuro)
+                sub: '#666666',     // Medium Gray
+                guinda: '#9D2449',  // Guinda Oficial
+                dorado: '#D4C19C',  // Dorado Oficial
+                gris: '#B38E5D',    // (Variant, using Dorado/Gris blend usually, adhering to header usage)
+                hair: '#d1d5db',
+                panel: '#f8f9fa',
+                sc: '#3B7D23',
+                su: '#2563EB',      // Brighter Blue for digital
+                red: '#B91C1C',
+                green: '#15803D'
             };
 
-            const tbl = {
-                table: {
-                    width: '100%',
-                    borderCollapse: 'collapse',
-                    fontSize: `${T.base}px`,
-                    lineHeight: T.lh
-                },
-                th: (bg = '#f3f4f6') => ({
-                    border: S.hair,
-                    background: bg,
-                    padding: '8px 8px', // Increased top/bottom padding
-                    textAlign: 'left',
-                    verticalAlign: 'middle',
-                    fontSize: `${T.small}px`,
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                    color: C.ink
-                }),
-                td: {
-                    border: S.hair,
-                    padding: '8px 8px', // Increased padding for vertical centering space
-                    textAlign: 'left',
-                    verticalAlign: 'middle',
-                    fontSize: `${T.base}px`,
-                    lineHeight: 1.25, // Adjusted line height
-                    color: C.ink
-                },
-                tdLabel: {
-                    border: S.hair,
-                    padding: '8px 8px',
-                    width: '34%',
-                    background: C.panel,
-                    fontSize: `${T.small}px`,
-                    fontWeight: 700,
-                    lineHeight: 1.2,
-                    color: C.sub,
-                    verticalAlign: 'middle'
-                },
-                zebra: (i) => (i % 2 === 0 ? '#ffffff' : '#fbfbfc')
-            };
-
-            // Improved Badge Style for Vertical Centering
-            const badge = (bg, fg = '#fff', border = 'transparent') => ({
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: 'auto',
-                minHeight: '18px',
-                padding: '2px 10px', // Balanced padding
-                borderRadius: '999px',
-                fontSize: `${T.small}px`,
-                fontWeight: 800,
-                letterSpacing: '0.02em',
-                lineHeight: '1.2', // Ensure line height matches font size nicely
-                backgroundColor: bg,
-                color: fg,
-                border: border === 'transparent' ? '1px solid transparent' : `1px solid ${border}`,
-                whiteSpace: 'nowrap',
-                verticalAlign: 'middle' // Helps with inline flow
-            });
-
-            const h2 = (color = C.ink) => ({
+            const styleH2 = {
                 fontSize: `${T.h2}px`,
-                fontWeight: 800,
-                margin: `0 0 ${S.gap1}px 0`,
-                color: '#111827',
-                backgroundColor: '#f3f4f6',
-                padding: '6px 10px',
-                borderRadius: '6px',
-                borderLeft: `4px solid ${color === C.ink ? C.guinda : color}`,
-                display: 'flex',
-                alignItems: 'center',
-                lineHeight: 1.2
-            });
+                fontWeight: 700,
+                color: C.guinda,
+                borderBottom: `2px solid ${C.dorado}`,
+                paddingBottom: '4px',
+                marginBottom: `${S.gap2}px`,
+                textTransform: 'uppercase',
+                letterSpacing: '0.05em'
+            };
 
-            const section = (mb = S.gap3) => ({ marginBottom: `${mb}px` });
+            const styleLabel = {
+                fontSize: `${T.small}px`,
+                color: C.sub,
+                fontWeight: 600,
+                textTransform: 'uppercase',
+                marginBottom: '2px'
+            };
+
+            const styleValue = {
+                fontSize: `${T.base}px`,
+                color: C.ink,
+                fontWeight: 400
+            };
+
+            const Box = ({ title, children, style }) => (
+                <div style={{ ...style }}>
+                    <div style={styleLabel}>{title}</div>
+                    <div style={styleValue}>{children}</div>
+                </div>
+            );
+
+            // Table Styles
+            const tblC = {
+                width: '100%',
+                borderCollapse: 'collapse',
+                fontSize: `${T.small}px`
+            };
+            const thC = {
+                textAlign: 'left',
+                padding: '6px 8px',
+                borderBottom: `2px solid ${C.dorado}`,
+                color: C.guinda,
+                fontWeight: 700,
+                verticalAlign: 'bottom'
+            };
+            const tdC = (i) => ({
+                padding: '6px 8px',
+                borderBottom: `1px solid ${C.hair}`,
+                backgroundColor: i % 2 === 0 ? '#fff' : '#f9fafb',
+                color: C.ink,
+                verticalAlign: 'top'
+            });
 
             return (
                 <div
@@ -282,440 +257,194 @@
                         lineHeight: T.lh,
                         color: C.ink,
                         backgroundColor: '#ffffff',
-                        boxSizing: 'border-box'
+                        boxSizing: 'border-box',
+                        position: 'relative'
                     }}
                 >
-                    <header
-                        style={{
-                            display: 'grid',
-                            gridTemplateColumns: '140px 1fr 170px',
-                            columnGap: '14px',
-                            alignItems: 'center',
-                            marginBottom: `${S.gap2}px`
-                        }}
-                    >
-                        <div style={{ width: '140px', height: '70px', display: 'flex', alignItems: 'center' }}>
-                            <img src="./assets/logo-sedema.png" alt="SEDEMA" style={{ maxHeight: '100%', maxWidth: '100%', objectFit: 'contain', display: 'block' }} />
+                    {/* --- HEADER --- */}
+                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '20px', borderBottom: `1px solid ${C.hair}`, paddingBottom: '10px' }}>
+                        <div style={{ display: 'flex', flexDirection: 'column' }}>
+                            <img src="./assets/logo-sedema.png" alt="SEDEMA" style={{ height: '55px', objectFit: 'contain', display: 'block', marginBottom: '8px' }} />
+                            <div style={{ fontSize: '10px', color: C.sub, fontWeight: 700, textTransform: 'uppercase' }}>Secretaría del Medio Ambiente</div>
+                            <div style={{ fontSize: '9px', color: C.sub }}>Dirección General del Sistema de Áreas Naturales Protegidas</div>
                         </div>
-                        <div style={{ minWidth: 0 }}>
-                            <div
-                                style={{
-                                    fontSize: `${T.h1}px`,
-                                    fontWeight: 800,
-                                    letterSpacing: '0.02em',
-                                    color: C.guinda,
-                                    lineHeight: 1.15,
-                                    textTransform: 'uppercase'
-                                }}
-                            >
-                                Visor de Consulta Ciudadana
+                        <div style={{ textAlign: 'right' }}>
+                            <div style={{ fontSize: `${T.h1}px`, fontWeight: 800, color: C.guinda, textTransform: 'uppercase', lineHeight: 1 }}>
+                                Ficha Informativa
                             </div>
-                            <div style={{ fontSize: `${T.lead}px`, color: C.sub, marginTop: '3px' }}>
-                                Consulta normativa de Categorías con protección ambiental
+                            <div style={{ fontSize: `${T.base}px`, color: C.sub, marginTop: '4px', fontStyle: 'italic' }}>
+                                Consulta Ciudadana de Zonificación
+                            </div>
+                            <div style={{ marginTop: '8px', fontSize: `${T.small}px`, color: C.ink }}>
+                                <strong>Folio:</strong> <span style={{ fontFamily: T.mono }}>{folio}</span>
+                            </div>
+                            <div style={{ fontSize: `${T.small}px`, color: C.ink }}>
+                                <strong>Fecha:</strong> {fecha}
                             </div>
                         </div>
-                        <div
-                            style={{
-                                textAlign: 'right',
-                                fontSize: `${T.small}px`,
-                                color: C.sub,
-                                lineHeight: 1.35
-                            }}
-                        >
-                            <div style={{ fontWeight: 800, color: C.ink }}>Fecha de consulta</div>
-                            <div>{fecha}</div>
-                            <div style={{ marginTop: '6px', fontWeight: 800, color: C.ink }}>Folio orientativo</div>
-                            <div style={{ fontFamily: T.mono, fontSize: `${T.small}px` }}>{folio}</div>
-                        </div>
-                    </header>
-                    <div
-                        style={{
-                            height: '4px',
-                            borderRadius: '999px',
-                            backgroundColor: bandColor,
-                            marginBottom: `${S.gap2}px`
-                        }}
-                    />
-                    <div style={{ borderTop: `1px solid ${C.hair}`, marginBottom: `${S.gap2}px` }} />
-                    <section style={section(S.gap3)}>
-                        <h2 style={h2()}>Mapa de referencia y simbología</h2>
-                        <div style={{ display: 'flex', gap: '12px' }}>
-                            <div
-                                style={{
-                                    flex: '0 0 65%',
-                                    border: S.hair,
-                                    borderRadius: `${S.radius}px`,
-                                    padding: '8px',
-                                    boxSizing: 'border-box'
-                                }}
-                            >
-                                <div style={{ fontSize: `${T.small}px`, color: C.sub, marginBottom: '6px' }}>
-                                    <strong>Mapa de referencia (no a escala)</strong>
-                                </div>
-                                <div
-                                    style={{
-                                        border: `1px solid ${C.hair}`,
-                                        borderRadius: '4px',
-                                        overflow: 'hidden',
-                                        height: '208px',
-                                        background: '#f3f4f6'
-                                    }}
-                                >
-                                    {mapImage ? (
-                                        <img
-                                            src={mapImage}
-                                            crossOrigin="anonymous"
-                                            alt="Mapa de referencia"
-                                            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
-                                        />
-                                    ) : (
-                                        <div
-                                            style={{
-                                                width: '100%',
-                                                height: '100%',
-                                                position: 'relative',
-                                                background: '#eef2f7'
-                                            }}
-                                        >
-                                            <div
-                                                style={{
-                                                    position: 'absolute',
-                                                    left: '50%',
-                                                    top: '50%',
-                                                    transform: 'translate(-50%, -50%)',
-                                                    width: '28px',
-                                                    height: '28px',
-                                                    borderRadius: '50%',
-                                                    background: isSC ? C.sc : isUrban ? C.su : isOutside ? C.red : C.mute,
-                                                    border: '3px solid #ffffff',
-                                                    boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
-                                                    display: 'flex',
-                                                    alignItems: 'center',
-                                                    justifyContent: 'center',
-                                                    fontSize: `${T.small}px`,
-                                                    fontWeight: 900,
-                                                    color: '#ffffff'
-                                                }}
-                                            >
-                                                {isSC ? 'SC' : isUrban ? 'SU' : isOutside ? 'F' : ''}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div style={{ marginTop: '6px', fontSize: `${T.micro}px`, color: C.mute }}>
-                                    Para la vista interactiva del mapa, use el visor en línea.
-                                </div>
-                            </div>
-                            <div
-                                style={{
-                                    flex: '1 1 35%',
-                                    border: S.hair,
-                                    borderRadius: `${S.radius}px`,
-                                    padding: '8px',
-                                    boxSizing: 'border-box',
-                                    display: 'flex',
-                                    flexDirection: 'column'
-                                }}
-                            >
-                                <div style={{ fontSize: `${T.small}px`, fontWeight: 800, marginBottom: '6px', color: C.ink }}>
-                                    {isOutside ? 'Resultado fuera del ámbito territorial' : 'Simbología de puntos y zonificación'}
-                                </div>
-                                <div style={{ display: 'grid', gap: '6px', marginBottom: '8px' }}>
-                                    {/* SIMBOLOGIA LOGIC */}
-                                    {isOutside && (
-                                        <div style={{ display: 'grid', gap: '4px' }}>
-                                            <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                                <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.red, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                                <span style={{ lineHeight: 1.1 }}>Punto fuera de CDMX</span>
-                                            </div>
-                                            {outsideContextName && (
-                                                <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                                    <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 2, background: outsideContextName.includes('Morelos') ? C.morelos : C.edomex, marginRight: '6px', border: '1px solid #9ca3af' }} />
-                                                    <span style={{ lineHeight: 1.1 }}><strong>{outsideContextName}</strong></span>
-                                                </div>
-                                            )}
-                                        </div>
-                                    )}
-                                    {/* Normal coloring */}
-                                    {isSC && (
-                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.sc, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            <span style={{ lineHeight: 1.1 }}>Punto “SC”: Suelo de Conservación</span>
-                                        </div>
-                                    )}
-                                    {isUrban && (
-                                        <div style={{ display: 'flex', alignItems: 'center', fontSize: `${T.small}px`, color: C.sub }}>
-                                            <span style={{ flexShrink: 0, width: '10px', height: '10px', borderRadius: 999, background: C.su, marginRight: '6px', border: '1px solid #fff', boxShadow: '0 0 1px rgba(0,0,0,0.25)' }} />
-                                            <span style={{ lineHeight: 1.1 }}>Punto “SU”: Suelo Urbano</span>
-                                        </div>
-                                    )}
+                    </div>
 
+                    {/* --- SECTION 1: UBICACIÓN --- */}
+                    <div style={{ display: 'flex', gap: '20px', marginBottom: `${S.gap3}px` }}>
+                        <div style={{ flex: '1' }}>
+                            <div style={styleH2}>Ubicación del Predio</div>
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '8px' }}>
+                                <Box title="Dirección Aproximada / Lugar">{direccion}</Box>
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                                    <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
+                                    <Box title="Coordenadas (Lat, Lng)">
+                                        <span style={{ fontFamily: T.mono, background: '#f3f4f6', padding: '2px 6px', borderRadius: '4px' }}>
+                                            {coordText}
+                                        </span>
+                                    </Box>
                                 </div>
-
-                                {/* ZONING KEY DISPLAY */}
-                                {!isOutside && !(isUrban && !analysis.zoningKey) && (
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
-                                        {analysis.zoningKey ? (
-                                            <>
-                                                <span style={{ width: '10px', height: '10px', borderRadius: 2, background: zoningColor, border: '1px solid #9ca3af' }} />
-                                                <span style={{ fontSize: `${T.small}px` }}>
-                                                    <strong>{analysis.zoningKey}</strong>
-                                                </span>
-                                            </>
-                                        ) : (
-                                            <span style={{ fontSize: `${T.small}px`, color: C.mute }}>Sin zonificación disponible.</span>
-                                        )}
+                            </div>
+                        </div>
+                        {/* --- MAP (Miniature) --- */}
+                        <div style={{ flex: '0 0 280px' }}>
+                            <div style={{
+                                border: `1px solid ${C.hair}`,
+                                height: '180px',
+                                backgroundColor: '#f3f4f6',
+                                borderRadius: '4px',
+                                overflow: 'hidden',
+                                position: 'relative'
+                            }}>
+                                {mapImage ? (
+                                    <img src={mapImage} style={{ width: '100%', height: '100%', objectFit: 'cover' }} alt="Mapa" />
+                                ) : (
+                                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', color: C.sub, fontSize: '10px' }}>
+                                        Sin vista previa
                                     </div>
                                 )}
                             </div>
-                        </div>
-                        <div
-                            style={{
-                                marginTop: `${S.gap2}px`,
-                                padding: '10px 12px',
-                                borderRadius: `${S.radius}px`,
-                                border: S.hair,
-                                backgroundColor: '#fbfbfc'
-                            }}
-                        >
-                            <div
-                                style={{
-                                    fontSize: `${T.small}px`,
-                                    fontWeight: 900,
-                                    marginBottom: `${S.gap1}px`,
-                                    color: C.ink,
-                                    textTransform: 'uppercase',
-                                    letterSpacing: '0.06em'
-                                }}
-                            >
-                                Información esencial de la consulta
-                            </div>
-                            <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap' }}>
-                                <div style={{ flex: '1 1 58%', minWidth: '240px' }}>
-                                    <div style={{ fontSize: `${T.small}px`, fontWeight: 800, color: C.sub }}>Dirección</div>
-                                    <div style={{ fontSize: `${T.base}px`, color: C.ink }}>
-                                        {direccion}
-                                    </div>
-                                </div>
-                                <div style={{ flex: '0 0 190px' }}>
-                                    <div style={{ fontSize: `${T.small}px`, fontWeight: 800, color: C.sub }}>Coordenadas (Lat, Lng)</div>
-                                    <div
-                                        style={{
-                                            fontFamily: T.mono,
-                                            fontSize: `${T.base}px`,
-                                            color: C.ink,
-                                            lineHeight: 1,
-                                            padding: '8px 10px',
-                                            marginTop: '4px',
-                                            borderRadius: '4px',
-                                            border: '1px solid #d1d5db',
-                                            backgroundColor: '#ffffff',
-                                            display: 'inline-flex',
-                                            alignItems: 'center',
-                                            justifyContent: 'center'
-                                        }}
-                                    >
-                                        {coordText}
-                                    </div>
-                                </div>
+                            <div style={{ marginTop: '6px', fontSize: '9px', color: C.sub, textAlign: 'center' }}>
+                                Escaneo de ubicación referencial
                             </div>
                         </div>
-                    </section>
-                    {!isOutside && (
-                        <section style={section(S.gap3)}>
-                            <h2 style={h2()}>Identificación normativa básica</h2>
-                            <table style={tbl.table}>
-                                <tbody>
-                                    <tr style={{ background: tbl.zebra(0) }}>
-                                        <td style={tbl.tdLabel}>Alcaldía</td>
-                                        <td style={tbl.td}>{analysis.alcaldia || 'Ciudad de México'}</td>
-                                    </tr>
-                                    <tr style={{ background: tbl.zebra(1) }}>
-                                        <td style={tbl.tdLabel}>Tipo de suelo</td>
-                                        <td style={tbl.td}>
-                                            <span style={badge(soilBg, soilFg)}>{statusLabel}</span>
-                                            {isSC && (
-                                                <div style={{ marginTop: '4px', fontSize: `${T.micro}px`, color: C.mute }}>
-                                                    Clasificación territorial: SC (PGOEDF 2000)
-                                                </div>
-                                            )}
-                                        </td>
-                                    </tr>
-                                    {(!isUrban && analysis.zoningKey) && (
-                                        <tr style={{ background: tbl.zebra(2) }}>
-                                            <td style={tbl.tdLabel}>Zonificación PGOEDF</td>
-                                            <td style={tbl.td}>
-                                                <span style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', maxWidth: '100%', flexWrap: 'wrap' }}>
-                                                    <span
-                                                        style={{
-                                                            ...badge(zoningColor, '#ffffff'),
-                                                            fontWeight: 800,
-                                                            maxWidth: '350px',
-                                                            overflow: 'hidden',
-                                                            textOverflow: 'ellipsis'
-                                                        }}
-                                                        title={zoningDisplay}
-                                                    >
-                                                        {zoningDisplay}
-                                                    </span>
-                                                    {!['ANP', 'NODATA'].includes(analysis.zoningKey) && (
-                                                        <span style={badge('#ffffff', C.ink, zoningColor)}>
-                                                            {analysis.zoningKey}
-                                                        </span>
-                                                    )}
-                                                </span>
-                                            </td>
-                                        </tr>
-                                    )}
+                    </div>
 
-                                    {/* TARJETA SECUNDARIA ANP (Si tiene zonificación interna) */}
-                                    {analysis.hasInternalAnpZoning && analysis.anpInternalFeature && (
-                                        <>
-                                            <tr style={{ background: '#fdf4ff' }}>
-                                                <td colSpan="2" style={{ ...tbl.td, border: S.hair, fontWeight: 800, color: C.anp, textAlign: 'center' }}>
-                                                    DETALLE ÁREA NATURAL PROTEGIDA
-                                                </td>
-                                            </tr>
-                                            <tr style={{ background: tbl.zebra(3) }}>
-                                                <td style={tbl.tdLabel}>Nombre ANP</td>
-                                                <td style={tbl.td}>
-                                                    <strong>{analysis.anpInternalFeature.properties?.NOMBRE || analysis.anpNombre || '—'}</strong>
-                                                </td>
-                                            </tr>
-                                            <tr style={{ background: tbl.zebra(4) }}>
-                                                <td style={tbl.tdLabel}>Categoría</td>
-                                                <td style={tbl.td}>{analysis.anpInternalFeature.properties?.CATEGORIA_PROTECCION || analysis.anpCategoria || '—'}</td>
-                                            </tr>
-                                        </>
-                                    )}
-                                </tbody>
-                            </table>
-                        </section>
-                    )}
+                    {/* --- SECTION 2: NORMATIVIDAD --- */}
+                    <div style={{ marginBottom: `${S.gap3}px` }}>
+                        <div style={styleH2}>Normatividad Aplicable</div>
 
-                    {isUrban && (
-                        <section style={section(S.gap3)}>
-                            <h2 style={h2()}>Referencia para Suelo Urbano</h2>
-                            <div style={{ fontSize: `${T.base}px`, color: C.sub, textAlign: 'justify', margin: 0 }}>
-                                La ubicación consultada se encuentra en Suelo Urbano. La regulación específica corresponde a la SEDUVI.
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
+                            {/* COL 1: SUELO */}
+                            <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
+                                <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Clasificación de Suelo</div>
+                                <div style={{ fontSize: '14px', fontWeight: 800, color: isSC ? C.sc : isUrban ? C.su : C.red }}>
+                                    {statusLabel}
+                                </div>
+                                {isSC && (
+                                    <div style={{ fontSize: '10px', color: C.ink, marginTop: '4px' }}>
+                                        Suelo de Conservación (PGOEDF 2000)
+                                    </div>
+                                )}
                             </div>
-                        </section>
-                    )}
 
+                            {/* COL 2: ZONIFICACION */}
+                            {(!isUrban || analysis.zoningKey) && !isOutside && (
+                                <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
+                                    <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Zonificación Específica</div>
+                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                        <div style={{ width: '12px', height: '12px', background: zoningColor, border: '1px solid #999' }}></div>
+                                        <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
+                                            {analysis.zoningKey || '—'}
+                                        </div>
+                                    </div>
+                                    <div style={{ fontSize: '11px', color: C.ink, marginTop: '4px', fontWeight: 500 }}>
+                                        {analysis.zoningName || ''}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+
+
+                        {/* ANP INTERNA */}
+                        {analysis.hasInternalAnpZoning && analysis.anpInternalFeature && (
+                            <div style={{ marginTop: '10px', padding: '10px', border: `1px solid ${C.guinda}`, background: '#FFF5F7', borderRadius: '4px' }}>
+                                <div style={{ fontSize: '11px', fontWeight: 800, color: C.guinda, textTransform: 'uppercase' }}>Dentro de ANP: {analysis.anpNombre}</div>
+                                <div style={{ fontSize: '10px', color: C.ink, marginTop: '2px' }}>
+                                    <strong>Categoría:</strong> {analysis.anpCategoria}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* --- SECTION 3: ACTIVIDADES (Solo SC) --- */}
                     {isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog && (
-                        <>
-                            <section style={section(S.gap2)}>
-                                <h2 style={h2(C.red)}>Actividades prohibidas</h2>
-                                {detalleProhibidas.length === 0 ? (
-                                    <div style={{ fontSize: `${T.small}px`, color: C.sub }}>
-                                        No se identificaron actividades prohibidas específicas.
-                                    </div>
-                                ) : (
-                                    <table style={{ ...tbl.table, fontSize: `${T.small}px`, tableLayout: 'fixed' }}>
-                                        <colgroup>
-                                            <col style={{ width: '22%' }} />
-                                            <col style={{ width: '30%' }} />
-                                            <col style={{ width: '48%' }} />
-                                        </colgroup>
-                                        <thead>
-                                            <tr>
-                                                <th style={tbl.th('#fff1f2')}>Sector</th>
-                                                <th style={tbl.th('#fff1f2')}>Actividad general</th>
-                                                <th style={tbl.th('#fff1f2')}>Actividad específica</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {detalleProhibidas.map((a, i) => (
-                                                <tr key={i} style={{ background: tbl.zebra(i) }}>
-                                                    <td style={{ ...tbl.td, verticalAlign: 'middle' }}>{a.sector || '-'}</td>
-                                                    <td style={{ ...tbl.td, verticalAlign: 'middle' }}>{a.general || '-'}</td>
-                                                    <td style={{ ...tbl.td, overflowWrap: 'break-word' }}>{a.specific || '-'}</td>
-                                                </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
-                                )}
-                            </section>
+                        <div>
+                            <div style={styleH2}>Catálogo de Actividades (Suelo de Conservación)</div>
 
-                            <section style={section(S.gap2)}>
-                                <h2 style={h2(C.green)}>Actividades permitidas</h2>
+                            <div style={{ marginBottom: '15px' }}>
+                                <div style={{ fontSize: '11px', fontWeight: 700, color: C.green, marginBottom: '6px', textTransform: 'uppercase' }}>Permitidas</div>
                                 {detallePermitidas.length === 0 ? (
-                                    <div style={{ fontSize: `${T.small}px`, color: C.sub }}>
-                                        No se identificaron actividades permitidas específicas.
-                                    </div>
+                                    <div style={{ fontSize: '10px', fontStyle: 'italic', color: C.sub }}>Sin actividades permitidas específicas listadas.</div>
                                 ) : (
-                                    <table style={{ ...tbl.table, fontSize: `${T.small}px`, tableLayout: 'fixed' }}>
-                                        <colgroup>
-                                            <col style={{ width: '22%' }} />
-                                            <col style={{ width: '30%' }} />
-                                            <col style={{ width: '48%' }} />
-                                        </colgroup>
+                                    <table style={tblC}>
                                         <thead>
                                             <tr>
-                                                <th style={tbl.th('#dcfce7')}>Sector</th>
-                                                <th style={tbl.th('#dcfce7')}>Actividad general</th>
-                                                <th style={tbl.th('#dcfce7')}>Actividad específica</th>
+                                                <th style={{ ...thC, color: C.green, borderBottomColor: C.green }}>Actividad</th>
+                                                <th style={{ ...thC, color: C.green, borderBottomColor: C.green }}>Detalle</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {detallePermitidas.map((a, i) => (
-                                                <tr key={i} style={{ background: tbl.zebra(i) }}>
-                                                    <td style={{ ...tbl.td, verticalAlign: 'middle' }}>{a.sector || '-'}</td>
-                                                    <td style={{ ...tbl.td, verticalAlign: 'middle' }}>{a.general || '-'}</td>
-                                                    <td style={{ ...tbl.td, overflowWrap: 'break-word' }}>{a.specific || '-'}</td>
+                                                <tr key={i}>
+                                                    <td style={tdC(i)} width="40%"><strong>{a.general}</strong></td>
+                                                    <td style={tdC(i)}>{a.specific}</td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
                                 )}
-                            </section>
-                            <section style={section(S.gap2)}>
-                                <h2 style={h2()}>Notas Normativas</h2>
-                                <div style={{
-                                    border: `1px solid ${C.hair}`,
-                                    padding: '10px 12px',
-                                    borderRadius: `${S.radius}px`,
-                                    backgroundColor: '#fbfbfc'
-                                }}>
-                                    <ul style={{ margin: 0, paddingLeft: '16px', listStyleType: 'disc' }}>
-                                        {(REGULATORY_NOTES || []).map((note, idx) => (
-                                            <li key={idx} style={{
-                                                fontSize: `${T.base}px`,
-                                                marginBottom: '6px',
-                                                textAlign: 'justify',
-                                                color: C.ink
-                                            }}>
-                                                {note}
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-                            </section>
-                        </>
-                    )}
+                            </div>
 
-                    <section style={{ marginTop: `${S.gap2}px` }}>
-                        <h2 style={h2()}>Enlaces de referencia</h2>
-                        <div style={{ fontSize: `${T.small}px`, color: C.sub, marginBottom: `${S.gap2}px` }}>
-                            <strong>Visor:</strong> {visorUrlShort}
-                            <div style={{ marginTop: '8px' }}>
-                                <QrCodeImg value={visorUrl} size={74} />
+                            <div>
+                                <div style={{ fontSize: '11px', fontWeight: 700, color: C.red, marginBottom: '6px', textTransform: 'uppercase' }}>Prohibidas</div>
+                                {detalleProhibidas.length === 0 ? (
+                                    <div style={{ fontSize: '10px', fontStyle: 'italic', color: C.sub }}>Sin actividades prohibidas específicas listadas.</div>
+                                ) : (
+                                    <table style={tblC}>
+                                        <thead>
+                                            <tr>
+                                                <th style={{ ...thC, color: C.red, borderBottomColor: C.red }}>Actividad</th>
+                                                <th style={{ ...thC, color: C.red, borderBottomColor: C.red }}>Detalle</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {detalleProhibidas.map((a, i) => (
+                                                <tr key={i}>
+                                                    <td style={tdC(i)} width="40%"><strong>{a.general}</strong></td>
+                                                    <td style={tdC(i)}>{a.specific}</td>
+                                                </tr>
+                                            ))}
+                                        </tbody>
+                                    </table>
+                                )}
                             </div>
                         </div>
-                        <div
-                            style={{
-                                borderTop: `1px solid ${C.hair}`,
-                                paddingTop: `${S.gap2}px`,
-                                fontSize: `${T.micro}px`,
-                                color: C.mute,
-                                textAlign: 'justify',
-                                lineHeight: 1.45
-                            }}
-                        >
-                            <strong>Aviso legal:</strong> La presente ficha tiene carácter orientativo y no sustituye dictámenes técnicos, resoluciones administrativas ni instrumentos jurídicos emitidos por las autoridades competentes.
+                    )}
+
+                    {/* --- FOOTER --- */}
+                    <div style={{ position: 'absolute', bottom: '30px', left: '30px', right: '30px' }}>
+                        <div style={{ borderTop: `1px solid ${C.dorado}`, paddingTop: '10px', display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+                            <div style={{ width: '70%' }}>
+                                <div style={{ fontSize: '9px', color: C.sub, textAlign: 'justify', lineHeight: 1.3 }}>
+                                    <strong>Aviso:</strong> Este documento es de carácter informativo y orientativo. No constituye un dictamen legal ni sustituye a los Certificados de Zonificación o Trámites oficiales ante la SEDEMA o SEDUVI. La información se basa en las capas geográficas vigentes en el Visor.
+                                </div>
+                            </div>
+                            <div style={{ width: '25%', textAlign: 'right', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '10px' }}>
+                                <div style={{ fontSize: '9px', fontWeight: 700, color: C.ink }}>
+                                    validar en visor &rarr;
+                                </div>
+                                <QrCodeImg value={visorUrl} size={48} />
+                            </div>
                         </div>
-                    </section >
-                </div >
+                    </div>
+
+                </div>
             );
         })();
     });
