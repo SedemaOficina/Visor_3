@@ -626,22 +626,36 @@
             const { jsPDF } = window.jspdf;
 
             try {
-                // 1) Intentar Mapbox Static primero (Estrategia Prioritaria)
-                const staticUrl = getStaticMapUrl({
-                    lat: analysis.coordinate.lat,
-                    lng: analysis.coordinate.lng,
-                    zoom: 14
-                });
+                // 0) Detectar si hay capas activas que requieran render local
+                const hasActiveLayers = visibleMapLayers?.sc ||
+                    visibleMapLayers?.zoning ||
+                    visibleMapLayers?.anp ||
+                    visibleMapLayers?.alcaldias;
+
+                // 1) Intentar Mapbox Static SOLO si no hay capas complejas (Estrategia Prioritaria)
+                let staticUrl = null;
+                let staticOk = false;
+
+                if (!hasActiveLayers) {
+                    staticUrl = getStaticMapUrl({
+                        lat: analysis.coordinate.lat,
+                        lng: analysis.coordinate.lng,
+                        zoom: 14
+                    });
+                    staticOk = await preloadImage(staticUrl);
+                }
 
                 let img = null;
-                const staticOk = await preloadImage(staticUrl);
 
                 if (staticOk) {
                     img = staticUrl;
                 } else {
-                    // 2) Fallback: leaflet-image (Opción Secundaria)
-                    // Solo si falló el estático intentamos el render cliente
-                    console.warn('Mapbox Static falló, intentando leaflet-image fallback...');
+                    // 2) Fallback / Active Layers: leaflet-image (Render Cliente)
+                    // Usamos esto si hay capas activas (para que se vean) o si falló el estático
+                    if (!staticOk && !hasActiveLayers) {
+                        console.warn('Mapbox Static falló, intentando leaflet-image fallback...');
+                    }
+
                     img = await buildExportMapImage({
                         lat: analysis.coordinate.lat,
                         lng: analysis.coordinate.lng,
