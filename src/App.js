@@ -309,6 +309,9 @@ const VisorApp = () => {
 
   const { addToast } = useToast();
 
+  /* ZOOM TRACKING */
+  const [currentZoom, setCurrentZoom] = useState(12);
+
   // Capas mapa
   const [visibleMapLayers, setVisibleMapLayers] = useState({
     sc: true,
@@ -461,8 +464,7 @@ const VisorApp = () => {
     );
   }
 
-  /* ZOOM TRACKING */
-  const [currentZoom, setCurrentZoom] = useState(12);
+
 
   return (
     <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
