@@ -461,6 +461,9 @@ const VisorApp = () => {
     );
   }
 
+  /* ZOOM TRACKING */
+  const [currentZoom, setCurrentZoom] = useState(12);
+
   return (
     <div className={`flex flex-col w-full h-full overflow-hidden bg-[#f3f4f6] ${loading || analyzing ? 'cursor-wait' : ''}`}>
 
@@ -505,6 +508,7 @@ const VisorApp = () => {
             resetMapViewRef={resetMapViewRef}
             selectedAnpId={analysis?.anpId}
             dataCache={dataCache}
+            onZoomChange={setCurrentZoom}
           />
 
           {loading && (
@@ -598,6 +602,7 @@ const VisorApp = () => {
           visibleMapLayers={visibleMapLayers}
           activeBaseLayer={activeBaseLayer}
           visibleZoningCats={visibleZoningCats}
+          currentZoom={currentZoom}
         />
       </div>
     </div>

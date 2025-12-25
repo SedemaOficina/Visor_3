@@ -21,7 +21,8 @@ const MapViewer = ({
     invalidateMapRef,
     resetMapViewRef,
     selectedAnpId,
-    dataCache
+    dataCache,
+    onZoomChange // New Prop
 }) => {
     // Access Constants lazily
     const Constants = getConstants();
@@ -111,6 +112,11 @@ const MapViewer = ({
 
         window.L.control.attribution({ position: 'topleft', prefix: false }).addTo(map);
         mapInstance.current = map;
+
+        // Track Zoom Logic
+        map.on('zoomend', () => {
+            if (onZoomChange) onZoomChange(map.getZoom());
+        });
 
         // ✅ calcular bounds de CDMX una sola vez (si existe geojson)
         let cdmxBounds = null;

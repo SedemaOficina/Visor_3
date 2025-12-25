@@ -459,7 +459,7 @@
         );
     });
 
-    const PdfExportController = ({ analysis, onExportReady, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats }) => {
+    const PdfExportController = ({ analysis, onExportReady, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom = 14 }) => {
         // Safe Lazy Access
         const { ZONING_ORDER, LAYER_STYLES, ZONING_CAT_INFO } = getConstants();
         const { getBaseLayerUrl, getZoningColor } = getUtils();
@@ -468,7 +468,7 @@
         const pdfRef = useRef(null);
         const exportArmedRef = useRef(false);
 
-        const buildExportMapImage = ({ lat, lng, zoom = 14, analysisStatus }) => {
+        const buildExportMapImage = ({ lat, lng, zoom, analysisStatus }) => {
             return new Promise((resolve) => {
                 try {
                     const L = window.L;
@@ -486,7 +486,6 @@
                         zoomControl: false,
                         attributionControl: false,
                         preferCanvas: true,
-                        // Fix: Evitar animaciones que pueden causar race conditions
                         fadeAnimation: false,
                         zoomAnimation: false,
                         markerZoomAnimation: false
@@ -590,23 +589,22 @@
                     const safetyTimeout = setTimeout(() => {
                         console.warn('Capture timeout');
                         capture();
-                    }, 4000); // Dar más tiempo (4s)
+                    }, 5000); // 5s timeout
 
-                    // Esperar a que tiles carguen un poco
+                    // Wait slightly longer for tiles and overlays
                     base.once('load', () => {
                         setTimeout(() => {
                             clearTimeout(safetyTimeout);
                             capture();
-                        }, 500);
+                        }, 800);
                     });
 
-                    // Failsafe por si load nunca dispara
+                    // Failsafe
                     setTimeout(() => {
                         if (!settled) capture();
-                    }, 5000);
+                    }, 5500);
 
                 } catch (e) {
-                    // Critical catch para evitar crash de hilo
                     console.error('Error crítico en buildExportMapImage', e);
                     resolve(null);
                 }
@@ -640,7 +638,7 @@
                     staticUrl = getStaticMapUrl({
                         lat: analysis.coordinate.lat,
                         lng: analysis.coordinate.lng,
-                        zoom: 14
+                        zoom: currentZoom
                     });
                     staticOk = await preloadImage(staticUrl);
                 }
@@ -651,7 +649,6 @@
                     img = staticUrl;
                 } else {
                     // 2) Fallback / Active Layers: leaflet-image (Render Cliente)
-                    // Usamos esto si hay capas activas (para que se vean) o si falló el estático
                     if (!staticOk && !hasActiveLayers) {
                         console.warn('Mapbox Static falló, intentando leaflet-image fallback...');
                     }
@@ -659,7 +656,7 @@
                     img = await buildExportMapImage({
                         lat: analysis.coordinate.lat,
                         lng: analysis.coordinate.lng,
-                        zoom: 14,
+                        zoom: currentZoom,
                         analysisStatus: analysis.status
                     });
                 }
