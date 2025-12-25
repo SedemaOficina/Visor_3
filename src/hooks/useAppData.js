@@ -69,7 +69,11 @@
         MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0b2gzZnB0NnU2a2xwY2oifQ.2BDJUISBBvrm1wM8RwXusg',
         INITIAL_CENTER: [19.34, -99.145],
         INITIAL_ZOOM: 10,
-        FOCUS_ZOOM: 16
+        FOCUS_ZOOM: 16,
+        CONTACT_INFO: {
+            phone: "55 5278 3500 ext. 1234",
+            hours: "Lunes a Viernes 09:00 - 15:00 hrs"
+        }
     };
 
     // IMMEDIATE GLOBAL ASSIGNMENT

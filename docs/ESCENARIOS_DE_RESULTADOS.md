@@ -12,16 +12,6 @@ Es el corazón de la aplicación. Recibe una coordenada (`lat, lng`) y la base d
     *   *Nota:* Las ANP tienen prioridad visual sobre cualquier otra zonificación.
 4.  **Zonificación PGOEDF:** Si está en SC, identifica la categoría específica (Forestal, Agroecológico, etc.) y recupera las reglas normativas asociadas (actividades permitidas/prohibidas).
 
-### 1.2 Sistema de Constantes (`constants.js`)
-*Centralización de la Configuración*
-Se ha implementado un objeto global `window.App.Constants` que gestiona:
-*   **`COLORS`:** Paleta de colores institucional unificada.
-*   **`ZONING_CAT_INFO`:** Definiciones de etiquetas y colores por categoría.
-*   **`LAYER_STYLES`:** Estilos visuales para las capas del mapa (Leaflet).
-*   **`PROVISIONS_NOTES`:** Notas normativas legales que aparecen al pie de los resultados.
-
----
-
 ## 2. Escenarios de Resultados
 
 ### Escenario A: Fuera de la CDMX
@@ -56,7 +46,23 @@ Se ha implementado un objeto global `window.App.Constants` que gestiona:
     *   **Tablas:** Ocultas. Se debe consultar el instrumento específico del poblado.
     *   **Colores:** Distintivos (Naranja PDU, Café Rural, Gris Urbano).
 
+
 ---
+
+## 2.1 Archivos y Lógica de Datos por Escenario
+
+Esta tabla detalla los archivos específicos (`GeoJSON`, `CSV` o `Módulos JS`) que intervienen en la decisión de cada escenario descrito arriba.
+
+| Escenario | Condición Lógica | Archivos Involucrados (Principal) | Archivos Secundarios / Contexto |
+| :--- | :--- | :--- | :--- |
+| **A. Fuera CDMX** | `!findFeature(pt, cdmx)` | `cdmx.geojson` (Límites CDMX) | `edomex.geojson`, `morelos.geojson` |
+| **B. Suelo Urbano** | `findFeature(pt, cdmx)` AND `!findFeature(pt, sc)` | `suelo-de-conservacion-2020.geojson` | `alcaldias.geojson` |
+| **C. ANP** | `findFeature(pt, anp)` | `anp_consolidada.geojson` | `anp_internal.geojson` (si tiene zonificación interna) |
+| **D. SC Zonificado** | `findFeature(pt, sc)` AND `findFeature(pt, zoning)` | `zoonificacion_pgoedf_2000_sin_anp.geojson` | `tabla_actividades_pgoedf.csv` (Reglas) |
+| **E. PDU (Parciales)** | `zoning.CLAVE` in (`PDU_PP`, `PDU_PR`, `PDU_ZU`) | `Zon_*.geojson` (Archivos locales PDU) | `analysisEngine.js` (Lógica de clasificación) |
+
+---
+
 
 ## 3. Paleta de Colores Institucional
 
@@ -77,24 +83,4 @@ Se ha rediseñado la paleta para reducir el ruido visual y garantizar accesibili
     *   **Éxito:** `#15803d` (Verde bosque).
     *   **Info:** `#1d4ed8` (Azul rey).
 
----
 
-## 4. Solución de Problemas (Troubleshooting)
-
-### Error: "Pantalla Blanca" o Crash al hacer clic
-**Causa:** El navegador tiene en caché una versión antigua de `app.js` o `constants.js`.
-**Solución:** Realizar una **Recarga Forzada** (Hard Reload):
-*   Windows/Linux: `Ctrl` + `F5` o `Ctrl` + `Shift` + `R`.
-*   Mac: `Cmd` + `Shift` + `R`.
-*   *Verificación:* Abrir consola (F12) y buscar el mensaje `APP VERSION: DEBUG 2.2`.
-
-### Error: "Cannot read properties of undefined (reading 'PROVISIONS_NOTES')"
-**Causa:** Inconsistencia en la carga de constantes (frecuente tras actualizaciones).
-**Estado:** **Corregido** en la versión 2.2 con validaciones de seguridad (null-checks) en `ResultsContent.js` y `analysisEngine.js`.
-
-### Error: Datos de PDF incompletos o Mapa en Blanco
-**Causa:** Fallo en la generación de imagen del mapa (leaflet-image) por timeouts o carga de tiles.
-**Estado:** **Corregido** (v2.3). Se implementó estrategia híbrida:
-1.  **Mapbox Static API (Prioridad):** Genera una imagen de alta resolución desde el servidor.
-2.  **Fallback Robusto:** Si falla Static, usa renderizado local con protección contra crashes.
-3.  **Diseño:** Se actualizó el formato a estilo "Oficio" institucional.
