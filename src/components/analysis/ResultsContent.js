@@ -20,6 +20,18 @@ const getZoningDisplay = (analysis) => {
     return analysis.zoningName || 'Sin información';
 };
 
+/* Helper Texto Contraste (YIQ) */
+const getContrastYIQ = (hexcolor) => {
+    if (!hexcolor) return 'black';
+    hexcolor = hexcolor.replace("#", "");
+    if (hexcolor.length === 3) hexcolor = hexcolor.split('').map(c => c + c).join('');
+    var r = parseInt(hexcolor.substr(0, 2), 16);
+    var g = parseInt(hexcolor.substr(2, 2), 16);
+    var b = parseInt(hexcolor.substr(4, 2), 16);
+    var yiq = ((r * 299) + (g * 587) + (b * 114)) / 1000;
+    return (yiq >= 128) ? '#000000' : '#ffffff';
+};
+
 /* ------------------------------------------------ */
 /* SUB-COMPONENTES */
 /* ------------------------------------------------ */
@@ -298,6 +310,19 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                 >
                     {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                 </span>
+
+                {/* Badge Zonificación PGOEDF */}
+                {isSC && analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP' && (
+                    <span
+                        className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm leading-none"
+                        style={{
+                            backgroundColor: zoningColor,
+                            color: getContrastYIQ(zoningColor)
+                        }}
+                    >
+                        {zoningDisplay}
+                    </span>
+                )}
 
                 {/* Badge ANP */}
                 {analysis.isANP && (
