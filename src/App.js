@@ -509,6 +509,7 @@ const VisorApp = () => {
             location={location}
             onLocationSelect={handleLocationSelect}
             analysisStatus={analysis?.status}
+            isANP={analysis?.isANP}
             visibleMapLayers={visibleMapLayers}
             setVisibleMapLayers={setVisibleMapLayers}
             visibleZoningCats={visibleZoningCats}

@@ -468,7 +468,7 @@
         const pdfRef = useRef(null);
         const exportArmedRef = useRef(false);
 
-        const buildExportMapImage = ({ lat, lng, zoom, analysisStatus }) => {
+        const buildExportMapImage = ({ lat, lng, zoom, analysisStatus, isANP }) => {
             return new Promise((resolve) => {
                 try {
                     const L = window.L;
@@ -564,18 +564,52 @@
                     }
 
                     // 4. Pin (Encima de todo)
-                    const isSC = (analysisStatus === 'CONSERVATION_SOIL');
-                    const isSU = (analysisStatus === 'URBAN_SOIL');
-                    const pinFill = isSC ? (LAYER_STYLES?.sc?.color || 'green') : isSU ? '#3b82f6' : '#9d2148';
+                    // Configurable fill colors
+                    const styles = LAYER_STYLES || {};
 
-                    L.circleMarker([lat, lng], {
-                        radius: 10,  // Un poco más grande para visibilidad
-                        color: '#ffffff',
-                        weight: 4,
-                        fillColor: pinFill,
-                        fillOpacity: 1,
-                        pane: markerPane
-                    }).addTo(m);
+                    // PRIORITIZATION LOGIC:
+                    // 1. OUTSIDE CDMX -> 'X' (Red)
+                    // 2. SC -> 'SC' (Green) - Prevails over ANP
+                    // 3. ANP -> 'ANP' (Purple)
+                    // 4. SU -> 'SU' (Blue)
+
+                    let label = '';
+                    let bgColor = '#9ca3af';
+
+                    if (analysisStatus === 'OUTSIDE_CDMX') {
+                        label = 'X';
+                        bgColor = '#b91c1c';
+                    } else if (analysisStatus === 'CONSERVATION_SOIL') {
+                        label = 'SC';
+                        bgColor = styles.sc?.color || '#3B7D23';
+                    } else if (isANP) {
+                        label = 'ANP';
+                        bgColor = '#9333ea';
+                    } else if (analysisStatus === 'URBAN_SOIL') {
+                        label = 'SU';
+                        bgColor = '#3b82f6';
+                    }
+
+                    const iconHtml = `
+                      <div class="marker-pop" style="
+                        width:32px;height:32px;background:${bgColor};color:#fff;
+                        border:3px solid #fff;border-radius:50%;
+                        display:flex;align-items:center;justify-content:center;
+                        font-weight:bold;font-size:10px;
+                        box-shadow:0 2px 8px rgba(0,0,0,0.25);
+                      ">
+                        ${label}
+                      </div>
+                      `;
+
+                    const icon = L.divIcon({
+                        html: iconHtml,
+                        className: '',
+                        iconSize: [32, 32],
+                        iconAnchor: [16, 16]
+                    });
+
+                    L.marker([lat, lng], { icon, pane: markerPane }).addTo(m);
 
                     /* Capture Logic Segura */
                     let settled = false;
@@ -673,7 +707,8 @@
                         lat: analysis.coordinate.lat,
                         lng: analysis.coordinate.lng,
                         zoom: currentZoom,
-                        analysisStatus: analysis.status
+                        analysisStatus: analysis.status,
+                        isANP: analysis.isANP
                     });
                 }
 

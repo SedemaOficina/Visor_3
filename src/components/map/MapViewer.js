@@ -11,6 +11,7 @@ const MapViewer = ({
     location,
     onLocationSelect,
     analysisStatus,
+    isANP,
     visibleMapLayers,
     setVisibleMapLayers,
     visibleZoningCats,
@@ -477,15 +478,29 @@ const MapViewer = ({
         if (markerRef.current) markerRef.current.remove();
 
         const styles = LAYER_STYLES || {};
-        const label =
-            analysisStatus === 'CONSERVATION_SOIL' ? 'SC' :
-                analysisStatus === 'URBAN_SOIL' ? 'SU' :
-                    analysisStatus === 'OUTSIDE_CDMX' ? 'X' : '';
 
-        const bgColor =
-            analysisStatus === 'CONSERVATION_SOIL' ? (styles.sc?.color || '#3B7D23') :
-                analysisStatus === 'URBAN_SOIL' ? '#3b82f6' :
-                    analysisStatus === 'OUTSIDE_CDMX' ? '#b91c1c' : '#9ca3af';
+        // PRIORITIZATION LOGIC:
+        // 1. OUTSIDE CDMX -> 'X' (Red)
+        // 2. SC -> 'SC' (Green) - Prevails over ANP
+        // 3. ANP -> 'ANP' (Purple)
+        // 4. SU -> 'SU' (Blue)
+
+        let label = '';
+        let bgColor = '#9ca3af';
+
+        if (analysisStatus === 'OUTSIDE_CDMX') {
+            label = 'X';
+            bgColor = '#b91c1c';
+        } else if (analysisStatus === 'CONSERVATION_SOIL') {
+            label = 'SC';
+            bgColor = styles.sc?.color || '#3B7D23';
+        } else if (isANP) {
+            label = 'ANP';
+            bgColor = '#9333ea'; // Purple for ANP
+        } else if (analysisStatus === 'URBAN_SOIL') {
+            label = 'SU';
+            bgColor = '#3b82f6';
+        }
 
         // Sanitizar label solo por si acaso
         const safeLabel = escapeHtml(label);
@@ -495,7 +510,7 @@ const MapViewer = ({
             width:32px;height:32px;background:${bgColor};color:#fff;
             border:3px solid #fff;border-radius:50%;
             display:flex;align-items:center;justify-content:center;
-            font-weight:bold;font-size:12px;
+            font-weight:bold;font-size:10px;
             box-shadow:0 2px 8px rgba(0,0,0,0.25);
           ">
             ${safeLabel}
@@ -514,7 +529,7 @@ const MapViewer = ({
         const currentZoom = mapInstance.current.getZoom();
         const targetZoom = Math.max(currentZoom, FOCUS_ZOOM);
         mapInstance.current.flyTo([location.lat, location.lng], targetZoom, { duration: 0.8 });
-    }, [location, analysisStatus]);
+    }, [location, analysisStatus, isANP]);
 
     return (
         <div className="relative h-full w-full">
