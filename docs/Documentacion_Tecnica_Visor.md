@@ -48,10 +48,17 @@ El sistema clasifica cualquier punto geográfico en **uno** de los siguientes es
 El panel de resultados se adapta dinámicamente según la clasificación del punto.
 
 ### 3.1 Badges (Etiquetas de Clasificación)
-Las fichas ahora soportan **múltiples badges** en la misma línea para reflejar intersecciones normativas importantes.
+Las fichas soportan la visualización simultánea de múltiples etiquetas para reflejar la complejidad normativa del territorio.
 
-*   *Ejemplo Común:* Un punto en Suelo Urbano que cae dentro de un Parque Nacional mostrará:
-    `[SUELO URBANO]` (Azul) + `[ANP]` (Morado)
+*   **Tipos de Badges:**
+    1.  **Suelo Base:** `[SUELO DE CONSERVACIÓN]` (Verde) o `[SUELO URBANO]` (Azul).
+    2.  **Zonificación PGOEDF:** Etiqueta dinámica con el nombre completo de la categoría (ej. `[FORESTAL DE PROTECCIÓN]`).
+        *   *Color:* Hereda el color exacto de la capa geográfica.
+        *   *Contraste:* El color del texto (Blanco/Negro) se ajusta automáticamente según el brillo del fondo.
+    3.  **Área Natural Protegida:** `[ANP]` (Morado) si aplica.
+
+*   *Ejemplo Completo:*
+    `[SUELO DE CONSERVACIÓN]` `[AGROECOLÓGICO ESPECIAL]` `[ANP]`
 
 ### 3.2 Escenarios Detallados
 

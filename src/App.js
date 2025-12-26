@@ -555,7 +555,7 @@ const VisorApp = () => {
           />
 
 
-          <div className="absolute top-4 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
+          <div className="absolute top-24 md:top-4 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
 
             <button
               type="button"

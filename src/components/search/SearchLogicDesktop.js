@@ -156,8 +156,14 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                                 >
                                     {s._isHistory ? <Icons.Clock className="h-3 w-3 text-gray-400" /> : <Icons.MapPin className="h-3 w-3 text-gray-400" />}
                                     <div>
-                                        <div className="font-medium text-gray-800">{s.label}</div>
-                                        {s.fullLabel && <div className="text-[10px] text-gray-500">{s.fullLabel}</div>}
+                                        <div className="font-bold text-gray-800">{s.label}</div>
+                                        {s.fullLabel && (
+                                            <div className="text-[10px] text-gray-500">
+                                                {s.fullLabel.startsWith(s.label)
+                                                    ? s.fullLabel.substring(s.label.length).replace(/^,\s*/, '')
+                                                    : s.fullLabel}
+                                            </div>
+                                        )}
                                     </div>
                                 </button>
                             ))}

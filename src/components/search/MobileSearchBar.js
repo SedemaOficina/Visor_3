@@ -149,9 +149,18 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
                                 key={s.id}
                                 type="button"
                                 onClick={() => handleSelectSuggestion(s)}
-                                className="w-full text-left px-3 py-1.5 text-[11px] hover:bg-gray-50 border-t border-gray-50"
+                                className="w-full text-left px-3 py-2 hover:bg-gray-50 border-t border-gray-50 flex flex-col"
                             >
-                                {s.label}
+                                <span className="text-[12px] font-bold text-gray-800 leading-tight">
+                                    {s.label}
+                                </span>
+                                {s.fullLabel && (
+                                    <span className="text-[10px] text-gray-500 leading-tight">
+                                        {s.fullLabel.startsWith(s.label)
+                                            ? s.fullLabel.substring(s.label.length).replace(/^,\s*/, '')
+                                            : s.fullLabel}
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </div>
