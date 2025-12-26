@@ -451,9 +451,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                     </>
                 )}
 
-            <div className="bg-gray-50 border border-gray-100 p-3 rounded-xl mb-4">
-                <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
-            </div>
+            <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
             <LegalDisclaimer />
         </div>
     );
