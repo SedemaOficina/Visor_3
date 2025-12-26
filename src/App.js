@@ -195,15 +195,21 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
                 RESULTADO DE CONSULTA
               </h3>
             ) : (
-              <div className="flex flex-col items-center justify-center pt-2 pb-1 w-full">
-                <img
-                  src="./assets/logo-sedema.png"
-                  alt="SEDEMA"
-                  className="h-10 object-contain mb-2 opacity-90"
-                />
-                <div className="w-12 h-1 bg-[#bc955c] rounded-full mb-3"></div>
-                <h3 className="font-bold text-[#9d2148] text-sm mb-1 uppercase tracking-wide">Visor de Consulta</h3>
-                <p className="text-sm text-gray-600 text-center px-4 leading-relaxed font-medium">
+              <div className="flex flex-col items-center justify-center pt-3 pb-1 w-full relative overflow-hidden">
+                {/* Decorative Top Accent */}
+                <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#9d2148] via-[#bc955c] to-[#9d2148]"></div>
+
+                <div className="flex items-center gap-2 mb-1 mt-1">
+                  <div className="w-2 h-2 rounded-full bg-[#9d2148]"></div>
+                  <span className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase">SEDEMA</span>
+                  <div className="w-2 h-2 rounded-full bg-[#9d2148]"></div>
+                </div>
+
+                <h3 className="font-extrabold text-[#9d2148] text-xl mb-1 uppercase tracking-tight leading-none">
+                  Visor de Consulta
+                </h3>
+
+                <p className="text-sm text-gray-500 text-center px-6 leading-tight font-medium max-w-xs mx-auto">
                   {statusLabel}
                 </p>
               </div>
