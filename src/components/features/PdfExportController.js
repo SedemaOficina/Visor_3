@@ -295,16 +295,24 @@
                                 <div style={{ marginBottom: '15px' }}>
                                     <Box title="Dirección Aproximada / Lugar">{direccion}</Box>
                                 </div>
-                                <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)', gap: '20px' }}>
-                                    {!isOutside && (
-                                        <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
-                                    )}
-                                    <Box title="Coordenadas Geográficas">
-                                        <span style={{ fontFamily: T.mono, fontSize: '11px', background: '#f3f4f6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>
-                                            {coordText}
-                                        </span>
-                                    </Box>
-                                </div>
+                                <table style={{ width: '100%', borderCollapse: 'collapse' }}>
+                                    <tbody>
+                                        <tr>
+                                            {!isOutside && (
+                                                <td style={{ verticalAlign: 'top', width: '50%', paddingRight: '15px' }}>
+                                                    <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
+                                                </td>
+                                            )}
+                                            <td style={{ verticalAlign: 'top' }}>
+                                                <Box title="Coordenadas Geográficas">
+                                                    <span style={{ fontFamily: T.mono, fontSize: '11px', background: '#f3f4f6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>
+                                                        {coordText}
+                                                    </span>
+                                                </Box>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
                             </div>
                             {/* --- MAP --- */}
                             <div style={{ flex: '0 0 320px' }}>
@@ -714,13 +722,18 @@
 
                     if (hasActivities) {
                         const M = 15;
-                        const pageWidth = pdfW;
+                        const gap = 8;
+                        const colW = (pdfW - (2 * M) - gap) / 2;
 
                         // Pre-load Logo for headers
                         const logoDataUrl = await loadLogoData();
 
+                        const headersDrawn = {};
+
                         // Helper for Page Header 
-                        const addHeader = (pdfDoc) => {
+                        const addHeader = (pdfDoc, pageNumber) => {
+                            if (headersDrawn[pageNumber]) return M + 25; // Already drawn
+
                             let y = M;
                             if (logoDataUrl) {
                                 pdfDoc.addImage(logoDataUrl, 'PNG', M, y, 20, 10);
@@ -728,82 +741,105 @@
                             pdfDoc.setFontSize(14);
                             pdfDoc.setFont("helvetica", "bold");
                             pdfDoc.setTextColor(157, 36, 73); // Guinda
-                            pdfDoc.text("FICHA INFORMATIVA", pageWidth - M, y + 8, { align: 'right' });
+                            pdfDoc.text("FICHA INFORMATIVA", pdfW - M, y + 8, { align: 'right' });
 
                             const dateTitle = analysis.timestamp || new Date().toLocaleString();
                             pdfDoc.setFontSize(8);
                             pdfDoc.setFont("helvetica", "normal");
                             pdfDoc.setTextColor(100);
-                            pdfDoc.text(dateTitle, pageWidth - M, y + 13, { align: 'right' });
+                            pdfDoc.text(dateTitle, pdfW - M, y + 13, { align: 'right' });
 
                             pdfDoc.setDrawColor(212, 193, 156); // Dorado
                             pdfDoc.setLineWidth(0.5);
-                            pdfDoc.line(M, y + 15, pageWidth - M, y + 15);
+                            pdfDoc.line(M, y + 15, pdfW - M, y + 15);
+
+                            headersDrawn[pageNumber] = true;
                             return y + 25;
                         };
 
-                        let startY = 0;
+                        doc.addPage();
+                        const startPage = doc.internal.getCurrentPageInfo().pageNumber;
+                        let startY = addHeader(doc, startPage);
 
-                        // 1. Allowed Table
+                        // Data Preparation
                         const allowed = (analysis.allowedActivities || []).map(a => [a.general || '', a.specific || '']);
-                        if (allowed.length > 0) {
-                            doc.addPage();
-                            startY = addHeader(doc);
+                        const prohibited = (analysis.prohibitedActivities || []).map(a => [a.general || '', a.specific || '']);
 
-                            doc.setFontSize(11);
+                        // --- TABLE LEFT (Activities Allowed) ---
+                        let finalYLeft = startY;
+                        let finalPageLeft = startPage;
+
+                        if (allowed.length > 0) {
+                            doc.setFontSize(10);
                             doc.setTextColor(21, 128, 61); // Green
                             doc.setFont("helvetica", "bold");
-                            doc.text("ACTIVIDADES PERMITIDAS", M, startY);
+                            doc.text("PERMITIDAS", M, startY);
 
                             doc.autoTable({
                                 startY: startY + 3,
-                                head: [['Actividad', 'Especificaciones']],
+                                head: [['Actividad', 'Detalle']],
                                 body: allowed,
-                                theme: 'grid',
-                                headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 9, fontStyle: 'bold' },
-                                styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
-                                columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 'auto' } },
-                                margin: { left: M, right: M, top: 35, bottom: 20 },
+                                theme: 'plain', // Custom styling
+                                headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                                styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
+                                columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
+                                tableWidth: colW,
+                                margin: { left: M },
                                 didDrawPage: (data) => {
-                                    // Redraw header on new pages if table splits
-                                    if (data.pageNumber > 2) addHeader(doc);
+                                    addHeader(doc, data.pageNumber);
                                 }
                             });
+                            finalYLeft = doc.lastAutoTable.finalY;
+                            finalPageLeft = doc.internal.getCurrentPageInfo().pageNumber;
                         }
 
-                        // 2. Prohibited Table
-                        const prohibited = (analysis.prohibitedActivities || []).map(a => [a.general || '', a.specific || '']);
+                        // --- TABLE RIGHT (Activities Prohibited) ---
+                        // Reset cursor to start parallel render
+                        doc.setPage(startPage);
+
+                        let finalYRight = startY;
+                        let finalPageRight = startPage;
+
                         if (prohibited.length > 0) {
-                            // Check if we need new page or continue
-                            let finalY = doc.lastAutoTable?.finalY || startY;
-                            if (finalY > pdfH - 50) {
-                                doc.addPage();
-                                startY = addHeader(doc);
-                            } else {
-                                startY = finalY + 15;
-                            }
-
-                            // If we are on a fresh page (startY approx M+25), we don't need check, else check space
-                            if (startY > pdfH - 40) { doc.addPage(); startY = addHeader(doc); }
-
-                            doc.setFontSize(11);
+                            const leftM = M + colW + gap;
+                            doc.setFontSize(10);
                             doc.setTextColor(185, 28, 28); // Red
                             doc.setFont("helvetica", "bold");
-                            doc.text("ACTIVIDADES PROHIBIDAS", M, startY);
+                            doc.text("PROHIBIDAS", leftM, startY);
 
                             doc.autoTable({
                                 startY: startY + 3,
-                                head: [['Actividad', 'Especificaciones']],
+                                head: [['Actividad', 'Detalle']],
                                 body: prohibited,
-                                theme: 'grid',
-                                headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 9, fontStyle: 'bold' },
-                                styles: { fontSize: 8, cellPadding: 3, overflow: 'linebreak' },
-                                columnStyles: { 0: { cellWidth: 50 }, 1: { cellWidth: 'auto' } },
-                                margin: { left: M, right: M, top: 35, bottom: 20 },
+                                theme: 'plain',
+                                headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                                styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
+                                columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
+                                tableWidth: colW,
+                                margin: { left: leftM },
                                 didDrawPage: (data) => {
-                                    if (data.pageNumber > 2) addHeader(doc);
+                                    addHeader(doc, data.pageNumber);
                                 }
                             });
+                            finalYRight = doc.lastAutoTable.finalY;
+                            finalPageRight = doc.internal.getCurrentPageInfo().pageNumber;
+                        }
+
+                        // Sync Doc to Content End (Max of both)
+                        const maxPage = Math.max(finalPageLeft, finalPageRight);
+                        doc.setPage(maxPage);
+
+                        // --- GLOBAL FOOTER: PAGINATION (Page X of Y) ---
+                        const totalPages = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= totalPages; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(8);
+                            doc.setTextColor(150);
+                            doc.setFont("helvetica", "normal");
+                            const pageText = `Página ${i} de ${totalPages}`;
+                            doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
                         }
                     }
 
