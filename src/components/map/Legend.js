@@ -50,9 +50,14 @@ const Legend = ({
         }
     };
 
+    // CSS visibility transition classes
+    const visibilityClasses = isOpen
+        ? 'opacity-100 translate-x-0 pointer-events-auto'
+        : 'opacity-0 translate-x-4 pointer-events-none';
+
     return (
         <div
-            className="absolute top-16 md:top-24 right-4 md:right-20 z-[1110] w-[calc(100%-2rem)] md:w-64 bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 flex flex-col transition-all animate-slide-left pointer-events-auto"
+            className={`absolute top-16 md:top-24 right-4 md:right-20 z-[1110] w-[calc(100%-2rem)] md:w-64 bg-white/95 backdrop-blur-sm rounded-lg shadow-xl border border-gray-200 flex flex-col transition-all duration-300 ease-in-out ${visibilityClasses}`}
             style={{ maxHeight: 'calc(100% - 6rem)' }}
         >
             {/* Header */}
@@ -227,7 +232,10 @@ const Legend = ({
                                 className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
                                 onClick={() => handleToggleLayer('selectedAnpZoning')}
                             >
-                                <div className="flex items-center gap-2">
+                                <div
+                                    className="flex items-center gap-2"
+                                    title="Muestra la zonificación interna (sub-zonas) definida en el Programa de Manejo del ANP."
+                                >
                                     {Icons.Info ? <Icons.Info className="h-3 w-3 text-blue-500" /> : <span>i</span>}
                                     <span className="text-[10px] font-semibold text-blue-700 select-none">Zonificación Interna ANP</span>
                                 </div>

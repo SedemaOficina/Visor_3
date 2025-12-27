@@ -361,6 +361,7 @@ const VisorApp = () => {
 
   const handleExportClick = React.useCallback((e) => {
     if (typeof exportHandler === 'function') {
+      addToast('Generando documento PDF, por favor espere...', 'info');
       exportHandler(e);
     } else {
       alert('Aún no se puede exportar. Intenta recargar la página.');
