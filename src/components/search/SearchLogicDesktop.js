@@ -112,6 +112,13 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                             className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#9d2148] focus:border-transparent transition-all"
                             value={query}
                             onChange={handleChange}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') {
+                                    handleSubmit(e);
+                                    // Close suggestions on Enter
+                                    setSuggestions([]);
+                                }
+                            }}
                             onFocus={() => {
                                 // Show history if query is empty
                                 if (!query.trim()) {

@@ -13,6 +13,19 @@ const HelpModal = ({ isOpen, onClose }) => {
     const XIcon = Icons.X || (() => <span className="text-xl">×</span>);
     const MapPinnedIcon = Icons.MapPinned || (() => <span>📍</span>);
 
+    const { useEffect } = window.React;
+
+    useEffect(() => {
+        const handleKeyDown = (e) => {
+            if (e.key === 'Enter') onClose();
+        };
+
+        if (isOpen) {
+            window.addEventListener('keydown', handleKeyDown);
+        }
+        return () => window.removeEventListener('keydown', handleKeyDown);
+    }, [isOpen, onClose]);
+
     return (
         <div
             className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
