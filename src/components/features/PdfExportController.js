@@ -958,8 +958,18 @@
                                 if (heightLeft > 0) pdf.addPage();
                             }
                         }
-                        const cleanAlcaldia = (analysis.alcaldia || 'CDMX').replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
-                        pdf.save(`FICHA_LEGACY_${cleanAlcaldia}.pdf`);
+                        const isOutsideLegacy = analysis.status === 'OUTSIDE_CDMX';
+                        const outsideContextNameLegacy = analysis.outsideContext || null;
+
+                        let legacySuffix = 'CDMX';
+                        if (isOutsideLegacy) {
+                            legacySuffix = outsideContextNameLegacy || 'EXTERNO';
+                        } else {
+                            legacySuffix = analysis.alcaldia || 'CDMX';
+                        }
+
+                        const cleanLegacySuffix = legacySuffix.replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+                        pdf.save(`FICHA_LEGACY_${cleanLegacySuffix}.pdf`);
                         resolve();
                     }
 
