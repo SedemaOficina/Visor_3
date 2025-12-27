@@ -358,20 +358,32 @@
                                 )}
                             </div>
 
-                            {/* COL 2: ZONIFICACION */}
-                            {(!isUrban || analysis.zoningKey) && !isOutside && (
-                                <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
-                                    <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Zonificación Específica</div>
-                                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                        <div style={{ width: '12px', height: '12px', background: zoningColor, border: '1px solid #999' }}></div>
-                                        <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
-                                            {analysis.zoningKey || '—'}
-                                        </div>
+                            {/* COL 2: ZONIFICACION / ANP */}
+                            {isANP ? (
+                                <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.guinda}` }}>
+                                    <div style={{ fontSize: '10px', fontWeight: 700, color: C.guinda, textTransform: 'uppercase', marginBottom: '8px' }}>Régimen ANP</div>
+                                    <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
+                                        {analysis.zoningName || 'Área Natural Protegida'}
                                     </div>
-                                    <div style={{ fontSize: '11px', color: C.ink, marginTop: '4px', fontWeight: 500 }}>
-                                        {analysis.zoningName || ''}
+                                    <div style={{ fontSize: '10px', color: C.sub, marginTop: '4px', fontStyle: 'italic' }}>
+                                        Sujeto a Programa de Manejo
                                     </div>
                                 </div>
+                            ) : (
+                                (!isUrban || analysis.zoningKey) && !isOutside && (
+                                    <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
+                                        <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Zonificación Específica</div>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                            <div style={{ width: '12px', height: '12px', background: zoningColor, border: '1px solid #999' }}></div>
+                                            <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
+                                                {analysis.zoningKey || '—'}
+                                            </div>
+                                        </div>
+                                        <div style={{ fontSize: '11px', color: C.ink, marginTop: '4px', fontWeight: 500 }}>
+                                            {analysis.zoningName || ''}
+                                        </div>
+                                    </div>
+                                )
                             )}
                         </div>
 
@@ -785,7 +797,7 @@
                                 alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
                                 columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
                                 tableWidth: colW,
-                                margin: { left: M },
+                                margin: { left: M, top: 45 },
                                 didDrawPage: (data) => {
                                     addHeader(doc, data.pageNumber);
                                 }
@@ -818,7 +830,7 @@
                                 alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
                                 columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
                                 tableWidth: colW,
-                                margin: { left: leftM },
+                                margin: { left: leftM, top: 45 },
                                 didDrawPage: (data) => {
                                     addHeader(doc, data.pageNumber);
                                 }
