@@ -93,7 +93,8 @@
         const { getZoningColor } = getUtils();
 
         const fecha = analysis.timestamp || new Date().toLocaleString();
-        const folio = `F-${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 12)}`;
+        // Folio includes seconds now (14 chars: YYYYMMDDHHmmss)
+        const folio = `F-${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14)}`;
 
         const isUrban = analysis.status === 'URBAN_SOIL';
         const isSC = analysis.status === 'CONSERVATION_SOIL';
