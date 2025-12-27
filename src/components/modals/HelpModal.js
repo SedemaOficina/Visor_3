@@ -17,7 +17,7 @@ const HelpModal = ({ isOpen, onClose }) => {
 
     useEffect(() => {
         const handleKeyDown = (e) => {
-            if (e.key === 'Enter') onClose();
+            if (e.key === 'Enter' || e.key === 'Escape') onClose();
         };
 
         if (isOpen) {
