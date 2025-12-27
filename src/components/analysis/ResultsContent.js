@@ -569,42 +569,44 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                     </div>
                 )}
 
-            {/* 7. Notas Normativas */}
-            <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
-                <button
-                    onClick={() => setShowNotes(!showNotes)}
-                    className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
-                >
-                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
-                        {Icons.Info ? <Icons.Info className="h-3 w-3 text-gray-400" /> : <span>i</span>}
-                        Notas Normativas Importantes
-                    </span>
-                    {showNotes ?
-                        (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) :
-                        (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
-                </button>
+            {/* 7. Notas Normativas (Solo si hay zonificación PGOEDF válida) */}
+            {status === 'CONSERVATION_SOIL' && zoningKey && zoningKey !== 'NODATA' && zoningKey !== 'ANP' && (
+                <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                    <button
+                        onClick={() => setShowNotes(!showNotes)}
+                        className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
+                    >
+                        <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
+                            {Icons.Info ? <Icons.Info className="h-3 w-3 text-gray-400" /> : <span>i</span>}
+                            Notas Normativas Importantes
+                        </span>
+                        {showNotes ?
+                            (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) :
+                            (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
+                    </button>
 
-                {showNotes && (
-                    <div className="p-4 bg-white border-t border-gray-200">
-                        <ul className="space-y-3">
-                            {[
-                                "Adicionalmente a lo dispuesto en la tabla de usos del suelo, para cualquier obra o actividad que se pretenda desarrollar se deberán contemplar los criterios y lineamientos señalados en el programa de Ordenamiento Ecológico, así como cumplir con los permisos y autorizaciones en materia ambiental del Distrito Federal.",
-                                "Los usos del suelo no identificados en esta tabla deberán cumplir con los permisos y autorizaciones en materia urbana y ambiental aplicables en Suelo de Conservación.",
-                                "En las Areas Naturales Protegidas ANP regirá la zonificación especificada en su respectivo Programa de Manejo.",
-                                "La zonificación denominada PDU corresponde a las áreas normadas por los Programas Delegacionales o Parciales de Desarrollo Urbano vigentes.",
-                                "Las disposiciones de la presente regulación no prejuzgan sobre la propiedad de la tierra.",
-                                "El Suelo de Conservación definido por las barrancas estará regulado por la zonificación Forestal de Conservación FC, conforme a los límites establecidos por la Norma de Ordenación N° 21, señalada en los Programas de Desarrollo Urbano.",
-                                "* Se instrumentará un programa de reconversión de esta actividad por la producción de composta. Para ello, se elaborará un padrón de los productores y diseñar y ejecutar un programa de capacitación y proponer paquetes tecnológicos para transferencia y el desarrollo de estudios de mercado para la sustitución progresiva del producto y la reducción de la extracción directa."
-                            ].map((note, idx) => (
-                                <li key={idx} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed text-justify border-l-2 border-gray-200 pl-2">
-                                    <span className="text-[#9d2449] font-bold">•</span>
-                                    <span>{note}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                )}
-            </div>
+                    {showNotes && (
+                        <div className="p-4 bg-white border-t border-gray-200">
+                            <ul className="space-y-3">
+                                {[
+                                    "Adicionalmente a lo dispuesto en la tabla de usos del suelo, para cualquier obra o actividad que se pretenda desarrollar se deberán contemplar los criterios y lineamientos señalados en el programa de Ordenamiento Ecológico, así como cumplir con los permisos y autorizaciones en materia ambiental del Distrito Federal.",
+                                    "Los usos del suelo no identificados en esta tabla deberán cumplir con los permisos y autorizaciones en materia urbana y ambiental aplicables en Suelo de Conservación.",
+                                    "En las Areas Naturales Protegidas ANP regirá la zonificación especificada en su respectivo Programa de Manejo.",
+                                    "La zonificación denominada PDU corresponde a las áreas normadas por los Programas Delegacionales o Parciales de Desarrollo Urbano vigentes.",
+                                    "Las disposiciones de la presente regulación no prejuzgan sobre la propiedad de la tierra.",
+                                    "El Suelo de Conservación definido por las barrancas estará regulado por la zonificación Forestal de Conservación FC, conforme a los límites establecidos por la Norma de Ordenación N° 21, señalada en los Programas de Desarrollo Urbano.",
+                                    "* Se instrumentará un programa de reconversión de esta actividad por la producción de composta. Para ello, se elaborará un padrón de los productores y diseñar y ejecutar un programa de capacitación y proponer paquetes tecnológicos para transferencia y el desarrollo de estudios de mercado para la sustitución progresiva del producto y la reducción de la extracción directa."
+                                ].map((note, idx) => (
+                                    <li key={idx} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed text-justify border-l-2 border-gray-200 pl-2">
+                                        <span className="text-[#9d2449] font-bold">•</span>
+                                        <span>{note}</span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    )}
+                </div>
+            )}
 
             {/* 8. Action Buttons (Mobile & Desktop) */}
             <ActionButtons analysis={analysis} onExportPDF={onExportPDF} />
