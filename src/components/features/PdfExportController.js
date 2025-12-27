@@ -648,32 +648,39 @@
                     }
 
                     // 5. Pin/Marker
-                    // FIX 2: Use CircleMarker (Vector) instead of DivIcon (HTML) to avoid leaflet-image crashes
-                    let bgColor = '#9ca3af';
+                    // FIX 3: Use Data URI SVG Icon (Image) instead of Vector/DivIcon
+                    // This is the most robust way for leaflet-image to capture it.
+                    let bgColor = '#6b7280'; // gray-500 default
 
-                    if (analysisStatus === 'OUTSIDE_CDMX') bgColor = '#b91c1c';
-                    else if (analysisStatus === 'CONSERVATION_SOIL') bgColor = LAYER_STYLES?.sc?.color || '#3B7D23';
-                    else if (isANP) bgColor = '#9333ea';
-                    else if (analysisStatus === 'URBAN_SOIL') bgColor = '#3b82f6';
+                    if (analysisStatus === 'OUTSIDE_CDMX') bgColor = '#ef4444'; // red-500
+                    else if (analysisStatus === 'CONSERVATION_SOIL') bgColor = LAYER_STYLES?.sc?.color || '#16a34a'; // green-600
+                    else if (isANP) bgColor = '#9333ea'; // purple-600
+                    else if (analysisStatus === 'URBAN_SOIL') bgColor = '#3b82f6'; // blue-500
 
-                    // Outer ring
-                    L.circleMarker([lat, lng], {
-                        radius: 8,
-                        color: '#ffffff',
-                        weight: 3,
-                        fillColor: bgColor,
-                        fillOpacity: 1,
-                        pane: markerPane
-                    }).addTo(m);
+                    // Simple pin SVG with white outline and shadow effect
+                    const svgString = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
+                            <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
+                                <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="black" flood-opacity="0.3"/>
+                            </filter>
+                            <path fill="${bgColor}" stroke="white" stroke-width="1.5" filter="url(#shadow)" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
+                            <circle cx="12" cy="9" r="2.5" fill="white"/>
+                        </svg>
+                    `.trim();
 
-                    // Inner dot
-                    L.circleMarker([lat, lng], {
-                        radius: 2,
-                        color: '#ffffff',
-                        weight: 0,
-                        fillColor: '#ffffff',
-                        fillOpacity: 1,
-                        pane: markerPane
+                    const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
+
+                    const icon = L.icon({
+                        iconUrl: iconUrl,
+                        iconSize: [40, 40],
+                        iconAnchor: [20, 40], // Tip at bottom center
+                        popupAnchor: [0, -40]
+                    });
+
+                    L.marker([lat, lng], {
+                        icon: icon,
+                        pane: markerPane,
+                        interactive: false
                     }).addTo(m);
 
 
