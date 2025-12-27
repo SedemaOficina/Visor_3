@@ -916,9 +916,12 @@
                         }
 
                         // --- FILENAME GENERATION ---
+                        const isOutsideFn = analysis.status === 'OUTSIDE_CDMX';
+                        const outsideContextNameFn = analysis.outsideContext || null;
+
                         let filenameSuffix = 'CDMX';
-                        if (isOutside) {
-                            filenameSuffix = outsideContextName ? outsideContextName : 'EXTERNO';
+                        if (isOutsideFn) {
+                            filenameSuffix = outsideContextNameFn ? outsideContextNameFn : 'EXTERNO';
                         } else {
                             filenameSuffix = analysis.alcaldia || 'CDMX';
                         }
