@@ -895,8 +895,16 @@
                             doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
                         }
 
-                        const cleanAlcaldia = (analysis.alcaldia || 'CDMX').replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
-                        doc.save(`FICHA_SC_${cleanAlcaldia}.pdf`);
+                        // --- FILENAME GENERATION ---
+                        let filenameSuffix = 'CDMX';
+                        if (isOutside) {
+                            filenameSuffix = outsideContextName ? outsideContextName : 'EXTERNO';
+                        } else {
+                            filenameSuffix = analysis.alcaldia || 'CDMX';
+                        }
+
+                        const cleanSuffix = filenameSuffix.replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
+                        doc.save(`FICHA_SIG_${cleanSuffix}.pdf`);
 
                         // Restore Text for user view
                         setIncludeActivities(true);
