@@ -302,11 +302,22 @@
                                 <table style={{ width: '100%', borderCollapse: 'collapse' }}>
                                     <tbody>
                                         <tr>
-                                            {!isOutside && (
-                                                <td style={{ verticalAlign: 'top', width: '50%', paddingRight: '15px' }}>
+                                            <td style={{ verticalAlign: 'top', width: '50%', paddingRight: '15px' }}>
+                                                {isOutside ? (
+                                                    <div style={{ marginBottom: '10px' }}>
+                                                        <Box title="Estatus">
+                                                            <div style={{ color: C.red, fontWeight: 900, textTransform: 'uppercase', fontSize: '12px' }}>
+                                                                Fuera de la Ciudad de México
+                                                            </div>
+                                                        </Box>
+                                                        <div style={{ marginTop: '8px' }}>
+                                                            <Box title="Entidad Federativa">{outsideContextName || 'Otro Estado'}</Box>
+                                                        </div>
+                                                    </div>
+                                                ) : (
                                                     <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
-                                                </td>
-                                            )}
+                                                )}
+                                            </td>
                                             <td style={{ verticalAlign: 'top' }}>
                                                 <Box title="Coordenadas Geográficas">
                                                     <span style={{ fontFamily: T.mono, fontSize: '11px', background: '#f3f4f6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>
@@ -348,48 +359,62 @@
                     <div style={{ marginBottom: `${S.gap3}px` }}>
                         <div style={styleH2}>Normatividad Aplicable</div>
 
-                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
-                            {/* COL 1: SUELO */}
-                            <div style={{ background: C.panel, padding: '16px', borderRadius: '6px', border: `1px solid ${C.hair}` }}>
-                                <div style={{ fontSize: '11px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px' }}>Clasificación de Suelo</div>
-                                <div style={{ fontSize: '15px', fontWeight: 800, color: isSC ? C.sc : isUrban ? C.su : C.red, lineHeight: 1.3 }}>
-                                    {statusLabel}
+                        {isOutside ? (
+                            <div style={{ background: '#FFF5F5', padding: '20px', borderRadius: '6px', border: `1px solid ${C.red}`, textAlign: 'center' }}>
+                                <div style={{ fontSize: '14px', fontWeight: 800, color: C.red, marginBottom: '10px', textTransform: 'uppercase' }}>
+                                    Fuera de Jurisdicción de la CDMX
                                 </div>
-                                {isSC && (
-                                    <div style={{ fontSize: '10px', color: C.green, marginTop: '6px', fontStyle: 'italic' }}>
-                                        Regulado por el PGOEDF 2000
-                                    </div>
-                                )}
+                                <div style={{ fontSize: '11px', color: C.ink, lineHeight: 1.5, maxWidth: '600px', margin: '0 auto' }}>
+                                    El predio consultado no se encuentra dentro del territorio de la Ciudad de México.
+                                    La Secretaría del Medio Ambiente de la CDMX no tiene atribuciones para determinar la normatividad urbana o ambiental en esta ubicación.
+                                    <br /><br />
+                                    Le sugerimos consultar a las autoridades estatales o municipales correspondientes de <strong>{outsideContextName || 'la entidad federativa respectiva'}</strong>.
+                                </div>
                             </div>
-
-                            {/* COL 2: ZONIFICACION / ANP */}
-                            {isANP ? (
-                                <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.guinda}` }}>
-                                    <div style={{ fontSize: '10px', fontWeight: 700, color: C.guinda, textTransform: 'uppercase', marginBottom: '8px' }}>Régimen ANP</div>
-                                    <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
-                                        {analysis.zoningName || 'Área Natural Protegida'}
+                        ) : (
+                            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px', marginBottom: '15px' }}>
+                                {/* COL 1: SUELO */}
+                                <div style={{ background: C.panel, padding: '16px', borderRadius: '6px', border: `1px solid ${C.hair}` }}>
+                                    <div style={{ fontSize: '11px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px' }}>Clasificación de Suelo</div>
+                                    <div style={{ fontSize: '15px', fontWeight: 800, color: isSC ? C.sc : isUrban ? C.su : C.red, lineHeight: 1.3 }}>
+                                        {statusLabel}
                                     </div>
-                                    <div style={{ fontSize: '10px', color: C.sub, marginTop: '4px', fontStyle: 'italic' }}>
-                                        Sujeto a Programa de Manejo
-                                    </div>
+                                    {isSC && (
+                                        <div style={{ fontSize: '10px', color: C.green, marginTop: '6px', fontStyle: 'italic' }}>
+                                            Regulado por el PGOEDF 2000
+                                        </div>
+                                    )}
                                 </div>
-                            ) : (
-                                (!isUrban || analysis.zoningKey) && !isOutside && (
-                                    <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
-                                        <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Zonificación Específica</div>
-                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                                            <div style={{ width: '12px', height: '12px', background: zoningColor, border: '1px solid #999' }}></div>
-                                            <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
-                                                {analysis.zoningKey || '—'}
+
+                                {/* COL 2: ZONIFICACION / ANP */}
+                                {isANP ? (
+                                    <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.guinda}` }}>
+                                        <div style={{ fontSize: '10px', fontWeight: 700, color: C.guinda, textTransform: 'uppercase', marginBottom: '8px' }}>Régimen ANP</div>
+                                        <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
+                                            {analysis.zoningName || 'Área Natural Protegida'}
+                                        </div>
+                                        <div style={{ fontSize: '10px', color: C.sub, marginTop: '4px', fontStyle: 'italic' }}>
+                                            Sujeto a Programa de Manejo
+                                        </div>
+                                    </div>
+                                ) : (
+                                    (!isUrban || analysis.zoningKey) && (
+                                        <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
+                                            <div style={{ fontSize: '10px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px' }}>Zonificación Específica</div>
+                                            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                                                <div style={{ width: '12px', height: '12px', background: zoningColor, border: '1px solid #999' }}></div>
+                                                <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink }}>
+                                                    {analysis.zoningKey || '—'}
+                                                </div>
+                                            </div>
+                                            <div style={{ fontSize: '11px', color: C.ink, marginTop: '4px', fontWeight: 500 }}>
+                                                {analysis.zoningName || ''}
                                             </div>
                                         </div>
-                                        <div style={{ fontSize: '11px', color: C.ink, marginTop: '4px', fontWeight: 500 }}>
-                                            {analysis.zoningName || ''}
-                                        </div>
-                                    </div>
-                                )
-                            )}
-                        </div>
+                                    )
+                                )}
+                            </div>
+                        )}
 
 
 
@@ -856,17 +881,18 @@
                             // Sync Doc to Content End (Max of both)
                             const maxPage = Math.max(finalPageLeft, finalPageRight);
                             doc.setPage(maxPage);
+                        }
 
-                            // --- GLOBAL FOOTER: PAGINATION (Page X of Y) ---
-                            const totalPages = doc.internal.getNumberOfPages();
-                            for (let i = 1; i <= totalPages; i++) {
-                                doc.setPage(i);
-                                doc.setFontSize(8);
-                                doc.setTextColor(150);
-                                doc.setFont("helvetica", "normal");
-                                const pageText = `Página ${i} de ${totalPages}`;
-                                doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
-                            }
+                        // --- GLOBAL FOOTER: PAGINATION (Page X of Y) ---
+                        // Defines Layout for ALL pages
+                        const totalPages = doc.internal.getNumberOfPages();
+                        for (let i = 1; i <= totalPages; i++) {
+                            doc.setPage(i);
+                            doc.setFontSize(8);
+                            doc.setTextColor(150);
+                            doc.setFont("helvetica", "normal");
+                            const pageText = `Página ${i} de ${totalPages}`;
+                            doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
                         }
 
                         const cleanAlcaldia = (analysis.alcaldia || 'CDMX').replace(/[^a-zA-Z0-9]/g, "_").toUpperCase();
