@@ -59,11 +59,118 @@ const StatusMessage = ({ analysis }) => {
     return null;
 };
 
+const NormativeInstrumentCard = ({ analysis }) => {
+    const Icons = getIcons();
+    const { status, zoningKey } = analysis;
+    const isSC = status === 'CONSERVATION_SOIL';
+    const isUrban = status === 'URBAN_SOIL';
+    // PDU specific check can be refined if analysis has a flag, usually 'PDU_' prefix in zoningKey indicates partial/urban specifics
+    const hasSpecificPDU = zoningKey && zoningKey.startsWith('PDU_');
+
+    if (!isSC && !isUrban) return null;
+
+    if (isSC) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
+                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">
+                    Instrumento Rector
+                </div>
+                <div className="text-sm font-bold text-gray-800 mb-1">
+                    Ordenamiento Ecológico del Distrito Federal (PGOEDF)
+                </div>
+                <p className="text-[11px] text-gray-600 leading-snug mb-2">
+                    Regula los usos del suelo en el Suelo de Conservación para preservar su valor ambiental.
+                </p>
+                <a
+                    href="https://paot.org.mx/centro/programas/pgoedf.pdf"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                    title="Ver PDF oficial"
+                >
+                    {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
+                    Consulta el documento oficial del PGOEDF (PDF)
+                </a>
+            </div>
+        );
+    }
+
+    if (isUrban) {
+        return (
+            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
+                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">
+                    Instrumento Rector
+                </div>
+                <div className="text-sm font-bold text-gray-800 mb-1">
+                    {hasSpecificPDU ? 'Programa Parcial de Desarrollo Urbano' : 'Programa Delegacional de Desarrollo Urbano'}
+                </div>
+                <p className="text-[11px] text-gray-600 leading-snug mb-2">
+                    Instrumento de planeación urbana que establece los usos, reservas y destinos del suelo.
+                </p>
+
+                <div className="flex flex-col gap-1.5 mt-2">
+                    <a
+                        href="https://metropolis.cdmx.gob.mx/programas-delegacionales-de-desarrollo-urbano"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                    >
+                        {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
+                        Ver Programas Delegacionales
+                    </a>
+
+                    <a
+                        href="https://metropolis.cdmx.gob.mx/programas-parciales-de-desarrollo-urbano"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                    >
+                        {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
+                        Ver Programas Parciales (Zonas Especiales)
+                    </a>
+                </div>
+            </div>
+        );
+    }
+
+    return null;
+};
+
+const ZoningResultCard = ({ analysis, zoningDisplay }) => {
+    const Utils = getUtils();
+    const { status, zoningKey } = analysis;
+    const isSC = status === 'CONSERVATION_SOIL';
+
+    if (!isSC || !zoningKey || zoningKey === 'NODATA' || zoningKey === 'ANP') return null;
+
+    let zoningColor = '#9ca3af';
+    if (analysis.zoningKey && Utils.getZoningColor) {
+        zoningColor = Utils.getZoningColor(analysis.zoningKey);
+    }
+
+    return (
+        <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
+            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">
+                Zonificación PGOEDF
+            </div>
+            <div className="flex items-start gap-2">
+                <div
+                    className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 border border-black/10 shadow-sm"
+                    style={{ backgroundColor: zoningColor }}
+                />
+                <div className="text-base font-bold text-gray-800 leading-snug break-words">
+                    {zoningDisplay}
+                </div>
+            </div>
+        </div>
+    );
+};
+
 const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, accentColor }) => {
     if (!activities || activities.length === 0) return null;
 
-    const Icons = getIcons(); // Safe access
-    const Utils = getUtils(); // Safe access
+    const Icons = getIcons();
+    const Utils = getUtils();
 
     const groups = {};
     activities.forEach(a => {
@@ -196,37 +303,22 @@ const AnpGeneralCard = ({ analysis }) => {
     const { anpNombre, anpCategoria, anpTipoDecreto, anpFechaDecreto, anpSupDecretada } = analysis;
 
     return (
-        <div className="bg-purple-50 rounded-xl p-4 mb-4 animate-slide-up border border-purple-100">
-            <div className="flex items-center gap-2 text-purple-800 font-bold text-sm mb-3 border-b border-purple-100 pb-2">
-                {Icons.Leaf && <Icons.Leaf className="h-4 w-4" />}
-                <span>Datos Generales ANP</span>
+        <div className="bg-purple-50 rounded-lg p-3 mb-3 animate-slide-up border border-purple-100">
+            <div className="flex items-center gap-2 text-purple-800 font-bold text-xs uppercase mb-2 border-b border-purple-200 pb-1">
+                {Icons.Leaf && <Icons.Leaf className="h-3 w-3" />}
+                <span>Régimen ANP</span>
             </div>
 
-            <div className="space-y-3 text-xs text-gray-700">
-                <div className="grid grid-cols-1 gap-1">
+            <div className="space-y-2 text-xs text-gray-700">
+                <div className="grid grid-cols-1 gap-0.5">
                     <span className="text-[10px] uppercase font-bold text-gray-500">Nombre Oficial</span>
-                    <span className="font-medium text-gray-900 text-sm">{anpNombre || 'No disponible'}</span>
+                    <span className="font-semibold text-gray-900 leading-tight">{anpNombre || 'No disponible'}</span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-3">
                     <div>
                         <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Categoría</span>
                         <span className="font-medium text-gray-900">{anpCategoria || 'N/D'}</span>
-                    </div>
-                    <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Tipo Decreto</span>
-                        <span className="font-medium text-gray-900">{anpTipoDecreto || 'N/D'}</span>
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                    <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Fecha Decreto</span>
-                        <span className="font-medium text-gray-900">{anpFechaDecreto || 'N/D'}</span>
-                    </div>
-                    <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Superficie</span>
-                        <span className="font-medium text-gray-900">{anpSupDecretada ? `${anpSupDecretada} ha` : 'N/D'}</span>
                     </div>
                 </div>
             </div>
@@ -238,25 +330,19 @@ const AnpInternalCard = ({ analysis }) => {
     if (!analysis.hasInternalAnpZoning || !analysis.anpInternalFeature) return null;
     const Icons = getIcons();
     const data = analysis.anpInternalFeature.properties || {};
-    const nombre = data.NOMBRE || analysis.anpNombre || 'Desconocido';
+    // const nombre = data.NOMBRE || analysis.anpNombre || 'Desconocido';
     const zonificacion = data.ZONIFICACION || data.CATEGORIA_PROTECCION || analysis.anpCategoria || 'N/A';
 
     return (
-        <div className="bg-purple-50 rounded-xl p-4 mb-4 animate-slide-up border border-purple-100">
-            <div className="flex items-center gap-2 text-purple-800 font-bold text-sm mb-3 border-b border-purple-100 pb-2">
-                {Icons.Verified && <Icons.Verified className="h-4 w-4" />}
-                <span>Zonificación del Área Natural Protegida</span>
+        <div className="bg-purple-50 rounded-lg p-3 mb-3 animate-slide-up border border-purple-100">
+            <div className="flex items-center gap-2 text-purple-800 font-bold text-xs uppercase mb-2 border-b border-purple-200 pb-1">
+                {Icons.Verified && <Icons.Verified className="h-3 w-3" />}
+                <span>Zonificación Interna ANP</span>
             </div>
 
-            <div className="space-y-2 text-xs text-gray-700">
-                <div className="grid grid-cols-1 gap-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-500">Nombre Oficial</span>
-                    <span className="font-medium text-gray-900">{nombre || 'Desconocido'}</span>
-                </div>
-                <div className="grid grid-cols-1 gap-1">
-                    <span className="text-[10px] uppercase font-bold text-gray-500">Zonificación Programa de Manejo</span>
-                    <div className="font-medium text-gray-900">{zonificacion || 'N/A'}</div>
-                </div>
+            <div className="space-y-1 text-xs text-gray-700">
+                <span className="text-[10px] uppercase font-bold text-gray-500 block">Zonificación Programa de Manejo</span>
+                <span className="font-bold text-lg text-gray-900 block leading-tight">{zonificacion || 'N/A'}</span>
             </div>
         </div>
     );
@@ -281,11 +367,9 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
         zoningColor = Utils.getZoningColor(analysis.zoningKey);
     }
 
-    const showZoningBlock = !isOutside && !isUrban;
-
     if (isOutside) {
         return (
-            <div className="bg-red-50 border border-red-100 rounded-lg p-4 mb-4 animate-pulse-subtle">
+            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4 animate-pulse-subtle">
                 <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
                     {Icons.XCircle && <Icons.XCircle className="h-4 w-4" />}
                     <span>Fuera de CDMX</span>
@@ -300,21 +384,22 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
     return (
         <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 mb-4 animate-slide-up">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-                {/* Badge Suelo */}
+                {/* Badge Suelo Base */}
                 <span
-                    className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm leading-none"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none border"
                     style={{
-                        backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
-                        color: '#ffffff'
+                        backgroundColor: '#fff',
+                        borderColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
+                        color: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280'
                     }}
                 >
                     {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                 </span>
 
-                {/* Badge Zonificación PGOEDF */}
+                {/* Badge Zonificación (Solo label corto) - Opcional, ya que se muestra detalle abajo */}
                 {isSC && analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP' && (
                     <span
-                        className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm leading-none"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none"
                         style={{
                             backgroundColor: zoningColor,
                             color: getContrastYIQ(zoningColor)
@@ -327,42 +412,19 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                 {/* Badge ANP */}
                 {analysis.isANP && (
                     <span
-                        className="inline-flex items-center px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase shadow-sm leading-none"
-                        style={{
-                            backgroundColor: '#9333ea', // Morado Institucional ANP
-                            color: '#ffffff'
-                        }}
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none bg-purple-100 text-purple-800 border border-purple-200"
                     >
                         ANP
                     </span>
                 )}
             </div>
 
-            <StatusMessage analysis={analysis} />
-
-            <div className="mb-4">
-                <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Alcaldía</div>
-                <div className="text-lg font-bold text-gray-800 leading-tight">
+            <div>
+                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Alcaldía</div>
+                <div className="text-xl font-bold text-gray-800 leading-tight">
                     {analysis.alcaldia || 'Ciudad de México'}
                 </div>
             </div>
-
-            {showZoningBlock && (
-                <div className="mb-2">
-                    <div className="text-[10px] text-gray-500 font-medium uppercase tracking-wider mb-1">
-                        Zonificación PGOEDF
-                    </div>
-                    <div className="flex items-start gap-2">
-                        <div
-                            className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
-                            style={{ backgroundColor: zoningColor }}
-                        />
-                        <div className="text-sm font-semibold text-gray-700 leading-snug break-words">
-                            {zoningDisplay}
-                        </div>
-                    </div>
-                </div>
-            )}
         </div>
     );
 };
@@ -382,40 +444,55 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
 
     const zoningDisplay = getZoningDisplay(analysis);
 
+    /* ---------------------------------------------------- */
+    /*   JERARQUÍA NORMATIVA DE VISUALIZACIÓN               */
+    /*   1. LocationSummary (Badges + Alcaldía)             */
+    /*   2. StatusMessage (Warnings especiales)             */
+    /*   3. NormativeInstrument (Rector: PGOEDF / PDU)      */
+    /*   4. ZoningDetail (PGOEDF específica / ANP Interna)  */
+    /*   5. Regulatory (ANP General)                        */
+    /*   6. Activities (Catálogo SC)                        */
+    /* ---------------------------------------------------- */
+
     return (
-        <div className="space-y-4 animate-in">
+        <div className="space-y-2 animate-in">
+            {/* 1. Resumen Ubicación */}
             <LocationSummary analysis={analysis} zoningDisplay={zoningDisplay} />
-            <AnpGeneralCard analysis={analysis} />
+
+            {/* 2. Mensajes de Estado Criticos */}
+            <StatusMessage analysis={analysis} />
+
+            {/* 3. Instrumento Rector */}
+            <NormativeInstrumentCard analysis={analysis} />
+
+            {/* 4. Zonificación Específica */}
+            {/* Si es SC mostrar Zonificación PGOEDF */}
+            <ZoningResultCard analysis={analysis} zoningDisplay={zoningDisplay} />
+            {/* Si tiene zonificación interna ANP mostrarla */}
             <AnpInternalCard analysis={analysis} />
 
-            {((analysis.zoningKey && analysis.zoningKey.startsWith('PDU_')) || analysis.status === 'URBAN_SOIL') && (
-                <div className="p-3 bg-blue-50 text-blue-800 text-xs border-l-4 border-blue-400 rounded-r mb-3">
-                    <strong>Consulta Específica Requerida:</strong>
-                    <br />
-                    Esta zona se rige por un <strong>Programa de Desarrollo Urbano</strong> específico.
-                    <br />
-                    Consulte el documento oficial de SEDUVI para detalle de usos.
-                </div>
-            )}
+            {/* 5. Regímenes Adicionales */}
+            <AnpGeneralCard analysis={analysis} />
 
+            {/* 6. Catálogo de Actividades (Solo SC) */}
             {analysis.status === 'CONSERVATION_SOIL' &&
                 !analysis.isPDU &&
                 !analysis.noActivitiesCatalog && (
                     <>
-                        <div className="flex items-center justify-between mt-2 mb-2">
-                            <div className="text-[11px] font-semibold text-gray-600">
-                                Catálogo de Actividades (PGOEDF)
+                        <div className="flex items-center justify-between mt-4 mb-2">
+                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+                                Catálogo de Actividades
                             </div>
                             <button
                                 onClick={() => setShowDetails(v => !v)}
                                 className="text-[10px] text-blue-600 hover:underline font-medium"
                             >
-                                {showDetails ? 'Ocultar detalle' : 'Ver detalle'}
+                                {showDetails ? 'Ocultar todo' : 'Ver todo'}
                             </button>
                         </div>
 
                         {showDetails && (
-                            <div className="mt-2 animate-in slide-in-from-top-2 duration-300">
+                            <div className="animate-in slide-in-from-top-2 duration-300">
                                 <div className="border-b border-gray-200 mb-4 flex gap-4">
                                     <button
                                         onClick={() => setActiveTab('prohibidas')}
