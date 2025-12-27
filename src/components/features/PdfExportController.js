@@ -315,7 +315,12 @@
                                                         </div>
                                                     </div>
                                                 ) : (
-                                                    <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
+                                                    <div>
+                                                        <Box title="Entidad Federativa">Ciudad de México</Box>
+                                                        <div style={{ marginTop: '8px' }}>
+                                                            <Box title="Alcaldía">{analysis.alcaldia || 'Ciudad de México'}</Box>
+                                                        </div>
+                                                    </div>
                                                 )}
                                             </td>
                                             <td style={{ verticalAlign: 'top' }}>
@@ -388,8 +393,8 @@
 
                                 {/* COL 2: ZONIFICACION / ANP */}
                                 {isANP ? (
-                                    <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.guinda}` }}>
-                                        <div style={{ fontSize: '10px', fontWeight: 700, color: C.guinda, textTransform: 'uppercase', marginBottom: '8px', borderBottom: `1px solid ${C.hair}`, paddingBottom: '4px' }}>Régimen ANP</div>
+                                    <div style={{ background: '#FAF5FF', padding: '12px', borderRadius: '4px', border: `1px solid #7E22CE` }}>
+                                        <div style={{ fontSize: '10px', fontWeight: 700, color: '#7E22CE', textTransform: 'uppercase', marginBottom: '8px', borderBottom: `1px solid #E9D5FF`, paddingBottom: '4px' }}>Régimen ANP</div>
 
                                         <div style={{ marginBottom: '6px' }}>
                                             <div style={{ fontSize: '9px', fontWeight: 700, color: C.sub, textTransform: 'uppercase' }}>Nombre Oficial</div>
@@ -401,7 +406,7 @@
                                             <div style={{ fontSize: '10px', color: C.ink }}>{analysis.anpCategoria || 'No disponible'}</div>
                                         </div>
 
-                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px' }}>
+                                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '4px', marginBottom: '8px' }}>
                                             <div>
                                                 <div style={{ fontSize: '8px', fontWeight: 700, color: C.sub, textTransform: 'uppercase' }}>Decreto</div>
                                                 <div style={{ fontSize: '10px', color: C.ink }}>{analysis.anpTipoDecreto || 'N/D'}</div>
@@ -414,6 +419,10 @@
                                                 <div style={{ fontSize: '8px', fontWeight: 700, color: C.sub, textTransform: 'uppercase' }}>Superficie</div>
                                                 <div style={{ fontSize: '10px', color: C.ink }}>{analysis.anpSupDecretada ? `${analysis.anpSupDecretada} ha` : 'N/D'}</div>
                                             </div>
+                                        </div>
+
+                                        <div style={{ fontSize: '10px', color: '#7E22CE', fontStyle: 'italic', lineHeight: 1.3, fontWeight: 500 }}>
+                                            Área Natural Protegida: Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                                         </div>
                                     </div>
                                 ) : (
@@ -437,13 +446,37 @@
 
 
 
+                        {/* --- INSTRUMENTO RECTOR (Urban Only) --- */}
+                        {!isOutside && isUrban && !isANP && !isSC && (
+                            <div style={{ marginTop: '15px', background: C.panel, padding: '16px', borderRadius: '6px', border: `1px solid ${C.hair}` }}>
+                                <div style={{ fontSize: '11px', fontWeight: 700, color: C.sub, textTransform: 'uppercase', marginBottom: '8px', borderBottom: '1px solid #e5e7eb', paddingBottom: '4px' }}>Instrumento Rector</div>
+                                <div style={{ fontSize: '13px', fontWeight: 800, color: C.ink, marginBottom: '6px' }}>
+                                    Programa Delegacional de Desarrollo Urbano
+                                </div>
+                                <div style={{ fontSize: '10px', color: C.ink, marginBottom: '10px', lineHeight: 1.4 }}>
+                                    Instrumento de planeación urbana que establece los usos, reservas y destinos del suelo.
+                                </div>
+                                <div style={{ display: 'flex', gap: '15px' }}>
+                                    <div style={{ fontSize: '10px', color: C.su, fontWeight: 700, textDecoration: 'underline' }}>
+                                        Ver Programas Delegacionales
+                                    </div>
+                                    <div style={{ fontSize: '10px', color: C.su, fontWeight: 700, textDecoration: 'underline' }}>
+                                        Ver Programas Parciales (Zonas Especiales)
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                         {/* ANP INTERNA */}
                         {analysis.hasInternalAnpZoning && analysis.anpInternalFeature && (
-                            <div style={{ marginTop: '10px', padding: '10px', border: `1px solid ${C.guinda}`, background: '#FFF5F7', borderRadius: '4px' }}>
-                                <div style={{ fontSize: '11px', fontWeight: 700, color: C.guinda, textTransform: 'uppercase', marginBottom: '4px' }}>Zonificación Interna ANP</div>
+                            <div style={{ marginTop: '10px', padding: '10px', border: `1px solid #7E22CE`, background: '#FAF5FF', borderRadius: '4px' }}>
+                                <div style={{ fontSize: '11px', fontWeight: 700, color: '#7E22CE', textTransform: 'uppercase', marginBottom: '4px' }}>Zonificación Interna ANP</div>
                                 <div style={{ fontSize: '9px', color: C.sub, textTransform: 'uppercase' }}>Zonificación Programa de Manejo</div>
-                                <div style={{ fontSize: '12px', fontWeight: 800, color: C.heading }}>
+                                <div style={{ fontSize: '12px', fontWeight: 800, color: C.heading, marginBottom: '6px' }}>
                                     {analysis.anpInternalFeature.properties?.ZONIFICACION || analysis.anpInternalFeature.properties?.CATEGORIA_PROTECCION || 'Zonificación Específica'}
+                                </div>
+                                <div style={{ fontSize: '10px', color: '#7E22CE', fontStyle: 'italic', fontWeight: 500 }}>
+                                    Área Natural Protegida: Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                                 </div>
                             </div>
                         )}
