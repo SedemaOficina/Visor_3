@@ -36,27 +36,46 @@ const getContrastYIQ = (hexcolor) => {
 /* SUB-COMPONENTES */
 /* ------------------------------------------------ */
 
-const StatusMessage = ({ analysis }) => {
-    const { status, isANP, zoningKey } = analysis;
+const InlineAlert = ({ tone, children }) => {
+    const Icons = getIcons();
 
-    if (status === 'OUTSIDE_CDMX') return null;
+    // Configuración de tonos
+    const variants = {
+        anp: {
+            bg: 'bg-purple-50',
+            border: 'border-purple-400',
+            text: 'text-purple-900',
+            icon: Icons.Leaf // Opcional, podría ser genérico
+        },
+        nodata: {
+            bg: 'bg-yellow-50',
+            border: 'border-yellow-400',
+            text: 'text-yellow-800',
+            icon: Icons.AlertTriangle
+        },
+        urban: {
+            bg: 'bg-blue-50',
+            border: 'border-blue-400',
+            text: 'text-blue-900',
+            icon: Icons.Info
+        },
+        error: {
+            bg: 'bg-red-50',
+            border: 'border-red-400',
+            text: 'text-red-900',
+            icon: Icons.XCircle
+        }
+    };
 
-    if (zoningKey === 'ANP' || isANP) {
-        return (
-            <div className="p-3 bg-purple-50 text-purple-900 text-xs border-l-4 border-purple-400 rounded-r mb-3 animate-in fade-in">
-                <strong>Atención:</strong> Este punto se encuentra en un <strong>Área Natural Protegida</strong>. Aplica regulación específica (Programa de Manejo).
-            </div>
-        );
-    }
+    const variant = variants[tone] || variants.nodata;
+    const Icon = variant.icon || (() => null);
 
-    if ((status === 'NO_DATA' || zoningKey === 'NODATA') && status !== 'URBAN_SOIL')
-        return (
-            <div className="p-3 bg-yellow-50 text-yellow-800 text-xs border-l-4 border-yellow-400 rounded-r mb-3">
-                <strong>Aviso:</strong> No se encontró información disponible para esta zona.
-            </div>
-        );
-
-    return null;
+    return (
+        <div className={`p-3 text-xs border-l-4 rounded-r mb-3 flex items-start gap-2 animate-in fade-in ${variant.bg} ${variant.border} ${variant.text}`}>
+            <Icon className="h-4 w-4 shrink-0 mt-0.5 opacity-80" />
+            <div className="leading-snug">{children}</div>
+        </div>
+    );
 };
 
 const NormativeInstrumentCard = ({ analysis }) => {
@@ -64,7 +83,6 @@ const NormativeInstrumentCard = ({ analysis }) => {
     const { status, zoningKey } = analysis;
     const isSC = status === 'CONSERVATION_SOIL';
     const isUrban = status === 'URBAN_SOIL';
-    // PDU specific check can be refined if analysis has a flag, usually 'PDU_' prefix in zoningKey indicates partial/urban specifics
     const hasSpecificPDU = zoningKey && zoningKey.startsWith('PDU_');
 
     if (!isSC && !isUrban) return null;
@@ -86,10 +104,9 @@ const NormativeInstrumentCard = ({ analysis }) => {
                     target="_blank"
                     rel="noreferrer"
                     className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
-                    title="Ver PDF oficial"
                 >
                     {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
-                    Consulta el documento oficial del PGOEDF (PDF)
+                    Consulta el documento oficial (PDF)
                 </a>
             </div>
         );
@@ -108,7 +125,7 @@ const NormativeInstrumentCard = ({ analysis }) => {
                     Instrumento de planeación urbana que establece los usos, reservas y destinos del suelo.
                 </p>
 
-                <div className="flex flex-col gap-1.5 mt-2">
+                <div className="grid grid-cols-1 gap-1.5 mt-2">
                     <a
                         href="https://metropolis.cdmx.gob.mx/programas-delegacionales-de-desarrollo-urbano"
                         target="_blank"
@@ -155,7 +172,7 @@ const ZoningResultCard = ({ analysis, zoningDisplay }) => {
             </div>
             <div className="flex items-start gap-2">
                 <div
-                    className="w-2.5 h-2.5 rounded-full mt-1.5 shrink-0 border border-black/10 shadow-sm"
+                    className="w-3 h-3 rounded-full mt-1 shrink-0 border border-black/10 shadow-sm"
                     style={{ backgroundColor: zoningColor }}
                 />
                 <div className="text-base font-bold text-gray-800 leading-snug break-words">
@@ -178,30 +195,30 @@ const AnpGeneralCard = ({ analysis }) => {
                 <span>Régimen ANP</span>
             </div>
 
-            <div className="space-y-2 text-xs text-gray-700">
+            <div className="space-y-3 text-xs text-gray-700">
                 <div className="grid grid-cols-1 gap-0.5">
-                    <span className="text-[10px] uppercase font-bold text-gray-500">Nombre Oficial</span>
+                    <span className="text-[10px] uppercase font-bold text-gray-500 tracking-wide">Nombre Oficial</span>
                     <span className="font-semibold text-gray-900 leading-tight">{anpNombre || 'No disponible'}</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Categoría</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5 tracking-wide">Categoría</span>
                         <span className="font-medium text-gray-900">{anpCategoria || 'N/D'}</span>
                     </div>
                     <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Tipo Decreto</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5 tracking-wide">Decreto</span>
                         <span className="font-medium text-gray-900">{anpTipoDecreto || 'N/D'}</span>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-3">
                     <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Fecha Decreto</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5 tracking-wide">Fecha</span>
                         <span className="font-medium text-gray-900">{anpFechaDecreto || 'N/D'}</span>
                     </div>
                     <div>
-                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Superficie</span>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5 tracking-wide">Superficie</span>
                         <span className="font-medium text-gray-900">{anpSupDecretada ? `${anpSupDecretada} ha` : 'N/D'}</span>
                     </div>
                 </div>
@@ -214,7 +231,6 @@ const AnpInternalCard = ({ analysis }) => {
     if (!analysis.hasInternalAnpZoning || !analysis.anpInternalFeature) return null;
     const Icons = getIcons();
     const data = analysis.anpInternalFeature.properties || {};
-    // const nombre = data.NOMBRE || analysis.anpNombre || 'Desconocido';
     const zonificacion = data.ZONIFICACION || data.CATEGORIA_PROTECCION || analysis.anpCategoria || 'N/A';
 
     return (
@@ -225,20 +241,19 @@ const AnpInternalCard = ({ analysis }) => {
             </div>
 
             <div className="space-y-1 text-xs text-gray-700">
-                <span className="text-[10px] uppercase font-bold text-gray-500 block">Zonificación Programa de Manejo</span>
-                <span className="font-bold text-lg text-gray-900 block leading-tight">{zonificacion || 'N/A'}</span>
+                <span className="text-[10px] uppercase font-bold text-gray-500 block tracking-wide">Zonificación Programa de Manejo</span>
+                <span className="font-bold text-base text-gray-900 block leading-tight">{zonificacion || 'N/A'}</span>
             </div>
         </div>
     );
 };
 
-const LocationSummary = ({ analysis, zoningDisplay }) => {
+const LocationSummary = ({ analysis }) => {
     const Icons = getIcons();
     const COLORS = getColors();
     const Utils = getUtils();
 
     const { status } = analysis;
-    const isOutside = status === 'OUTSIDE_CDMX';
     const isSC = status === 'CONSERVATION_SOIL';
     const isUrban = status === 'URBAN_SOIL';
 
@@ -251,26 +266,19 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
         zoningColor = Utils.getZoningColor(analysis.zoningKey);
     }
 
-    if (isOutside) {
-        return (
-            <div className="bg-red-50 border border-red-100 rounded-xl p-4 mb-4 animate-pulse-subtle">
-                <div className="flex items-center gap-2 text-red-700 font-bold text-sm mb-1">
-                    {Icons.XCircle && <Icons.XCircle className="h-4 w-4" />}
-                    <span>Fuera de CDMX</span>
-                </div>
-                <p className="text-xs text-red-600 leading-snug">
-                    Este punto se encuentra en <strong>{analysis.outsideContext || 'otro estado'}</strong>.
-                </p>
-            </div>
-        );
-    }
+    // Short zoning badge: Just the key (FC, FPE, etc)
+    const zoningBadgeLabel = analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP'
+        ? analysis.zoningKey
+        : null;
+
+    if (status === 'OUTSIDE_CDMX') return null; // Handled by InlineAlert in main content
 
     return (
-        <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 mb-4 animate-slide-up">
-            <div className="flex flex-wrap items-center gap-2 mb-3">
-                {/* Badge Suelo Base (Filled) */}
+        <div className="bg-white border border-gray-100 rounded-xl p-4 mb-4 shadow-none animate-slide-up">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
+                {/* Badge Suelo Base (Filled, no shadow) */}
                 <span
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm"
+                    className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
                     style={{
                         backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
                         color: '#ffffff'
@@ -279,23 +287,23 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                     {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                 </span>
 
-                {/* Badge Zonificación (Solo label corto) - Filled */}
-                {isSC && analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP' && (
+                {/* Badge Zonificación SHORT (Filled) */}
+                {zoningBadgeLabel && (
                     <span
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
                         style={{
                             backgroundColor: zoningColor,
                             color: getContrastYIQ(zoningColor)
                         }}
                     >
-                        {zoningDisplay}
+                        {zoningBadgeLabel}
                     </span>
                 )}
 
                 {/* Badge ANP (Filled) */}
                 {analysis.isANP && (
                     <span
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none bg-[#9333ea] text-white shadow-sm"
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none bg-[#9333ea] text-white"
                     >
                         ANP
                     </span>
@@ -303,8 +311,8 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
             </div>
 
             <div>
-                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider mb-0.5">Alcaldía</div>
-                <div className="text-xl font-bold text-gray-800 leading-tight">
+                <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-0.5">Alcaldía</div>
+                <div className="text-lg font-bold text-gray-900 leading-tight">
                     {analysis.alcaldia || 'Ciudad de México'}
                 </div>
             </div>
@@ -319,16 +327,21 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
     const Icons = getIcons();
     const Utils = getUtils();
 
+    // 1. Grouping
     const groups = {};
     activities.forEach(a => {
         if (!groups[a.sector]) groups[a.sector] = {};
-        if (!groups[a.sector][a.general]) groups[a.sector][a.general] = [];
-        groups[a.sector][a.general].push(a.specific);
+        if (!groups[a.sector][a.general]) groups[a.sector][a.general] = new Set();
+        // Deduplicate specifics using Set
+        groups[a.sector][a.general].add(a.specific);
     });
 
+    // 2. Sorting Steps
+    const sortedSectors = Object.keys(groups).sort((a, b) => a.localeCompare(b));
+
     return (
-        <details open className={`group rounded-lg border border-gray-200 overflow-hidden mb-3 shadow-sm ${bgClass}`}>
-            <summary className={`flex items-center justify-between px-3 py-2 cursor-pointer ${headerClass}`}>
+        <details open className={`group rounded-lg border border-gray-200 overflow-hidden mb-3 ${bgClass}`}>
+            <summary className={`flex items-center justify-between px-3 py-2.5 cursor-pointer ${headerClass} hover:opacity-90 transition-opacity`}>
                 <div className="flex items-center gap-2 font-bold text-xs">
                     {icon}
                     <span>
@@ -341,12 +354,15 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
                 {Icons.ChevronDown && <Icons.ChevronDown className="h-4 w-4 group-open:rotate-180 transition-transform" />}
             </summary>
 
-            <div className="px-3 py-2 bg-white border-t border-gray-100 space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                {Object.entries(groups).map(([sector, generals], i) => {
+            {/* Mobile Scroll Limit: max-h-[45vh] on mobile only. MD: no limit */}
+            <div className="px-3 py-2 bg-white border-t border-gray-100 space-y-3 overflow-y-auto custom-scrollbar max-h-[45vh] md:max-h-none">
+                {sortedSectors.map((sector, i) => {
+                    const generalsMap = groups[sector];
+                    const sortedGenerals = Object.keys(generalsMap).sort((a, b) => a.localeCompare(b));
                     const st = Utils.getSectorStyle ? Utils.getSectorStyle(sector) : { border: '#ccc', text: '#333' };
 
                     return (
-                        <div key={i} className="mb-3 rounded overflow-hidden border border-gray-100">
+                        <div key={i} className="mb-2 rounded overflow-hidden border border-gray-100">
                             <div
                                 className="px-3 py-1.5 font-bold text-[10px] uppercase tracking-wide border-l-4 bg-gray-50"
                                 style={{
@@ -358,36 +374,41 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
                             </div>
 
                             <div className="bg-white">
-                                {Object.entries(generals).map(([gen, specifics], j) => (
-                                    <details key={j} className="group/inner border-b border-gray-50 last:border-0">
-                                        <summary className="px-3 py-2 text-[11px] font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex justify-between select-none">
-                                            <div className="flex items-center gap-2">
-                                                <span
-                                                    className="w-1.5 h-1.5 rounded-full"
-                                                    style={{ backgroundColor: accentColor || st.border }}
-                                                />
-                                                <span>{gen}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[9px] text-gray-400 bg-gray-100 px-1.5 rounded-full">
-                                                    {specifics.length}
-                                                </span>
-                                                {Icons.ChevronDown && <Icons.ChevronDown className="h-3 w-3 text-gray-400 group-open/inner:rotate-180 transition-transform" />}
-                                            </div>
-                                        </summary>
+                                {sortedGenerals.map((gen, j) => {
+                                    const specificSet = generalsMap[gen];
+                                    const specificList = Array.from(specificSet).sort((a, b) => a.localeCompare(b));
 
-                                        <ul className="bg-gray-50/50 px-4 py-2 space-y-1">
-                                            {specifics.map((spec, k) => (
-                                                <li
-                                                    key={k}
-                                                    className="text-[10px] text-gray-600 pl-3 relative border-l-2 border-gray-200"
-                                                >
-                                                    {spec}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </details>
-                                ))}
+                                    return (
+                                        <details key={j} className="group/inner border-b border-gray-50 last:border-0 hover:bg-gray-50 transition-colors">
+                                            <summary className="px-3 py-2 text-[11px] font-medium text-gray-700 cursor-pointer flex justify-between select-none items-start gap-2">
+                                                <div className="flex items-start gap-2">
+                                                    <span
+                                                        className="w-1.5 h-1.5 rounded-full mt-1.5 shrink-0"
+                                                        style={{ backgroundColor: accentColor || st.border }}
+                                                    />
+                                                    <span className="leading-snug">{gen}</span>
+                                                </div>
+                                                <div className="flex items-center gap-1 shrink-0 mt-0.5">
+                                                    <span className="text-[9px] text-gray-400 bg-gray-100 px-1.5 rounded-full">
+                                                        {specificList.length}
+                                                    </span>
+                                                    {Icons.ChevronDown && <Icons.ChevronDown className="h-3 w-3 text-gray-400 group-open/inner:rotate-180 transition-transform" />}
+                                                </div>
+                                            </summary>
+
+                                            <ul className="bg-gray-50/30 px-4 py-2 space-y-1.5">
+                                                {specificList.map((spec, k) => (
+                                                    <li
+                                                        key={k}
+                                                        className="text-[11px] text-gray-600 pl-3 relative border-l-2 border-gray-200 leading-snug"
+                                                    >
+                                                        {spec}
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </details>
+                                    );
+                                })}
                             </div>
                         </div>
                     );
@@ -398,18 +419,18 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
 };
 
 const LegalDisclaimer = () => (
-    <div className="mt-4 p-3 bg-gray-50 border-t border-gray-100 text-[10px] text-gray-400 text-justify">
-        <strong>Aviso Legal:</strong> La información mostrada tiene carácter orientativo y no sustituye la interpretación oficial ni los documentos normativos vigentes.
+    <div className="mt-6 mb-2 p-0 text-[10px] text-gray-400 text-center uppercase tracking-wide opacity-70">
+        Información de carácter orientativo. No sustituye documentos oficiales.
     </div>
 );
 
-const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
+const ActionButtons = ({ analysis, onExportPDF }) => {
     const COLORS = getColors();
     const Icons = getIcons();
-    const btnClass = "flex flex-col items-center justify-center p-2 bg-white border border-gray-200 rounded text-gray-600 transition-all hover:shadow-sm";
+    const btnClass = "flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-lg text-gray-700 transition-all active:scale-[0.98] hover:border-gray-300 hover:bg-gray-50";
 
     return (
-        <div className="hidden md:grid grid-cols-2 gap-2 w-full">
+        <div className="grid grid-cols-2 gap-3 w-full mt-2">
             {/* Google Maps */}
             {analysis?.coordinate && (
                 <a
@@ -417,13 +438,10 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
                     target="_blank"
                     rel="noreferrer"
                     className={btnClass}
-                    style={{ '--hover-color': COLORS.primary }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
-                    title="Ver ubicación en Google Maps"
+                    title="Ver en Google Maps"
                 >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1" />}
-                    <span className="text-[9px] font-bold">Google Maps</span>
+                    {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1.5 text-blue-600" />}
+                    <span className="text-[11px] font-bold">Google Maps</span>
                 </a>
             )}
 
@@ -432,13 +450,10 @@ const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
                 type="button"
                 onClick={(e) => onExportPDF?.(e)}
                 className={btnClass}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
-                title="Generar ficha en PDF"
-                aria-label="Exportar resultados a PDF"
+                title="Generar Ficha PDF"
             >
-                {Icons.Pdf && <Icons.Pdf className="h-5 w-5 mb-1" />}
-                <span className="text-[9px] font-bold">Exportar PDF</span>
+                {Icons.Pdf && <Icons.Pdf className="h-5 w-5 mb-1.5 text-[#9d2449]" />}
+                <span className="text-[11px] font-bold">Descargar Ficha</span>
             </button>
         </div>
     );
@@ -455,65 +470,62 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     const Icons = getIcons();
     const COLORS = getColors();
     const Constants = getConstants();
-    const REGULATORY_NOTES = Constants.REGULATORY_NOTES || [];
 
     const zoningDisplay = getZoningDisplay(analysis);
-
-    /* ---------------------------------------------------- */
-    /*   JERARQUÍA NORMATIVA DE VISUALIZACIÓN               */
-    /*   1. LocationSummary (Badges + Alcaldía)             */
-    /*   2. StatusMessage (Warnings especiales)             */
-    /*   3. NormativeInstrument (Rector: PGOEDF / PDU)      */
-    /*   4. AnpGeneralCard (General ANP) - BEFORE ZONING    */
-    /*   5. ZoningDetail (PGOEDF específica)                */
-    /*   6. AnpInternalCard (Interna ANP)                   */
-    /*   7. Activities (Catálogo SC)                        */
-    /* ---------------------------------------------------- */
+    const { status, zoningKey, isANP } = analysis;
 
     return (
-        <div className="space-y-2 animate-in">
-            {/* 1. Resumen Ubicación */}
-            <LocationSummary analysis={analysis} zoningDisplay={zoningDisplay} />
+        <div className="space-y-3 animate-in pb-4">
 
-            {/* 2. Mensajes de Estado Criticos */}
-            <StatusMessage analysis={analysis} />
+            {/* 1. Location and basic context */}
+            <LocationSummary analysis={analysis} />
+
+            {/* 2. Unified Critical Alerts */}
+            {status === 'OUTSIDE_CDMX' && (
+                <InlineAlert tone="error">
+                    Este punto se encuentra <strong>fuera de la Ciudad de México</strong> ({analysis.outsideContext || 'otro estado'}).
+                </InlineAlert>
+            )}
+
+            {(status === 'NO_DATA' || zoningKey === 'NODATA') && status !== 'URBAN_SOIL' && status !== 'OUTSIDE_CDMX' && (
+                <InlineAlert tone="nodata">
+                    <strong>Sin Información:</strong> No se encontraron datos de zonificación para esta ubicación.
+                </InlineAlert>
+            )}
+
+            {(isANP || zoningKey === 'ANP') && (
+                <InlineAlert tone="anp">
+                    <strong>Área Natural Protegida:</strong> Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
+                </InlineAlert>
+            )}
 
             {/* 3. Instrumento Rector */}
             <NormativeInstrumentCard analysis={analysis} />
 
-            {/* 4. Régimen ANP General (Debe ir antes de Zonificaciones específicas si es régimen superior) */}
-            <AnpGeneralCard analysis={analysis} />
-
-            {/* 5. Zonificación PGOEDF */}
+            {/* 4. Zonificación PGOEDF (Solo SC) */}
             <ZoningResultCard analysis={analysis} zoningDisplay={zoningDisplay} />
 
-            {/* 6. Zonificación Interna ANP */}
+            {/* 5. ANP Details (Si aplica) */}
+            <AnpGeneralCard analysis={analysis} />
             <AnpInternalCard analysis={analysis} />
 
-
-            {/* 7. Catálogo de Actividades (Solo SC) */}
+            {/* 6. Catálogo de Actividades (Solo SC, no PDU) */}
             {analysis.status === 'CONSERVATION_SOIL' &&
                 !analysis.isPDU &&
                 !analysis.noActivitiesCatalog && (
-                    <>
-                        <div className="flex items-center justify-between mt-4 mb-2">
-                            <div className="text-[11px] font-bold text-gray-500 uppercase tracking-wide">
+                    <div className="mt-4">
+                        <div className="flex items-center justify-between mb-2 px-1">
+                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">
                                 Catálogo de Actividades
                             </div>
-                            <button
-                                onClick={() => setShowDetails(v => !v)}
-                                className="text-[10px] text-blue-600 hover:underline font-medium"
-                            >
-                                {showDetails ? 'Ocultar todo' : 'Ver todo'}
-                            </button>
                         </div>
 
                         {showDetails && (
                             <div className="animate-in slide-in-from-top-2 duration-300">
-                                <div className="border-b border-gray-200 mb-4 flex gap-4">
+                                <div className="flex gap-4 border-b border-gray-200 mb-3">
                                     <button
                                         onClick={() => setActiveTab('prohibidas')}
-                                        className={`pb-2 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'prohibidas'
+                                        className={`flex-1 pb-2 text-[10px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'prohibidas'
                                             ? 'border-red-500 text-red-700'
                                             : 'border-transparent text-gray-400 hover:text-gray-600'
                                             }`}
@@ -522,7 +534,7 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                                     </button>
                                     <button
                                         onClick={() => setActiveTab('permitidas')}
-                                        className={`pb-2 text-[11px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'permitidas'
+                                        className={`flex-1 pb-2 text-[10px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'permitidas'
                                             ? 'border-green-500 text-green-700'
                                             : 'border-transparent text-gray-400 hover:text-gray-600'
                                             }`}
@@ -552,48 +564,52 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
                                         accentColor={COLORS.success}
                                     />
                                 )}
-
-                                <div className="mt-4 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
-                                    <button
-                                        onClick={() => setShowNotes(!showNotes)}
-                                        className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
-                                    >
-                                        <span className="text-xs font-bold text-gray-700 uppercase tracking-wide flex items-center gap-2">
-                                            {Icons.Info ? <Icons.Info className="h-4 w-4 text-gray-500" /> : <span>i</span>}
-                                            Notas Normativas
-                                        </span>
-                                        {showNotes ?
-                                            (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) :
-                                            (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
-                                    </button>
-
-                                    {showNotes && (
-                                        <div className="p-4 bg-white border-t border-gray-200">
-                                            <ul className="space-y-3">
-                                                {[
-                                                    "Adicionalmente a lo dispuesto en la tabla de usos del suelo, para cualquier obra o actividad que se pretenda desarrollar se deberán contemplar los criterios y lineamientos señalados en el programa de Ordenamiento Ecológico, así como cumplir con los permisos y autorizaciones en materia ambiental del Distrito Federal.",
-                                                    "Los usos del suelo no identificados en esta tabla deberán cumplir con los permisos y autorizaciones en materia urbana y ambiental aplicables en Suelo de Conservación.",
-                                                    "En las Areas Naturales Protegidas ANP regirá la zonificación especificada en su respectivo Programa de Manejo.",
-                                                    "La zonificación denominada PDU corresponde a las áreas normadas por los Programas Delegacionales o Parciales de Desarrollo Urbano vigentes.",
-                                                    "Las disposiciones de la presente regulación no prejuzgan sobre la propiedad de la tierra.",
-                                                    "El Suelo de Conservación definido por las barrancas estará regulado por la zonificación Forestal de Conservación FC, conforme a los límites establecidos por la Norma de Ordenación N° 21, señalada en los Programas de Desarrollo Urbano.",
-                                                    "* Se instrumentará un programa de reconversión de esta actividad por la producción de composta. Para ello, se elaborará un padrón de los productores y diseñar y ejecutar un programa de capacitación y proponer paquetes tecnológicos para transferencia y el desarrollo de estudios de mercado para la sustitución progresiva del producto y la reducción de la extracción directa."
-                                                ].map((note, idx) => (
-                                                    <li key={idx} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed text-justify border-l-2 border-gray-200 pl-2">
-                                                        <span className="text-[#9d2148] font-bold">•</span>
-                                                        <span>{note}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-                                    )}
-                                </div>
                             </div>
                         )}
-                    </>
+                    </div>
                 )}
 
-            <ActionButtonsDesktop analysis={analysis} onExportPDF={onExportPDF} />
+            {/* 7. Notas Normativas */}
+            <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                <button
+                    onClick={() => setShowNotes(!showNotes)}
+                    className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
+                >
+                    <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
+                        {Icons.Info ? <Icons.Info className="h-3 w-3 text-gray-400" /> : <span>i</span>}
+                        Notas Normativas Importantes
+                    </span>
+                    {showNotes ?
+                        (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) :
+                        (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
+                </button>
+
+                {showNotes && (
+                    <div className="p-4 bg-white border-t border-gray-200">
+                        <ul className="space-y-3">
+                            {[
+                                "Adicionalmente a lo dispuesto en la tabla de usos del suelo, para cualquier obra o actividad que se pretenda desarrollar se deberán contemplar los criterios y lineamientos señalados en el programa de Ordenamiento Ecológico, así como cumplir con los permisos y autorizaciones en materia ambiental del Distrito Federal.",
+                                "Los usos del suelo no identificados en esta tabla deberán cumplir con los permisos y autorizaciones en materia urbana y ambiental aplicables en Suelo de Conservación.",
+                                "En las Areas Naturales Protegidas ANP regirá la zonificación especificada en su respectivo Programa de Manejo.",
+                                "La zonificación denominada PDU corresponde a las áreas normadas por los Programas Delegacionales o Parciales de Desarrollo Urbano vigentes.",
+                                "Las disposiciones de la presente regulación no prejuzgan sobre la propiedad de la tierra.",
+                                "El Suelo de Conservación definido por las barrancas estará regulado por la zonificación Forestal de Conservación FC, conforme a los límites establecidos por la Norma de Ordenación N° 21, señalada en los Programas de Desarrollo Urbano.",
+                                "* Se instrumentará un programa de reconversión de esta actividad por la producción de composta. Para ello, se elaborará un padrón de los productores y diseñar y ejecutar un programa de capacitación y proponer paquetes tecnológicos para transferencia y el desarrollo de estudios de mercado para la sustitución progresiva del producto y la reducción de la extracción directa."
+                            ].map((note, idx) => (
+                                <li key={idx} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed text-justify border-l-2 border-gray-200 pl-2">
+                                    <span className="text-[#9d2449] font-bold">•</span>
+                                    <span>{note}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+            </div>
+
+            {/* 8. Action Buttons (Mobile & Desktop) */}
+            <ActionButtons analysis={analysis} onExportPDF={onExportPDF} />
+
+            {/* 9. Disclaimer */}
             <LegalDisclaimer />
         </div>
     );
