@@ -166,137 +166,6 @@ const ZoningResultCard = ({ analysis, zoningDisplay }) => {
     );
 };
 
-const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, accentColor }) => {
-    if (!activities || activities.length === 0) return null;
-
-    const Icons = getIcons();
-    const Utils = getUtils();
-
-    const groups = {};
-    activities.forEach(a => {
-        if (!groups[a.sector]) groups[a.sector] = {};
-        if (!groups[a.sector][a.general]) groups[a.sector][a.general] = [];
-        groups[a.sector][a.general].push(a.specific);
-    });
-
-    return (
-        <details open className={`group rounded-lg border border-gray-200 overflow-hidden mb-3 shadow-sm ${bgClass}`}>
-            <summary className={`flex items-center justify-between px-3 py-2 cursor-pointer ${headerClass}`}>
-                <div className="flex items-center gap-2 font-bold text-xs">
-                    {icon}
-                    <span>
-                        {title}{' '}
-                        <span className="text-[10px] font-normal opacity-80">
-                            ({activities.length})
-                        </span>
-                    </span>
-                </div>
-                {Icons.ChevronDown && <Icons.ChevronDown className="h-4 w-4 group-open:rotate-180 transition-transform" />}
-            </summary>
-
-            <div className="px-3 py-2 bg-white border-t border-gray-100 space-y-3 max-h-[300px] overflow-y-auto custom-scrollbar">
-                {Object.entries(groups).map(([sector, generals], i) => {
-                    const st = Utils.getSectorStyle ? Utils.getSectorStyle(sector) : { border: '#ccc', text: '#333' };
-
-                    return (
-                        <div key={i} className="mb-3 rounded overflow-hidden border border-gray-100">
-                            <div
-                                className="px-3 py-1.5 font-bold text-[10px] uppercase tracking-wide border-l-4 bg-gray-50"
-                                style={{
-                                    borderLeftColor: st.border,
-                                    color: '#374151'
-                                }}
-                            >
-                                {sector}
-                            </div>
-
-                            <div className="bg-white">
-                                {Object.entries(generals).map(([gen, specifics], j) => (
-                                    <details key={j} className="group/inner border-b border-gray-50 last:border-0">
-                                        <summary className="px-3 py-2 text-[11px] font-medium text-gray-700 cursor-pointer hover:bg-gray-50 flex justify-between select-none">
-                                            <div className="flex items-center gap-2">
-                                                <span
-                                                    className="w-1.5 h-1.5 rounded-full"
-                                                    style={{ backgroundColor: accentColor || st.border }}
-                                                />
-                                                <span>{gen}</span>
-                                            </div>
-                                            <div className="flex items-center gap-2">
-                                                <span className="text-[9px] text-gray-400 bg-gray-100 px-1.5 rounded-full">
-                                                    {specifics.length}
-                                                </span>
-                                                {Icons.ChevronDown && <Icons.ChevronDown className="h-3 w-3 text-gray-400 group-open/inner:rotate-180 transition-transform" />}
-                                            </div>
-                                        </summary>
-
-                                        <ul className="bg-gray-50/50 px-4 py-2 space-y-1">
-                                            {specifics.map((spec, k) => (
-                                                <li
-                                                    key={k}
-                                                    className="text-[10px] text-gray-600 pl-3 relative border-l-2 border-gray-200"
-                                                >
-                                                    {spec}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </details>
-                                ))}
-                            </div>
-                        </div>
-                    );
-                })}
-            </div>
-        </details>
-    );
-};
-
-const LegalDisclaimer = () => (
-    <div className="mt-4 p-3 bg-gray-50 border-t border-gray-100 text-[10px] text-gray-400 text-justify">
-        <strong>Aviso Legal:</strong> La información mostrada tiene carácter orientativo y no sustituye la interpretación oficial ni los documentos normativos vigentes.
-    </div>
-);
-
-const ActionButtonsDesktop = ({ analysis, onExportPDF }) => {
-    const COLORS = getColors();
-    const Icons = getIcons();
-    const btnClass = "flex flex-col items-center justify-center p-2 bg-white border border-gray-200 rounded text-gray-600 transition-all hover:shadow-sm";
-
-    return (
-        <div className="hidden md:grid grid-cols-2 gap-2 w-full">
-            {/* Google Maps */}
-            {analysis?.coordinate && (
-                <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className={btnClass}
-                    style={{ '--hover-color': COLORS.primary }}
-                    onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
-                    title="Ver ubicación en Google Maps"
-                >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1" />}
-                    <span className="text-[9px] font-bold">Google Maps</span>
-                </a>
-            )}
-
-            {/* Exportar PDF */}
-            <button
-                type="button"
-                onClick={(e) => onExportPDF?.(e)}
-                className={btnClass}
-                onMouseEnter={(e) => { e.currentTarget.style.borderColor = COLORS.primary; e.currentTarget.style.color = COLORS.primary; }}
-                onMouseLeave={(e) => { e.currentTarget.style.borderColor = '#e5e7eb'; e.currentTarget.style.color = '#4b5563'; }}
-                title="Generar ficha en PDF"
-                aria-label="Exportar resultados a PDF"
-            >
-                {Icons.Pdf && <Icons.Pdf className="h-5 w-5 mb-1" />}
-                <span className="text-[9px] font-bold">Exportar PDF</span>
-            </button>
-        </div>
-    );
-};
-
 const AnpGeneralCard = ({ analysis }) => {
     if (!analysis || !analysis.isANP) return null;
     const Icons = getIcons();
@@ -319,6 +188,21 @@ const AnpGeneralCard = ({ analysis }) => {
                     <div>
                         <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Categoría</span>
                         <span className="font-medium text-gray-900">{anpCategoria || 'N/D'}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Tipo Decreto</span>
+                        <span className="font-medium text-gray-900">{anpTipoDecreto || 'N/D'}</span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Fecha Decreto</span>
+                        <span className="font-medium text-gray-900">{anpFechaDecreto || 'N/D'}</span>
+                    </div>
+                    <div>
+                        <span className="text-[10px] uppercase font-bold text-gray-500 block mb-0.5">Superficie</span>
+                        <span className="font-medium text-gray-900">{anpSupDecretada ? `${anpSupDecretada} ha` : 'N/D'}</span>
                     </div>
                 </div>
             </div>
@@ -384,22 +268,21 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
     return (
         <div className="bg-white border border-gray-100 shadow-sm rounded-xl p-4 mb-4 animate-slide-up">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-                {/* Badge Suelo Base */}
+                {/* Badge Suelo Base (Filled) */}
                 <span
-                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none border"
+                    className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm"
                     style={{
-                        backgroundColor: '#fff',
-                        borderColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
-                        color: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280'
+                        backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
+                        color: '#ffffff'
                     }}
                 >
                     {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                 </span>
 
-                {/* Badge Zonificación (Solo label corto) - Opcional, ya que se muestra detalle abajo */}
+                {/* Badge Zonificación (Solo label corto) - Filled */}
                 {isSC && analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP' && (
                     <span
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none shadow-sm"
                         style={{
                             backgroundColor: zoningColor,
                             color: getContrastYIQ(zoningColor)
@@ -409,10 +292,10 @@ const LocationSummary = ({ analysis, zoningDisplay }) => {
                     </span>
                 )}
 
-                {/* Badge ANP */}
+                {/* Badge ANP (Filled) */}
                 {analysis.isANP && (
                     <span
-                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none bg-purple-100 text-purple-800 border border-purple-200"
+                        className="inline-flex items-center px-2.5 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase leading-none bg-[#9333ea] text-white shadow-sm"
                     >
                         ANP
                     </span>
@@ -449,9 +332,10 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
     /*   1. LocationSummary (Badges + Alcaldía)             */
     /*   2. StatusMessage (Warnings especiales)             */
     /*   3. NormativeInstrument (Rector: PGOEDF / PDU)      */
-    /*   4. ZoningDetail (PGOEDF específica / ANP Interna)  */
-    /*   5. Regulatory (ANP General)                        */
-    /*   6. Activities (Catálogo SC)                        */
+    /*   4. AnpGeneralCard (General ANP) - BEFORE ZONING    */
+    /*   5. ZoningDetail (PGOEDF específica)                */
+    /*   6. AnpInternalCard (Interna ANP)                   */
+    /*   7. Activities (Catálogo SC)                        */
     /* ---------------------------------------------------- */
 
     return (
@@ -465,16 +349,17 @@ const ResultsContent = ({ analysis, onExportPDF }) => {
             {/* 3. Instrumento Rector */}
             <NormativeInstrumentCard analysis={analysis} />
 
-            {/* 4. Zonificación Específica */}
-            {/* Si es SC mostrar Zonificación PGOEDF */}
-            <ZoningResultCard analysis={analysis} zoningDisplay={zoningDisplay} />
-            {/* Si tiene zonificación interna ANP mostrarla */}
-            <AnpInternalCard analysis={analysis} />
-
-            {/* 5. Regímenes Adicionales */}
+            {/* 4. Régimen ANP General (Debe ir antes de Zonificaciones específicas si es régimen superior) */}
             <AnpGeneralCard analysis={analysis} />
 
-            {/* 6. Catálogo de Actividades (Solo SC) */}
+            {/* 5. Zonificación PGOEDF */}
+            <ZoningResultCard analysis={analysis} zoningDisplay={zoningDisplay} />
+
+            {/* 6. Zonificación Interna ANP */}
+            <AnpInternalCard analysis={analysis} />
+
+
+            {/* 7. Catálogo de Actividades (Solo SC) */}
             {analysis.status === 'CONSERVATION_SOIL' &&
                 !analysis.isPDU &&
                 !analysis.noActivitiesCatalog && (
