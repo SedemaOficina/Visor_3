@@ -43,7 +43,7 @@ const HelpModal = ({ isOpen, onClose }) => {
                         </div>
                         <div>
                             <h2 className="text-base font-bold text-gray-800 leading-tight">
-                                Verifica si un predio se encuentra en
+                                Verifica si un punto se encuentra en
                             </h2>
                             <p className="text-sm text-[#9d2148] font-semibold">
                                 Suelo de Conservación o Área Natural Protegida
@@ -68,7 +68,7 @@ const HelpModal = ({ isOpen, onClose }) => {
                         <section>
                             <h3 className="flex items-center gap-2 text-base font-bold text-[#9d2148] mb-3 uppercase tracking-wide">
                                 <MapPinnedIcon className="h-4 w-4" />
-                                ¿Cómo ubicar un predio?
+                                ¿Cómo realizar una consulta?
                             </h3>
                             <ul className="space-y-3 pl-1">
                                 <li className="flex gap-3 text-sm text-gray-700">
@@ -86,7 +86,7 @@ const HelpModal = ({ isOpen, onClose }) => {
                                 <li className="flex gap-3 text-sm text-gray-700">
                                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-100 text-gray-600 font-bold flex items-center justify-center text-[10px] border border-gray-200">3</span>
                                     <span>
-                                        <strong>Navegación manual:</strong> Navega por el mapa y haz clic directamente sobre el predio de interés.
+                                        <strong>Navegación manual:</strong> Navega por el mapa y haz clic directamente sobre la ubicación de interés.
                                     </span>
                                 </li>
                                 <li className="flex gap-3 text-sm text-gray-700">

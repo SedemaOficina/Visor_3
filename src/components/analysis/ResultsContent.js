@@ -431,7 +431,7 @@ const CitizenSummaryCard = ({ analysis }) => {
 
         if (status === 'URBAN_SOIL') {
             if (isANP) {
-                return `Aunque es zona urbana, este predio está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
+                return `Aunque es zona urbana, este punto está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
             }
             return `Te encuentras en Suelo Urbano. Aquí predominan las actividades residenciales, comerciales y de servicios. Las reglas de construcción dependen de la SEDUVI y del Plan de Desarrollo Urbano de ${alcaldia || 'la alcaldía'}.`;
         }
@@ -439,7 +439,7 @@ const CitizenSummaryCard = ({ analysis }) => {
         if (status === 'CONSERVATION_SOIL') {
             // ANP CASE
             if (isANP) {
-                return `¡Estás en una zona muy importante! Este predio es parte de una Área Natural Protegida (ANP). Su objetivo principal es preservar la biodiversidad. Aquí las construcciones están muy restringidas y se sigue un Plan de Manejo específico.`;
+                return `¡Estás en una zona muy importante! Este punto es parte de una Área Natural Protegida (ANP). Su objetivo principal es preservar la biodiversidad. Aquí las construcciones están muy restringidas y se sigue un Plan de Manejo específico.`;
             }
 
             // ZONING CASES (PGOEDF)
@@ -578,7 +578,7 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
 
             {(isANP || zoningKey === 'ANP') && (
                 <InlineAlert tone="anp">
-                    <strong>Área Natural Protegida:</strong> Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
+                    <strong>Área Natural Protegida:</strong> Este punto se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                 </InlineAlert>
             )}
 

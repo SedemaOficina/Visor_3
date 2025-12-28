@@ -35,7 +35,7 @@
         const STEPS = [
             {
                 title: '¡Bienvenido al Visor Ciudadano!',
-                text: 'Esta herramienta te permite consultar el Uso de Suelo y Normatividad de cualquier predio en la CDMX de forma fácil y rápida.',
+                text: 'Esta herramienta te permite consultar el Uso de Suelo y Normatividad de cualquier ubicación en la CDMX de forma fácil y rápida.',
                 icon: Icons.MapPin || (() => <span>📍</span>)
             },
             {
@@ -45,7 +45,7 @@
             },
             {
                 title: 'Paso 2: Explora',
-                text: 'O navega por el mapa interactivo. Haz clic sobre cualquier predio para ver su información detallada.',
+                text: 'O navega por el mapa interactivo. Haz clic sobre cualquier punto para ver su información detallada.',
                 icon: Icons.Navigation || (() => <span>👆</span>)
             },
             {

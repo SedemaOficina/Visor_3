@@ -100,7 +100,7 @@ const SidebarDesktop = ({
                                 Bienvenido al Visor Ciudadano
                             </h3>
                             <p className="text-sm text-gray-500 leading-relaxed max-w-[260px] mx-auto">
-                                Para comenzar, selecciona un predio en el mapa o busca una dirección específica.
+                                Para comenzar, selecciona un punto en el mapa o busca una dirección específica.
                             </p>
 
                             {/* Decorative dots */}

@@ -258,11 +258,11 @@
                 return `Estás consultando una ubicación fuera de la Ciudad de México. Aquí no aplican las regulaciones de la SEDEMA CDMX. Te sugerimos contactar a las autoridades locales de ${analysis.outsideContext || 'la entidad vecina'}.`;
             }
             if (status === 'URBAN_SOIL') {
-                if (isANP) return `Aunque es zona urbana, este predio está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
+                if (isANP) return `Aunque es zona urbana, este punto está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
                 return `Te encuentras en Suelo Urbano. Aquí predominan las actividades residenciales, comerciales y de servicios. Las reglas de construcción dependen de la SEDUVI y del Plan de Desarrollo Urbano de ${alcaldia || 'la alcaldía'}.`;
             }
             if (status === 'CONSERVATION_SOIL') {
-                if (isANP) return `¡Estás en una zona muy importante! Este predio es parte de una Área Natural Protegida (ANP). Su objetivo principal es preservar la biodiversidad. Aquí las construcciones están muy restringidas y se sigue un Plan de Manejo específico.`;
+                if (isANP) return `¡Estás en una zona muy importante! Este punto es parte de una Área Natural Protegida (ANP). Su objetivo principal es preservar la biodiversidad. Aquí las construcciones están muy restringidas y se sigue un Plan de Manejo específico.`;
                 switch (zoningKey) {
                     case 'RE': return `Estás en una zona de Rescate Ecológico. Estas áreas han sido afectadas por actividades humanas pero buscamos restaurarlas. La prioridad es reforestar y evitar que la mancha urbana crezca más.`;
                     case 'FC': case 'FCE': case 'FP': case 'FPE': return `Estás en una zona Forestal. Es el pulmón de la ciudad. Aquí la prioridad absoluta es mantener el bosque sano. Prácticamente no se permite construir viviendas ni comercios para proteger el agua y el aire de todos.`;
@@ -319,7 +319,7 @@
 
                     {/* --- SECTION 1: UBICACIÓN --- */}
                     <div style={{ marginBottom: '40px' }}>
-                        <div style={styleH2}>Ubicación del Predio</div>
+                        <div style={styleH2}>Ubicación del Punto</div>
                         <div style={{ display: 'flex', gap: '30px', alignItems: 'flex-start' }}>
                             <div style={{ flex: '1' }}>
                                 <div style={{ marginBottom: '15px' }}>
@@ -396,7 +396,7 @@
                                     Fuera de Jurisdicción de la CDMX
                                 </div>
                                 <div style={{ fontSize: '11px', color: C.ink, lineHeight: 1.5, maxWidth: '600px', margin: '0 auto' }}>
-                                    El predio consultado no se encuentra dentro del territorio de la Ciudad de México.
+                                    El punto consultado no se encuentra dentro del territorio de la Ciudad de México.
                                     La Secretaría del Medio Ambiente de la CDMX no tiene atribuciones para determinar la normatividad urbana o ambiental en esta ubicación.
                                     <br /><br />
                                     Le sugerimos consultar a las autoridades estatales o municipales correspondientes de <strong>{outsideContextName || 'la entidad federativa respectiva'}</strong>.
@@ -468,7 +468,7 @@
                                             </div>
 
                                             <div style={{ fontSize: '10px', color: '#7E22CE', fontStyle: 'italic', lineHeight: 1.3, fontWeight: 500 }}>
-                                                Área Natural Protegida: Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
+                                                Área Natural Protegida: Este punto se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                                             </div>
                                         </div>
                                     )}
@@ -525,7 +525,7 @@
                                     {analysis.anpInternalFeature.properties?.ZONIFICACION || analysis.anpInternalFeature.properties?.CATEGORIA_PROTECCION || 'Zonificación Específica'}
                                 </div>
                                 <div style={{ fontSize: '10px', color: '#7E22CE', fontStyle: 'italic', fontWeight: 500 }}>
-                                    Área Natural Protegida: Este predio se encuentra dentro de un ANP y se rige por su Programa de Manejo.
+                                    Área Natural Protegida: Este punto se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                                 </div>
                             </div>
                         )}
