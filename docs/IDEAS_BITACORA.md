@@ -15,12 +15,11 @@ Este documento clasifica las ideas de mejora, deuda técnica y funcionalidades p
 Mejoras enfocadas en la facilidad de uso, estética y accesibilidad.
 
 *   Onboarding
-    *   � **Tutorial Guiado (Walkthrough)**: Al abrir por primera vez, mostrar 3 globos flotantes: "1. Busca", "2. Analiza", "3. Descarga". Reduciría dudas iniciales.
-*   Navegación Desktop
-    *   🟢 **Botón "Buscar" Explícito**: Añadir icono de lupa clicable junto a la barra de coordenadas para no depender solo del "Enter".
+    *   🟡 **Tutorial Guiado (Walkthrough)**: Al abrir por primera vez, mostrar 3 globos flotantes: "1. Busca", "2. Analiza", "3. Descarga". Reduciría dudas iniciales.
 *   Accesibilidad
     *   🟢 **Búsqueda por Voz**: Icono de micrófono en el buscador móvil para dictar direcciones (Web Speech API).
-    *   � **Modo Oscuro Automático**: Detectar preferencia del sistema y ajustar el mapa a "Dark Matter" y tarjetas oscuras.
+    *   🟡 **Modo Oscuro Automático**: Detectar preferencia del sistema y ajustar el mapa a "Dark Matter" y tarjetas oscuras.
+    *   🟢 **Control de Opacidad de Capas**: Un slider simple en el panel de capas para ajustar transparencia del mapa de zonificación sobre la satelital.
 *   Estética "Premium"
     *   🟡 **Dashboard de "KPIs"**: Rediseñar la sección de datos para que los metros cuadrados y usos clave se vean como indicadores financieros grandes, no solo texto.
     *   🟢 **Sello de Verificación Animado**: Animación sutil de "Sellado" al completar un análisis para dar certeza psicológica.
@@ -35,35 +34,50 @@ Mejoras en la ficha descargable que se entrega al ciudadano.
     *   🟡 **Código QR de Autenticidad**: Que el QR generado apunte a una URL de validación única con los parámetros encriptados o firmados (simulado).
     *   🟢 **Marca de Agua Digital**: Añadir marca de agua sutil de "Documento Informativo - Sin Validez Legal" en el fondo de la página.
 
-## �️ 3. Herramientas del Mapa
+## 🗺️ 3. Herramientas del Mapa
 Funcionalidades geoespaciales para interacción avanzada.
 
 *   Interacción
     *   🟡 **Herramienta de Medición (Regla)**: Botón para trazar líneas y medir distancia (ej. "Distancia a la barranca").
+    *   🟡 **Comparativo de Predios**: Opción para seleccionar dos puntos A y B y ver una tabla comparativa de sus normas lado a lado.
     *   MEDIO **Filtro de "Solo mi Alcaldía"**: Al buscar, oscurecer todo el mapa excepto la alcaldía de interés (masking).
+    *   🟢 **Enlace a Street View / Google Earth**: Un botón en la ficha para "Ver en 3D" que abra Google Earth Web en las mismas coordenadas para inspección visual del terreno.
 *   Capas
     *   🟡 **Visualización 3D**: Activar extrusión de edificios en niveles de zoom alto (requiere vector tiles).
+    *   🔴 **Capa de Atlas de Riesgos**: Sobreponer capas de grietas o inundaciones (si existen datos WMS/GeoJSON disponibles).
 
 ## ⚙️ 4. Lógica de Negocio y Datos
 Funcionalidades core del sistema y gestión de información.
 
 *   Retención
-    *   FÁCIL **Historial de Búsquedas**: Guardar las últimas 5 consultas en `localStorage` para acceso rápido.
-    *   MEDIO **Mis Ubicaciones Favoritas**: Permitir marcar puntos con estrella ("Casa", "Terreno") y guardarlos en el navegador.
+    *   MEDIO **Mis Ubicaciones Favoritas**: Permitir marcar puntos con estrella ("Casa", "Terreno") y guardarlos en el navegador (Local Storage avanzado).
 *   IA y Soporte
-    *   🔴 **Chat Normativo (IA)**: Integración futura con LLM para preguntar "¿Qué puedo construir aquí?" y responder basado en la Ley.
+    *   🔴 **Chat Normativo (IA)**: Integración futura con LLM para preguntar "¿Qué puedo construir aquí?" y responder basado en la Ley (Plan de Implementación ya diseñado).
+*   Herramientas
+    *   🟡 **Calculadora de Potencial Constructivo**: Un "widget" donde el usuario ingrese la superficie del terreno y el sistema calcule automáticamente el Máximo de Construcción permitido (Fórmula: `Superficie * CoeficienteUtilizacion`).
 
-## � 5. Arquitectura y Mantenimiento
+## 🧱 5. Arquitectura y Mantenimiento
 Mejoras técnicas invisibles pero críticas.
 
 *   Plataforma
     *   🟡 **PWA (Progressive Web App)**: Permitir "instalar" el visor en iOS/Android para abrirlo sin navegador y con caché offline básico.
+    *   🟢 **Modo "Impresión Web"**: Hoja de estilos CSS `@media print` optimizada para que `Ctrl+P` genere una ficha limpia sin necesidad del PDF Generator (como alternativa rápida).
 *   Calidad de Datos
     *   🟢 **Reporte de Errores Ciudadano**: Botón "¿Dato incorrecto?" que abra un form prellenado para que los usuarios reporten incongruencias en la zonificación.
 
 ---
 
 ## ✅ Histórico de Implementaciones (Ya Realizado)
+
+### 📌 Fase 2: Robustez y Usabilidad (Diciembre 2025)
+*   **[PDF] Encabezado Unificado Vectorial**: Se eliminó la captura de imagen para la primera página. Ahora todas las páginas usan un encabezado vectorial nítido, resolviendo problemas de calidad y consistencia.
+*   **[PDF] Corrección de Layout**: Ajuste de coordenadas para que el número de página no se encime con la línea dorada ni la fecha.
+*   **[UX] Buscador Inteligente**:
+    *   **Historial de Búsquedas**: Se guarda localmente las últimas consultas.
+    *   **Supresión de Ruido**: Si el usuario escribe coordenadas, el buscador ya no estorba con sugerencias irrelevantes.
+    *   **Botón de Ayuda**: Tooltip integrado explicando formatos (Dirección, Coordenadas Decimales y DMS).
+*   **[UX] Botón Buscar Explícito**: Se añadió botón clicable para usuarios que no usan "Enter".
+*   **[CORE] Manejo "Fuera de CDMX"**: Lógica refinada para mostrar explicaciones claras cuando un punto cae en EDOMEX o Morelos, diferenciando estados específicos de genéricos.
 
 ### 📌 Fase 1: Consolidación Normativa
 *   **[PDF] Nombres de Archivo Inteligentes**: Implementado formato `FICHA_FOLIO_TIPO_UBICACION.pdf` para fácil archivo.
