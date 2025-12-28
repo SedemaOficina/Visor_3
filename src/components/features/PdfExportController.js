@@ -1040,7 +1040,7 @@
                                 doc.setFontSize(8);
                                 doc.setTextColor(100);
                                 doc.setFont("helvetica", "normal");
-                                doc.text("Esta tabla detalla las actividades permitidas en la zona, conforme a la normatividad vigente.", M, startY + 4);
+                                doc.text("Esta tabla detalla las actividades permitidas en la zona, conforme a la normatividad vigente.", M, startY + 4, { maxWidth: colW });
 
                                 const tableStartY = startY + 7;
 
@@ -1050,7 +1050,7 @@
                                     body: allowed,
                                     theme: 'plain', // Custom styling
                                     headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
-                                    styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                    styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
                                     alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
                                     columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
                                     tableWidth: colW,
@@ -1080,7 +1080,7 @@
                                 doc.setFontSize(8);
                                 doc.setTextColor(100);
                                 doc.setFont("helvetica", "normal");
-                                doc.text("Esta tabla detalla las actividades prohibidas.", leftM, startY + 4);
+                                doc.text("Esta tabla detalla las actividades prohibidas.", leftM, startY + 4, { maxWidth: colW });
 
                                 const tableStartY = startY + 7;
 
@@ -1090,7 +1090,7 @@
                                     body: prohibited,
                                     theme: 'plain',
                                     headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
-                                    styles: { fontSize: 7, cellPadding: 3, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                    styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
                                     alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
                                     columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
                                     tableWidth: colW,
