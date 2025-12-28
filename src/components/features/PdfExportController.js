@@ -1144,7 +1144,7 @@
                             // For Page 1, we assume the HTML capture represents the header, but we need to add the Page Number text 
                             // because it wasn't in the DOM (unless we add it to DOM too, but easier here).
 
-                            const footerY = 22; // Approx Y position for "Página X de Y" (below Date)
+                            const footerY = 34; // Approx Y position for "Página X de Y" (below Date)
 
                             doc.setFontSize(8);
                             doc.setTextColor(100);
