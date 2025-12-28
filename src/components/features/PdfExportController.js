@@ -247,7 +247,7 @@
             const { status, zoningKey, isANP, alcaldia } = analysis;
             if (status === 'OUTSIDE_CDMX') {
                 const estado = analysis.outsideContext || 'otro estado';
-                return `Estás consultando una ubicación fuera de la Ciudad de México, específicamente en ${estado}. Aquí no aplican las regulaciones de la Ciudad de México. Te sugerimos contactar a las autoridades locales del Estado para más información.`;
+                return `La ubicación consultada se localiza en el ${estado}. Las regulaciones de la Ciudad de México no aplican en este territorio. La determinación normativa corresponde a las autoridades locales del ${estado}.`;
             }
             if (status === 'URBAN_SOIL') {
                 if (isANP) return `Aunque es zona urbana, este punto está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
@@ -471,16 +471,40 @@
                         )}
 
                         {/* --- RESUMEN NORMATIVO (CITIZEN SUMMARY) --- */}
-                        {summaryText && !isOutside && (
-                            <div style={{ marginBottom: '15px', background: 'linear-gradient(to bottom right, #eff6ff, #ffffff)', padding: '16px', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', gap: '12px' }}>
-                                <div style={{ flexShrink: 0, width: '24px', height: '24px', background: '#dbeafe', borderRadius: '50%', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'serif', fontSize: '14px', fontWeight: 'bold', lineHeight: 1 }}>
-                                    i
+                        {summaryText && (
+                            <div style={{
+                                marginBottom: '15px',
+                                background: isOutside ? 'linear-gradient(to bottom right, #fef2f2, #ffffff)' : 'linear-gradient(to bottom right, #eff6ff, #ffffff)',
+                                padding: '16px',
+                                borderRadius: '8px',
+                                border: isOutside ? '1px solid #fca5a5' : '1px solid #bfdbfe',
+                                display: 'flex',
+                                gap: '12px'
+                            }}>
+                                <div style={{
+                                    flexShrink: 0,
+                                    width: '24px',
+                                    height: '24px',
+                                    background: isOutside ? '#fee2e2' : '#dbeafe',
+                                    borderRadius: '50%',
+                                    color: isOutside ? '#b91c1c' : '#2563eb',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center',
+                                    fontFamily: 'serif',
+                                    fontSize: '14px',
+                                    fontWeight: 'bold',
+                                    lineHeight: 1
+                                }}>
+                                    {isOutside ? '!' : 'i'}
                                 </div>
                                 <div>
-                                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase', marginBottom: '4px' }}>
-                                        Resumen Normativo
-                                    </div>
-                                    <div style={{ fontSize: '12px', color: '#1e3a8a', lineHeight: 1.5, fontWeight: 500 }}>
+                                    {!isOutside && (
+                                        <div style={{ fontSize: '11px', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                            Resumen Normativo
+                                        </div>
+                                    )}
+                                    <div style={{ fontSize: '12px', color: isOutside ? '#991b1b' : '#1e3a8a', lineHeight: 1.5, fontWeight: 500 }}>
                                         {summaryText}
                                     </div>
                                 </div>
@@ -847,14 +871,13 @@
                     const svgString = `
                         <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
                             <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
-                                <feDropShadow dx="0" dy="1" stdDeviation="1" flood-color="black" flood-opacity="0.3"/>
+                                <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="black" flood-opacity="0.3"/>
                             </filter>
-                            <path fill="${bgColor}" stroke="white" stroke-width="1.5" filter="url(#shadow)" d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/>
-                            <circle cx="12" cy="9" r="2.5" fill="white"/>
+                            <circle cx="12" cy="12" r="8" fill="${bgColor}" stroke="white" stroke-width="2.5" filter="url(#shadow)"/>
                         </svg>
                     `.trim();
                     const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
-                    const icon = L.icon({ iconUrl, iconSize: [40, 40], iconAnchor: [20, 40], popupAnchor: [0, -40] });
+                    const icon = L.icon({ iconUrl, iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -10] });
                     L.marker([lat, lng], { icon, pane: markerPane, interactive: false }).addTo(m);
 
                     await waitForMapReady(m);
