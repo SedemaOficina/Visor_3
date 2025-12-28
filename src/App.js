@@ -759,7 +759,7 @@ class ErrorBoundary extends React.Component {
 // --- HELPER FUNCTIONS ---
 const getReverseGeocoding = async (lat, lng, apiKey) => {
   if (!apiKey) return null;
-  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=address,poi&language=es&access_token=${apiKey}`;
+  const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${lng},${lat}.json?types=address,poi,neighborhood,locality,place&language=es&access_token=${apiKey}`;
   try {
     const response = await fetch(url);
     if (!response.ok) return null;
