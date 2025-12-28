@@ -415,12 +415,13 @@ const LegalDisclaimer = () => (
     </div>
 );
 
-const ActionButtons = ({ analysis, onExportPDF, isExporting }) => {
+const ActionButtons = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
     const Icons = getIcons();
+    // MOBILE FIX: Hidden on mobile (default), visible as grid on md screens
     const btnClass = "flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-lg text-gray-700 transition-all active:scale-[0.98] hover:border-gray-300 hover:bg-gray-50";
 
     return (
-        <div className="grid grid-cols-2 gap-3 w-full mt-2">
+        <div className="hidden md:grid grid-cols-2 gap-3 w-full mt-2">
             {/* Google Maps */}
             {analysis?.coordinate && (
                 <a
@@ -436,7 +437,6 @@ const ActionButtons = ({ analysis, onExportPDF, isExporting }) => {
             )}
 
             {/* Exportar PDF */}
-            {/* Exportar PDF */}
             <button
                 type="button"
                 onClick={(e) => !isExporting && onExportPDF?.(e)}
@@ -447,7 +447,7 @@ const ActionButtons = ({ analysis, onExportPDF, isExporting }) => {
                 {isExporting ? (
                     <>
                         {Icons.Loader2 ? <Icons.Loader2 className="h-5 w-5 mb-1.5 text-[#9d2449] animate-spin" /> : <span className="h-5 w-5 mb-1.5 block rounded-full border-2 border-t-[#9d2449] animate-spin" />}
-                        <span className="text-[11px] font-bold text-[#9d2449]">Generando...</span>
+                        <span className="text-[11px] font-bold text-[#9d2449]">Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
                     </>
                 ) : (
                     <>
@@ -460,7 +460,7 @@ const ActionButtons = ({ analysis, onExportPDF, isExporting }) => {
     );
 };
 
-const ResultsContent = ({ analysis, onExportPDF, isExporting }) => {
+const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
     if (!analysis) return null;
 
     const [activeTab, setActiveTab] = useState('prohibidas');

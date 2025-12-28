@@ -112,7 +112,7 @@ const ToastContainer = () => {
 
 /* 7.3 Bottom Sheet Móvil */
 /* ------------------------------------------------ */
-const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onStateChange, onExportPDF, isExporting }) => {
+const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onStateChange, onExportPDF, isExporting, exportProgress }) => {
   const [sheetState, setSheetState] = useState('collapsed'); // 'collapsed' | 'mid' | 'full'
   const sheetRef = useRef(null);
   const startY = useRef(0);
@@ -282,7 +282,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
             {isExporting ? (
               <>
                 {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin text-[#9d2148]" /> : <span className="h-4 w-4 rounded-full border-2 border-t-[#9d2148] animate-spin" />}
-                Generando...
+                Generando... {exportProgress ? `${exportProgress}%` : ''}
               </>
             ) : (
               <>
@@ -359,6 +359,7 @@ const VisorApp = () => {
   const [exportHandler, setExportHandler] = useState(null);
 
   const [isExporting, setIsExporting] = useState(false);
+  const [exportProgress, setExportProgress] = useState(0);
 
   const handleExportClick = React.useCallback(async (e) => {
     if (typeof exportHandler === 'function') {
@@ -375,6 +376,7 @@ const VisorApp = () => {
         addToast('Error al generar PDF', 'error');
       } finally {
         setIsExporting(false);
+        setExportProgress(0);
       }
     } else {
       alert('Aún no se puede exportar. Intenta recargar la página.');
@@ -529,7 +531,9 @@ const VisorApp = () => {
           onExportPDF={handleExportClick}
           desktopSearchSetRef={desktopSearchInputRef}
           isLoading={analyzing}
+          isLoading={analyzing}
           isExporting={isExporting}
+          exportProgress={exportProgress}
           onOpenHelp={() => setIsHelpOpen(true)}
         />
 
@@ -632,7 +636,9 @@ const VisorApp = () => {
           onStateChange={setMobileSheetState}
           onClose={handleReset}
           onExportPDF={handleExportClick}
+          onExportPDF={handleExportClick}
           isExporting={isExporting}
+          exportProgress={exportProgress}
         />
 
         <HelpModal
@@ -642,7 +648,9 @@ const VisorApp = () => {
 
         <PdfExportController
           analysis={analysis}
+          analysis={analysis}
           onExportReady={setExportHandler}
+          onProgress={setExportProgress}
           dataCache={dataCache}
           visibleMapLayers={visibleMapLayers}
           activeBaseLayer={activeBaseLayer}

@@ -13,9 +13,11 @@ const SidebarDesktop = ({
     desktopSearchSetRef,
     isLoading,
     isExporting,
+    exportProgress,
     onOpenHelp
 }) => (
     <div className="hidden md:flex h-full z-[1020] relative">
+
         <div
             id="sidebar-desktop"
             className={`
@@ -121,7 +123,7 @@ const SidebarDesktop = ({
                                 </span>
                                 <div className="h-px bg-gray-200 flex-1"></div>
                             </div>
-                            <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
+                            <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
                         </>
                     )}
                 </div>

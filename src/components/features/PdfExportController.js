@@ -563,7 +563,7 @@
         );
     });
 
-    const PdfExportController = ({ analysis, onExportReady, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom = 14 }) => {
+    const PdfExportController = ({ analysis, onExportReady, onProgress, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom = 14 }) => {
         // Safe Lazy Access
         const { getConstants, getBaseLayerUrl, getZoningColor } = window.App?.Utils || {};
         const { ZONING_ORDER, LAYER_STYLES, ZONING_CAT_INFO } = getConstants ? getConstants() : {};
@@ -577,6 +577,91 @@
         const exportMapInstance = useRef(null);
 
         // --- A. DIAGNOSTICS & HELPERS ---
+
+        // Helper for Grouping Table Rows
+        const processGroupedData = (items) => {
+            if (!items || !items.length) return [];
+            // Sort by General Activity to ensure adjacency
+            const sorted = [...items].sort((a, b) => (a.general || '').localeCompare(b.general || ''));
+
+            const body = [];
+            let lastGen = null;
+            let currentGroup = [];
+
+            // Pass 1: Group
+            sorted.forEach(item => {
+                const gen = item.general || '';
+                const spec = item.specific || '';
+                if (gen !== lastGen) {
+                    if (currentGroup.length > 0) {
+                        currentGroup[0].rowSpan = currentGroup.length;
+                        body.push(...currentGroup);
+                    }
+                    currentGroup = [];
+                    lastGen = gen;
+                    // Start new group
+                    currentGroup.push({ content: gen, styles: { valign: 'middle', halign: 'center', fontStyle: 'bold' } });
+                    // We need to store the specific alongside. autoTable body format: [ [col1, col2] ]
+                    // But if col1 is an object, it works.
+                } else {
+                    // Same group, push a "null" placeholder or empty string for the first col? 
+                    // No, autoTable with rowSpan logic:
+                    // The first row has {content: 'A', rowSpan: 2}, 'Spec 1'
+                    // The second row has 'Spec 2' (and we skip col 1?? No, we usually pass empty)
+                    // Actually simplest is use the `rowSpan` on the first cell object, and just don't output anything for that column in subsequent rows?
+                    // Wait, jsPDF-AutoTable expects correct number of cells per row.
+                    // We should pass {content: '', styles: {display: 'none'}} maybe?
+                    // Or just empty string? Empty string renders an empty cell, borders still drawn.
+                    // The standard way is `rowSpan`.
+                    currentGroup.push({ content: '', styles: { display: 'none' } }); // Phantom cell 
+                }
+            });
+            // Push last group
+            if (currentGroup.length > 0) {
+                currentGroup[0].rowSpan = currentGroup.length;
+                body.push(...currentGroup);
+            }
+
+            // Wait, the above logic constructs a SINGLE flattened array of CELLS? No.
+            // body needs to be Array of Arrays.
+
+            // Let's retry Logic:
+            const resultRows = [];
+            let sameCount = 0;
+
+            for (let i = 0; i < sorted.length; i++) {
+                const gen = sorted[i].general || '';
+                const spec = sorted[i].specific || '';
+
+                // Look ahead to count identicals
+                if (i === 0 || gen !== (sorted[i - 1].general || '')) {
+                    // New Group
+                    let count = 1;
+                    for (let j = i + 1; j < sorted.length; j++) {
+                        if ((sorted[j].general || '') === gen) count++;
+                        else break;
+                    }
+                    // Push First Row of Group
+                    resultRows.push([
+                        { content: gen, rowSpan: count, styles: { valign: 'middle', fontStyle: 'bold' } },
+                        spec
+                    ]);
+                } else {
+                    // Subsequent row of same group
+                    // Push row with phantom first cell (optional, depending on plugin version, usually just don't include it? 
+                    // No, looking at docs, you usually skip the cell in the data array if reusing? 
+                    // Actually, commonly you pass `content: ''` but that draws borders. 
+                    // Let's try passing just ONE cell for the second column?
+                    // No, that shifts it to column 0.
+                    // We must pass a cell.
+                    // We use the `styles: { display: 'none' }` trick or null?
+                    // Let's stick to standard behavior: If rowSpan is used, subsequent rows should NOT contain the cell at that index?
+                    // Let's assume standard behavior: YES, DO NOT INCLUDE the spanned cell in subsequent rows.
+                    resultRows.push([spec]);
+                }
+            }
+            return resultRows;
+        };
 
         const waitForMapReady = (map) => {
             return new Promise((resolve) => {
@@ -763,8 +848,11 @@
 
             // Return a promise to allow caller to await
             return new Promise(async (resolve, reject) => {
+                if (onProgress) onProgress(10); // START
+
                 if (!analysis || !pdfRef.current) {
                     reject("No analysis available");
+                    if (onProgress) onProgress(0);
                     return;
                 }
 
@@ -789,6 +877,7 @@
                     if (!img) {
                         img = await buildExportMapImage({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: currentZoom, analysisStatus: analysis.status, isANP: analysis.isANP });
                     }
+                    if (onProgress) onProgress(40); // MAP READY
                     setMapImage(img);
 
                     // 2. Prepare View Mode (Hide Activities for Cover)
@@ -812,6 +901,7 @@
 
                         const canvas = await window.html2canvas(element, { scale, useCORS: true, backgroundColor: '#ffffff', logging: false });
                         const coverImgData = canvas.toDataURL('image/png');
+                        if (onProgress) onProgress(70); // COVER READY
 
                         const pdfW = doc.internal.pageSize.getWidth();
                         const pdfH = doc.internal.pageSize.getHeight();
@@ -835,12 +925,20 @@
                             const headersDrawn = {};
 
                             // Helper for Page Header 
+                            // Helper for Page Header 
                             const addHeader = (pdfDoc, pageNumber) => {
                                 if (headersDrawn[pageNumber]) return M + 25; // Already drawn
 
                                 let y = M;
                                 if (logoDataUrl) {
-                                    pdfDoc.addImage(logoDataUrl, 'PNG', M, y, 20, 10);
+                                    // FIX LOGO ASPECT RATIO
+                                    const logoProps = pdfDoc.getImageProperties(logoDataUrl);
+                                    // Desired Width = 20mm
+                                    const desiredW = 20;
+                                    const ratio = logoProps.height / logoProps.width;
+                                    const desiredH = desiredW * ratio;
+
+                                    pdfDoc.addImage(logoDataUrl, 'PNG', M, y, desiredW, desiredH);
                                 }
                                 pdfDoc.setFontSize(14);
                                 pdfDoc.setFont("helvetica", "bold");
@@ -865,9 +963,9 @@
                             const startPage = doc.internal.getCurrentPageInfo().pageNumber;
                             let startY = addHeader(doc, startPage);
 
-                            // Data Preparation
-                            const allowed = (analysis.allowedActivities || []).map(a => [a.general || '', a.specific || '']);
-                            const prohibited = (analysis.prohibitedActivities || []).map(a => [a.general || '', a.specific || '']);
+                            // Data Preparation with Grouping
+                            const allowed = processGroupedData(analysis.allowedActivities || []);
+                            const prohibited = processGroupedData(analysis.prohibitedActivities || []);
 
                             // --- TABLE LEFT (Activities Allowed) ---
                             let finalYLeft = startY;
@@ -877,10 +975,17 @@
                                 doc.setFontSize(10);
                                 doc.setTextColor(21, 128, 61); // Green
                                 doc.setFont("helvetica", "bold");
+                                doc.setFont("helvetica", "bold");
                                 doc.text("PERMITIDAS", M, startY);
+                                doc.setFontSize(8);
+                                doc.setTextColor(100);
+                                doc.setFont("helvetica", "normal");
+                                doc.text("Esta tabla detalla las actividades permitidas en la zona, conforme a la normatividad vigente.", M, startY + 4);
+
+                                const tableStartY = startY + 7;
 
                                 doc.autoTable({
-                                    startY: startY + 3,
+                                    startY: tableStartY,
                                     head: [['Actividad', 'Detalle']],
                                     body: allowed,
                                     theme: 'plain', // Custom styling
@@ -910,10 +1015,17 @@
                                 doc.setFontSize(10);
                                 doc.setTextColor(185, 28, 28); // Red
                                 doc.setFont("helvetica", "bold");
+                                doc.setFont("helvetica", "bold");
                                 doc.text("PROHIBIDAS", leftM, startY);
+                                doc.setFontSize(8);
+                                doc.setTextColor(100);
+                                doc.setFont("helvetica", "normal");
+                                doc.text("Esta tabla detalla las actividades prohibidas.", leftM, startY + 4);
+
+                                const tableStartY = startY + 7;
 
                                 doc.autoTable({
-                                    startY: startY + 3,
+                                    startY: tableStartY,
                                     head: [['Actividad', 'Detalle']],
                                     body: prohibited,
                                     theme: 'plain',
@@ -936,17 +1048,26 @@
                             doc.setPage(maxPage);
                         }
 
-                        // --- GLOBAL FOOTER: PAGINATION (Page X of Y) ---
-                        // Defines Layout for ALL pages
+                        // --- GLOBAL FOOTER: PAGINATION & DISLAIMER ---
                         const totalPages = doc.internal.getNumberOfPages();
                         for (let i = 1; i <= totalPages; i++) {
                             doc.setPage(i);
+
+                            // Disclaimer
+                            doc.setFontSize(7);
+                            doc.setTextColor(150);
+                            doc.setFont("helvetica", "italic");
+                            doc.text("Este no es un documento oficial. Consulte la Ventanilla Única de la SEDEMA para trámites oficiales.", pdfW / 2, pdfH - 14, { align: 'center' });
+
+                            // Page Number
                             doc.setFontSize(8);
                             doc.setTextColor(150);
                             doc.setFont("helvetica", "normal");
                             const pageText = `Página ${i} de ${totalPages}`;
                             doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
                         }
+
+                        if (onProgress) onProgress(90); // TABLES DONE
 
                         // --- FILENAME GENERATION ---
                         const isOutsideFn = analysis.status === 'OUTSIDE_CDMX';
@@ -964,6 +1085,8 @@
 
                         // Restore Text for user view
                         setIncludeActivities(true);
+                        setIncludeActivities(true);
+                        if (onProgress) onProgress(100); // DONE
                         resolve();
 
                     } else {
