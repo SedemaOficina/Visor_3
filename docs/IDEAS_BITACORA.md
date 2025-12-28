@@ -17,7 +17,6 @@ Mejoras enfocadas en la facilidad de uso, estética y accesibilidad.
 *   Onboarding
     *   🟡 **Tutorial Guiado (Walkthrough)**: Al abrir por primera vez, muestra un recorrido por los elementos clave. (Versión básica implementada como modal centralizado).
 *   Estética "Premium"
-    *   � **Dashboard de "KPIs"**: Rediseñar la sección de datos para que los metros cuadrados y usos clave se vean como indicadores financieros grandes, no solo texto.
 
 ## 📄 2. Generación de Reportes (PDF)
 Mejoras en la ficha descargable que se entrega al ciudadano.
@@ -26,7 +25,7 @@ Mejoras en la ficha descargable que se entrega al ciudadano.
     *   🟢 **Enlace Directo a Programas de Manejo**: Si es ANP, que el PDF incluya un link clicable al documento oficial del Programa de Manejo específico.
     *   🔴 **Leyenda Incrustada en Mapa**: Generar visualmente la simbología DENTRO de la imagen del mapa capturado (complejo por limitantes de html2canvas).
 *   Seguridad y Validación
-    *   🟡 **Código QR de Autenticidad**: Que el QR generado apunte a una URL de validación única con los parámetros encriptados o firmados (simulado).
+    
 
 ## 🗺️ 3. Herramientas del Mapa
 Funcionalidades geoespaciales para interacción avanzada.
@@ -40,9 +39,7 @@ Funcionalidades geoespaciales para interacción avanzada.
 ## ⚙️ 4. Lógica de Negocio y Datos
 Funcionalidades core del sistema y gestión de información.
 
-*   Retención
-    *   MEDIO **Mis Ubicaciones Favoritas**: Permitir marcar puntos con estrella ("Casa", "Terreno") y guardarlos en el navegador (Local Storage avanzado).
-*   IA y Soporte
+*
     *   🔴 **Chat Normativo (IA)**: Integración futura con LLM para preguntar "¿Qué puedo construir aquí?" y responder basado en la Ley (Plan de Implementación ya diseñado).
 *   Herramientas
     *   🟡 **Calculadora de Potencial Constructivo**: Un "widget" donde el usuario ingrese la superficie del terreno y el sistema calcule automáticamente el Máximo de Construcción permitido (Fórmula: `Superficie * CoeficienteUtilizacion`).
