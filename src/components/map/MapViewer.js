@@ -575,65 +575,11 @@ const MapViewer = ({
                 </div>
             )}
 
-            {/* Custom Zoom Control - Light Theme Consolidado */}
-            <div className="absolute bottom-6 right-4 flex flex-col z-[1000] bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200 select-none">
-                <button
-                    onClick={() => mapInstance.current?.zoomIn()}
-                    className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
-                    title="Acercar"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="12" y1="5" x2="12" y2="19"></line>
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-                <div className="h-[1px] bg-gray-200 w-full" />
-                <button
-                    onClick={() => mapInstance.current?.zoomOut()}
-                    className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
-                    title="Alejar"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                        <line x1="5" y1="12" x2="19" y2="12"></line>
-                    </svg>
-                </button>
-            </div>
-
-            {/* Vertical Opacity Slider Control */}
-            <div className="hidden md:flex absolute top-24 right-4 z-[900] bg-white rounded-md shadow-md border border-gray-200 p-2 flex-col items-center gap-2 w-8 h-32 opacity-90 hover:opacity-100 transition-opacity" title="Control de Opacidad">
-                <div className="text-[10px] text-gray-400 font-bold mb-1 opacity-50 select-none">👁️</div>
-                <div className="h-full flex items-center justify-center">
-                    <input
-                        type="range"
-                        min="0.1"
-                        max="1"
-                        step="0.05"
-                        value={globalOpacity || 0.7}
-                        onChange={(e) => setGlobalOpacity && setGlobalOpacity(parseFloat(e.target.value))}
-                        className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
-                        style={{
-                            transform: 'rotate(-90deg)',
-                            transformOrigin: 'center'
-                        }}
-                    />
-                </div>
-                <div className="text-[9px] font-mono text-gray-500 mt-1 select-none">{Math.round((globalOpacity || 0.7) * 100)}%</div>
-            </div>
-
-            <style>{`
-                 /* Slider Thumb Customization */
-                 input[type=range]::-webkit-slider-thumb {
-                    -webkit-appearance: none;
-                    height: 12px;
-                    width: 12px;
-                    border-radius: 50%;
-                    background: #9d2449;
-                    cursor: pointer;
-                    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
-                 }
-            `}</style>
-
         </div>
+    );
+};
+
+        </div >
     );
 };
 

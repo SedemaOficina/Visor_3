@@ -354,6 +354,8 @@ const VisorApp = () => {
 
   const invalidateMapRef = useRef(null);
   const resetMapViewRef = useRef(null);
+  const zoomInRef = useRef(null);
+  const zoomOutRef = useRef(null);
   const desktopSearchInputRef = useRef(null);
   const mobileSearchInputRef = useRef(null);
 
@@ -522,8 +524,11 @@ const VisorApp = () => {
             setActiveBaseLayer={setActiveBaseLayer}
             globalOpacity={globalOpacity}
             setGlobalOpacity={setGlobalOpacity}
+            setGlobalOpacity={setGlobalOpacity}
             invalidateMapRef={invalidateMapRef}
             resetMapViewRef={resetMapViewRef}
+            zoomInRef={zoomInRef}
+            zoomOutRef={zoomOutRef}
             selectedAnpId={analysis?.anpId}
             dataCache={dataCache}
             onZoomChange={setCurrentZoom}
@@ -556,47 +561,96 @@ const VisorApp = () => {
           />
 
 
-          <div className="absolute top-24 md:top-28 right-4 flex flex-col items-end gap-2.5 pointer-events-auto z-[1100]">
+          {/* CONTROLS STACK */}
+          <div className="absolute top-24 md:top-28 right-4 flex flex-col items-end gap-2 pointer-events-auto z-[1100]">
 
+            {/* 1. Help */}
             <button
               type="button"
               onClick={() => setIsHelpOpen(true)}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
               title="Ayuda"
-              aria-label="Ayuda"
             >
               <span className="font-bold text-lg">?</span>
             </button>
 
-            <button
-              type="button"
-              onClick={() => setIsLegendOpen(v => !v)}
-              className={`w-10 h-10 flex items-center justify-center rounded-full shadow-lg border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
-              title="Capas y Simbología"
-              aria-label="Capas"
-            >
-              <Icons.Layers className="h-5 w-5" />
-            </button>
-
-            <button
-              type="button"
-              onClick={() => resetMapViewRef.current?.()}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
-              title="Restablecer vista"
-              aria-label="Restablecer vista"
-            >
-              <Icons.RotateCcw className="h-5 w-5" />
-            </button>
-
+            {/* 2. My Location */}
             <button
               type="button"
               onClick={handleUserLocation}
-              className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-lg border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
               title="Mi ubicación"
-              aria-label="Usar mi ubicación actual"
             >
-              <Icons.Navigation className="h-5 w-5" />
+              <Icons.Navigation className="h-4 w-4" />
             </button>
+
+            {/* 3. Reload / Reset View */}
+            <button
+              type="button"
+              onClick={() => resetMapViewRef.current?.()}
+              className="w-8 h-8 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-[#9d2148] hover:scale-105 active:scale-95 transition"
+              title="Restablecer vista"
+            >
+              <Icons.RotateCcw className="h-4 w-4" />
+            </button>
+
+            {/* 4. Layers */}
+            <button
+              type="button"
+              onClick={() => setIsLegendOpen(v => !v)}
+              className={`w-8 h-8 flex items-center justify-center rounded-full shadow-md border border-gray-200 hover:scale-105 active:scale-95 transition ${isLegendOpen ? 'bg-[#9d2148] text-white' : 'bg-white text-[#9d2148]'}`}
+              title="Capas y Simbología"
+            >
+              <Icons.Layers className="h-4 w-4" />
+            </button>
+
+            {/* Gap */}
+            <div className="h-2"></div>
+
+            {/* 5. Opacity Slider */}
+            <div className="hidden md:flex bg-white rounded-md shadow-md border border-gray-200 p-1 flex-col items-center gap-1 w-8 h-28 opacity-90 hover:opacity-100 transition-opacity" title="Control de Opacidad">
+              <div className="text-[9px] text-gray-400 font-bold opacity-50 select-none">👁️</div>
+              <div className="flex-1 flex items-center justify-center w-full">
+                <input
+                  type="range"
+                  min="0.1"
+                  max="1"
+                  step="0.05"
+                  value={globalOpacity || 0.7}
+                  onChange={(e) => setGlobalOpacity && setGlobalOpacity(parseFloat(e.target.value))}
+                  className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
+                  style={{
+                    transform: 'rotate(-90deg)',
+                    transformOrigin: 'center',
+                    width: '80px' // explicit width for rotation
+                  }}
+                />
+              </div>
+            </div>
+
+            {/* 6. Zoom Controls */}
+            <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 select-none mt-1">
+              <button
+                onClick={() => zoomInRef.current?.()}
+                className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+                title="Acercar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+              <div className="h-[1px] bg-gray-200 w-full" />
+              <button
+                onClick={() => zoomOutRef.current?.()}
+                className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+                title="Alejar"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </div>
 
           </div>
         </div>
