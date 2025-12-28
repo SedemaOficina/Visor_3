@@ -322,7 +322,7 @@ const VisorApp = () => {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeBaseLayer, setActiveBaseLayer] = useState('SATELLITE');
-  const [zoningOpacity, setZoningOpacity] = useState(0.5); // New Opacity State
+  const [globalOpacity, setGlobalOpacity] = useState(0.7); // Global Opacity State
   const [mobileSheetState, setMobileSheetState] = useState('collapsed');
 
   const [exportHandler, setExportHandler] = useState(null);
@@ -520,7 +520,8 @@ const VisorApp = () => {
             extraDataLoaded={extraDataLoaded}
             activeBaseLayer={activeBaseLayer}
             setActiveBaseLayer={setActiveBaseLayer}
-            zoningOpacity={zoningOpacity} // Pass Opacity
+            globalOpacity={globalOpacity}
+            setGlobalOpacity={setGlobalOpacity}
             invalidateMapRef={invalidateMapRef}
             resetMapViewRef={resetMapViewRef}
             selectedAnpId={analysis?.anpId}
@@ -549,8 +550,6 @@ const VisorApp = () => {
             setVisibleZoningCats={setVisibleZoningCats}
             activeBaseLayer={activeBaseLayer}
             setActiveBaseLayer={setActiveBaseLayer}
-            zoningOpacity={zoningOpacity} // Pass Opacity
-            setZoningOpacity={setZoningOpacity} // Pass Setter
             selectedAnpId={analysis?.anpId}
             anpName={analysis?.anpNombre}
             anpGeneralVisible={visibleMapLayers.anp}

@@ -130,11 +130,11 @@ Se detona cuando el punto intersecta la capa de Suelo de Conservación. Aquí ap
 | **Tarjeta Detalle ANP** | ❌ | ⚠️ (Si aplica) | ❌ | ✅ | ⚠️ (Si aplica) |
 | **Tablas Actividades** | ❌ | ❌ | ✅ | ❌ (Generalmente)| ❌ |
 | **Notas Normativas** | ❌ | ❌ | ✅ | ✅ | ❌ |
-| **Sello Verificado** | ❌ | ✅ | ✅ | ✅ | ✅ |
+
 
 ### D. Interfaz y Herramientas (Nuevas)
 Adicionalmente a los resultados, la interfaz cuenta con:
-*   **Sello de Verificación**: Animación "Premium" de validación al cargar datos normativos.
+
 *   **Control de Opacidad**: Slider en Leyendas para ajustar transparencia de zonificación.
 *   **Ayuda de Búsqueda**: Tooltip interactivo con ejemplos de formatos (Coords, DMS, Dirección).
 

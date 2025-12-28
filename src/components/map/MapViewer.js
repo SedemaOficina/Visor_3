@@ -23,8 +23,9 @@ const MapViewer = ({
     resetMapViewRef,
     selectedAnpId,
     dataCache,
-    onZoomChange, // New Prop
-    zoningOpacity = 0.5 // New Prop
+    onZoomChange,
+    globalOpacity = 0.7,
+    setGlobalOpacity
 }) => {
     // Access Constants lazily
     const Constants = getConstants();
@@ -422,7 +423,7 @@ const MapViewer = ({
         if (candidates.length) {
             const layer = window.L.geoJSON({ type: 'FeatureCollection', features: candidates }, {
                 pane: 'paneOverlay',
-                style: (feature) => getZoningStyle(feature),
+                style: (feature) => ({ ...getZoningStyle(feature), fillOpacity: globalOpacity }),
                 interactive: true,
                 onEachFeature: (feature, layerInstance) => {
                     const label = feature.properties?.ZONIFICACION || 'Zonificación ANP';
@@ -434,7 +435,7 @@ const MapViewer = ({
             mapInstance.current.addLayer(layer);
         }
 
-    }, [selectedAnpId, visibleMapLayers.selectedAnpZoning, extraDataLoaded, dataCache]);
+    }, [selectedAnpId, visibleMapLayers.selectedAnpZoning, extraDataLoaded, dataCache, globalOpacity]);
 
     // BASE CHANGE
     useEffect(() => {
@@ -462,6 +463,16 @@ const MapViewer = ({
             // Assuming currently they are driven by visibleMapLayers state from parent.
             if (visibleMapLayers[k] && !mapInstance.current.hasLayer(layer)) mapInstance.current.addLayer(layer);
             if (!visibleMapLayers[k] && mapInstance.current.hasLayer(layer)) mapInstance.current.removeLayer(layer);
+
+            // Global Opacity Update (skip alcaldias fill if intended to be transparent, or just apply)
+            // Ideally only apply fillOpacity to polygons
+            if (layer && visibleMapLayers[k] && layer.setStyle) {
+                if (k === 'alcaldias' || k === 'edomex' || k === 'morelos') {
+                    // Keep these mostly transparent or fixed
+                } else {
+                    layer.setStyle({ fillOpacity: globalOpacity });
+                }
+            }
         });
 
         if (Object.keys(zoningLayersRef.current).length) {
@@ -477,11 +488,11 @@ const MapViewer = ({
 
                 // Update Opacity Dynamically
                 if (shouldShow && zLayer) {
-                    zLayer.setStyle({ fillOpacity: zoningOpacity });
+                    zLayer.setStyle({ fillOpacity: globalOpacity });
                 }
             });
         }
-    }, [visibleMapLayers, visibleZoningCats, extraDataLoaded, zoningOpacity]);
+    }, [visibleMapLayers, visibleZoningCats, extraDataLoaded, globalOpacity]);
 
     // MARKER LOGIC
     useEffect(() => {
@@ -579,6 +590,40 @@ const MapViewer = ({
                     </svg>
                 </button>
             </div>
+
+            {/* Vertical Opacity Slider Control */}
+            <div className="hidden md:flex absolute top-24 right-4 z-[900] bg-white rounded-md shadow-md border border-gray-200 p-2 flex-col items-center gap-2 w-8 h-32 opacity-90 hover:opacity-100 transition-opacity" title="Control de Opacidad">
+                <div className="text-[10px] text-gray-400 font-bold mb-1 opacity-50 select-none">👁️</div>
+                <div className="h-full flex items-center justify-center">
+                    <input
+                        type="range"
+                        min="0.1"
+                        max="1"
+                        step="0.05"
+                        value={globalOpacity || 0.7}
+                        onChange={(e) => setGlobalOpacity && setGlobalOpacity(parseFloat(e.target.value))}
+                        className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
+                        style={{
+                            transform: 'rotate(-90deg)',
+                            transformOrigin: 'center'
+                        }}
+                    />
+                </div>
+                <div className="text-[9px] font-mono text-gray-500 mt-1 select-none">{Math.round((globalOpacity || 0.7) * 100)}%</div>
+            </div>
+
+            <style>{`
+                 /* Slider Thumb Customization */
+                 input[type=range]::-webkit-slider-thumb {
+                    -webkit-appearance: none;
+                    height: 12px;
+                    width: 12px;
+                    border-radius: 50%;
+                    background: #9d2449;
+                    cursor: pointer;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+                 }
+            `}</style>
 
         </div>
     );

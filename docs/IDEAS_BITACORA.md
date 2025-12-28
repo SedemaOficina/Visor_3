@@ -70,7 +70,7 @@ Mejoras técnicas invisibles pero críticas.
 *   **[UX] Botón Buscar Explícito**: Se añadió botón clicable para usuarios que no usan "Enter".
 *   **[CORE] Manejo "Fuera de CDMX"**: Lógica refinada para mostrar explicaciones claras cuando un punto cae en EDOMEX o Morelos, diferenciando estados específicos de genéricos.
 *   **[UI] Opacidad de Capas**: Se implementó un slider en el panel de Leyenda para controlar la transparencia de la zonificación sobre el satélite.
-*   **[UI] Sello de Verificación**: Ícono animado de "Verificado" al obtener resultados normativos.
+
 *   **[UI] Toggle Sidebar Ajustado**: Se centró verticalmente el botón de colapsar panel para mejorar visibilidad.
 
 ### 📌 Fase 1: Consolidación Normativa
