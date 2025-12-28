@@ -635,15 +635,38 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
             <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 mb-4">
 
                 {/* Search & Tabs Row */}
-                <div className="flex flex-col md:flex-row gap-4 mb-4">
-                    {/* Search Input */}
-                    <div className="relative flex-1">
+                {/* Search & Tabs Row - Refactored for Wrapper */}
+                <div className="flex flex-col gap-3 mb-4">
+                    {/* Tabs Full Width */}
+                    <div className="flex p-1 bg-gray-100 rounded-lg shrink-0">
+                        <button
+                            onClick={() => setActiveTab('prohibidas')}
+                            className={`flex-1 px-4 py-2 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'prohibidas'
+                                ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Prohibidas ({analysis.prohibitedActivities?.length || 0})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('permitidas')}
+                            className={`flex-1 px-4 py-2 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'permitidas'
+                                ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
+                                : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Permitidas ({analysis.allowedActivities?.length || 0})
+                        </button>
+                    </div>
+
+                    {/* Search Input Full Width */}
+                    <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
                             {Icons.Search ? <Icons.Search className="h-4 w-4" /> : <span>🔍</span>}
                         </div>
                         <input
                             type="text"
-                            placeholder="Buscar actividad (ej. Vivienda, Comercio...)"
+                            placeholder="Buscar actividad..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                             className="w-full pl-9 pr-4 py-2 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-gray-400"
@@ -653,28 +676,6 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                                 {Icons.X ? <Icons.X className="h-3 w-3" /> : <span>x</span>}
                             </button>
                         )}
-                    </div>
-
-                    {/* Tabs */}
-                    <div className="flex p-1 bg-gray-100 rounded-lg shrink-0">
-                        <button
-                            onClick={() => setActiveTab('prohibidas')}
-                            className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'prohibidas'
-                                ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            Prohibidas ({analysis.prohibitedActivities?.length || 0})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('permitidas')}
-                            className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'permitidas'
-                                ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
-                                : 'text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            Permitidas ({analysis.allowedActivities?.length || 0})
-                        </button>
                     </div>
                 </div>
 
