@@ -470,7 +470,7 @@
                         )}
 
                         {/* --- RESUMEN NORMATIVO (CITIZEN SUMMARY) --- */}
-                        {summaryText && (
+                        {summaryText && !isOutside && (
                             <div style={{
                                 marginBottom: '15px',
                                 background: isOutside ? 'linear-gradient(to bottom right, #fef2f2, #ffffff)' : 'linear-gradient(to bottom right, #eff6ff, #ffffff)',
