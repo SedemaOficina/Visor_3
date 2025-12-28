@@ -11,50 +11,15 @@ const Utils = AppGlobals.Utils || {};
 const Components = AppGlobals.Components || {};
 const Analysis = AppGlobals.Analysis || {};
 
-/* ------------------------------------------------ */
-/* BUNDLED CONFIGURATION (Audit Phase 1 Fix) */
-/* MOVED TO useAppData - Legacy block removed */
-/* ------------------------------------------------ */
-
-
-
-// Componentes UI (Lazy Access)
-const Icons = Components.Icons || new Proxy({}, { get: () => () => null });
-const InstitutionalHeader = Components.InstitutionalHeader || (() => null);
-const ToggleSwitch = Components.ToggleSwitch || (() => null);
-const Legend = Components.Legend || (() => null);
-const HelpModal = Components.HelpModal || (() => null);
-const MapViewer = Components.MapViewer || (() => null);
-const MobileSearchBar = Components.MobileSearchBar || (() => null);
-const SkeletonAnalysis = Components.SkeletonAnalysis || (() => null);
-const ResultsContent = Components.ResultsContent || (() => null);
-const SearchLogicDesktop = Components.SearchLogicDesktop || (() => null);
-const SidebarDesktop = Components.SidebarDesktop || (() => null);
-
-// Analysis access moved to component scope
-
-
 const PdfExportController = window.App.Components.PdfExportController;
 const OnboardingTour = window.App.Components.OnboardingTour;
-
-/* ------------------------------------------------ */
-/* 4. LÓGICA GEOESPACIAL (GEOJSON & DATOS) */
-/* Data Loading Logic moved to useAppData hook */
-/* ------------------------------------------------ */
-
-
 
 /* ------------------------------------------------ */
 /* 5. COMPONENTES UI COMPARTIDOS */
 /* ------------------------------------------------ */
 
-/* 6.1 Mensajes de estado */
-
-
-
 /* ------------------------------------------------ */
-/* ------------------------------------------------ */
-/* 6.2 Resumen Ejecutivo */
+/* NEW COMPONENT: TOAST NOTIFICATIONS */
 /* ------------------------------------------------ */
 
 /* ------------------------------------------------ */

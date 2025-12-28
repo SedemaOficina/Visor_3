@@ -13,7 +13,18 @@ const HelpModal = ({ isOpen, onClose }) => {
     const XIcon = Icons.X || (() => <span className="text-xl">×</span>);
     const MapPinnedIcon = Icons.MapPinned || (() => <span>📍</span>);
 
-    const { useEffect } = window.React;
+    const { useEffect, useState } = window.React;
+    const [isVisible, setIsVisible] = useState(false);
+
+    useEffect(() => {
+        if (isOpen) {
+            // Small timeout to ensure DOM mount before transition
+            const timer = setTimeout(() => setIsVisible(true), 50);
+            return () => clearTimeout(timer);
+        } else {
+            setIsVisible(false);
+        }
+    }, [isOpen]);
 
     useEffect(() => {
         const handleKeyDown = (e) => {
@@ -28,11 +39,11 @@ const HelpModal = ({ isOpen, onClose }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+            className={`fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300 ${isVisible ? 'opacity-100' : 'opacity-0'}`}
             style={{ pointerEvents: 'auto' }}
         >
             <div
-                className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden animate-scale-in"
+                className={`bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden glass-panel transition-all duration-300 ease-out transform ${isVisible ? 'scale-100 opacity-100 translate-y-0' : 'scale-95 opacity-0 translate-y-4'}`}
                 onClick={(e) => e.stopPropagation()}
             >
                 {/* Header */}
