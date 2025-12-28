@@ -18,8 +18,6 @@ const Legend = ({
     isOpen,
     setIsOpen,
     activeBaseLayer,
-    setIsOpen,
-    activeBaseLayer,
     setActiveBaseLayer,
     zoningOpacity,
     setZoningOpacity

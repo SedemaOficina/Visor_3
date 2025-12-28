@@ -131,12 +131,25 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
 
                     {showInfo && (
                         <div className="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 animate-in fade-in slide-in-from-top-1">
-                            <div className="font-bold mb-1">Formatos permitidos:</div>
-                            <ul className="list-disc list-inside space-y-0.5 text-[11px] opacity-90">
-                                <li><strong>Dirección:</strong> "Calle 5 de Mayo, Centro"</li>
-                                <li><strong>Coordenadas:</strong> "19.4326, -99.1332"</li>
-                                <li><strong>Coordenadas DMS:</strong> "19°22'18.8"N 99°04'25.8"W"</li>
-                                <li><strong>Colonias:</strong> "Polanco, Miguel Hidalgo"</li>
+                            <div className="font-bold mb-2">¿Cómo realizar una búsqueda?</div>
+                            <p className="mb-2 opacity-90">Puedes ingresar la ubicación de cualquiera de las siguientes formas:</p>
+                            <ul className="space-y-2 text-[11px] opacity-90">
+                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
+                                    <strong className="block text-blue-900 mb-0.5">Dirección</strong>
+                                    <span className="text-blue-700/80">Ejemplo: Calle 5 de Mayo, Centro</span>
+                                </li>
+                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
+                                    <strong className="block text-blue-900 mb-0.5">Coordenadas (latitud, longitud)</strong>
+                                    <span className="font-mono text-[10px] text-blue-700/80">Ejemplo: 19.4326, -99.1332</span>
+                                </li>
+                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
+                                    <strong className="block text-blue-900 mb-0.5">Coordenadas DMS (Grados, Minutos, Segundos)</strong>
+                                    <span className="font-mono text-[10px] text-blue-700/80">Ejemplo: 19°22'18.8"N 99°04'25.8"W</span>
+                                </li>
+                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
+                                    <strong className="block text-blue-900 mb-0.5">Colonia y alcaldía</strong>
+                                    <span className="text-blue-700/80">Ejemplo: Polanco, Miguel Hidalgo</span>
+                                </li>
                             </ul>
                         </div>
                     )}
