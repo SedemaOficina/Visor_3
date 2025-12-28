@@ -8,18 +8,18 @@
         const [step, setStep] = useState(0);
 
         useEffect(() => {
-            // Check if already seen
-            const seen = localStorage.getItem('tutorial_seen');
+            // Check if already seen (New key to force show for v3.2)
+            const seen = localStorage.getItem('tutorial_seen_v3_2');
             if (!seen) {
-                // Delay slightly to let app load
-                const timer = setTimeout(() => setIsVisible(true), 1500);
+                // Reduced delay for better responsiveness
+                const timer = setTimeout(() => setIsVisible(true), 800);
                 return () => clearTimeout(timer);
             }
         }, []);
 
         const handleDismiss = () => {
             setIsVisible(false);
-            localStorage.setItem('tutorial_seen', 'true');
+            localStorage.setItem('tutorial_seen_v3_2', 'true');
         };
 
         const handleNext = () => {
