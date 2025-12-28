@@ -153,47 +153,63 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                             </ul>
                         </div>
                     )}
-                    <div className="flex gap-2">
-                        <div className="relative w-full">
+                    <div className="relative group">
+                        <div className="relative flex items-center w-full shadow-sm hover:shadow-md transition-shadow bg-white rounded-full border border-gray-200 focus-within:ring-2 focus-within:ring-[#9d2449] focus-within:border-transparent">
                             <input
                                 type="text"
                                 ref={localInputRef}
-                                placeholder="Ej: Calle 5 de Mayo, Centro..."
-                                className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#9d2148] focus:border-transparent transition-all"
+                                placeholder="Buscar dirección, coordenadas, alcaldía..."
+                                className="w-full h-12 pl-6 pr-24 bg-transparent border-none rounded-full text-sm text-gray-700 placeholder-gray-400 focus:ring-0 focus:outline-none"
                                 value={query}
                                 onChange={handleChange}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter') {
                                         handleSubmit(e);
-                                        // Close suggestions on Enter
                                         setSuggestions([]);
                                     }
                                 }}
                                 onFocus={() => {
-                                    // Show history if query is empty
                                     if (!query.trim()) {
                                         const history = JSON.parse(localStorage.getItem('search_history') || '[]');
                                         if (history.length) setSuggestions(history.map(x => ({ ...x, _isHistory: true })));
                                     }
                                 }}
                             />
-                            <Icons.Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
 
-                            {isSearching && (
-                                <div className="absolute right-3 top-3">
-                                    <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2148] rounded-full animate-spin"></div>
-                                </div>
-                            )}
+                            {/* Buttons Container (Right) */}
+                            <div className="absolute right-2 flex items-center gap-1">
+                                {query && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setQuery('');
+                                            setSuggestions([]);
+                                            localInputRef.current?.focus();
+                                        }}
+                                        className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                                        title="Cerrar"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                )}
+
+                                <div className="h-6 w-px bg-gray-200 mx-1"></div>
+
+                                <button
+                                    type="button"
+                                    onClick={handleSubmit}
+                                    disabled={isSearching}
+                                    className="p-2 text-[#9d2449] hover:text-[#7d1d3a] rounded-full hover:bg-red-50 transition-colors disabled:opacity-50"
+                                    title="Buscar"
+                                >
+                                    {isSearching ? (
+                                        <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2449] rounded-full animate-spin"></div>
+                                    ) : (
+                                        <Icons.Search className="h-5 w-5" />
+                                    )}
+                                </button>
+                            </div>
                         </div>
-
-                        <button
-                            type="button"
-                            onClick={handleSubmit}
-                            className="h-11 px-4 bg-gray-100 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wide transition-colors"
-                            title="Buscar"
-                        >
-                            Buscar
-                        </button>
                     </div>
 
                     {/* Sugerencias y Recientes */}
