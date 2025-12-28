@@ -595,14 +595,9 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
 
     // 3. Filter
     const filteredList = sourceList.filter(item => {
-        const s = searchTerm.toLowerCase();
-        const matchSearch = !s ||
-            item.general.toLowerCase().includes(s) ||
-            item.specific.toLowerCase().includes(s) ||
-            item.sector.toLowerCase().includes(s);
-
+        // Search removed
         const matchSector = selectedSectors.size === 0 || selectedSectors.has(item.sector);
-        return matchSearch && matchSector;
+        return matchSector;
     });
 
     // Handlers
@@ -614,7 +609,7 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
     };
 
     const clearFilters = () => {
-        setSearchTerm('');
+        // setSearchTerm('');
         setSelectedSectors(new Set());
     };
 
@@ -660,25 +655,6 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                             Permitidas ({analysis.allowedActivities?.length || 0})
                         </button>
                     </div>
-
-                    {/* Search Input Full Width */}
-                    <div className="relative">
-                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                            {Icons.Search ? <Icons.Search className="h-4 w-4" /> : <span>🔍</span>}
-                        </div>
-                        <input
-                            type="text"
-                            placeholder="Buscar actividad..."
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full pl-9 pr-4 py-2 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-gray-400"
-                        />
-                        {searchTerm && (
-                            <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
-                                {Icons.X ? <Icons.X className="h-3 w-3" /> : <span>x</span>}
-                            </button>
-                        )}
-                    </div>
                 </div>
 
                 {/* Sector Chips & Mobile Index */}
@@ -686,7 +662,7 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                     <div className="space-y-2">
                         <div className="flex items-center justify-between">
                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Filtrar por Sector</span>
-                            {(selectedSectors.size > 0 || searchTerm) && (
+                            {(selectedSectors.size > 0) && (
                                 <button onClick={clearFilters} className="text-[10px] text-blue-500 hover:text-blue-700 font-medium hover:underline">
                                     Limpiar filtros
                                 </button>
