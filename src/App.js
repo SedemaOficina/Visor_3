@@ -468,7 +468,7 @@ const VisorApp = () => {
       const lng = parseFloat(params.get("lng"));
       const hasCoords = !isNaN(lat) && !isNaN(lng);
 
-      if (!hasCoords) setIsHelpOpen(true);
+      // if (!hasCoords) setIsHelpOpen(true); // Disable auto-open to favor OnboardingTour
       if (hasCoords) handleLocationSelect({ lat, lng });
     };
 
