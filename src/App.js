@@ -704,6 +704,7 @@ const VisorApp = () => {
           activeBaseLayer={activeBaseLayer}
           visibleZoningCats={visibleZoningCats}
           currentZoom={currentZoom}
+          approximateAddress={approximateAddress}
         />
 
         {/* --- CONTROLLER: ONBOARDING TOUR --- */}

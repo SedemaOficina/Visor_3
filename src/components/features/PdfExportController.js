@@ -89,7 +89,7 @@
         );
     };
 
-    const PdfFicha = window.React.forwardRef(({ analysis, mapImage, includeActivities = true }, ref) => {
+    const PdfFicha = window.React.forwardRef(({ analysis, mapImage, includeActivities = true, approximateAddress }, ref) => {
         if (!analysis) return null;
 
         // Safe Access within Render
@@ -113,6 +113,7 @@
                         'Información no disponible';
 
         const direccion =
+            approximateAddress ||
             analysis.address ||
             analysis.placeName ||
             analysis.label ||
@@ -629,7 +630,17 @@
         );
     });
 
-    const PdfExportController = ({ analysis, onExportReady, onProgress, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom = 14 }) => {
+    const PdfExportController = ({
+        analysis,
+        onExportReady,
+        onProgress,
+        dataCache,
+        visibleMapLayers,
+        activeBaseLayer,
+        visibleZoningCats,
+        currentZoom = 14,
+        approximateAddress
+    }) => {
         // Safe Lazy Access
         // Safe Lazy Access
         const { getConstants: utilsGetConstants, getBaseLayerUrl, getZoningColor } = window.App?.Utils || {};
@@ -1297,7 +1308,7 @@
                 <div style={{ position: 'absolute', top: -9999, left: -9999, width: '794px', zIndex: -1 }}>
                     <div style={{ background: '#ffffff' }}>
                         {/* Include Activities controlled by State */}
-                        <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} includeActivities={includeActivities} />
+                        <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} includeActivities={includeActivities} approximateAddress={approximateAddress} />
                     </div>
                 </div>
             </>

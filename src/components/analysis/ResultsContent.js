@@ -247,7 +247,7 @@ const AnpInternalCard = ({ analysis }) => {
     );
 };
 
-const LocationSummary = ({ analysis }) => {
+const LocationSummary = ({ analysis, approximateAddress }) => {
     const Icons = getIcons();
     const COLORS = getConstants().COLORS || {};
 
@@ -264,7 +264,6 @@ const LocationSummary = ({ analysis }) => {
         zoningColor = getZoningColor(analysis.zoningKey);
     }
 
-    // Use full descriptive name instead of Key (Acronym)
     const zoningBadgeLabel = analysis.zoningKey && analysis.zoningKey !== 'NODATA' && analysis.zoningKey !== 'ANP'
         ? getZoningDisplay(analysis)
         : null;
@@ -273,9 +272,25 @@ const LocationSummary = ({ analysis }) => {
 
     return (
         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-4 shadow-none animate-slide-up">
+
+            {approximateAddress && (
+                <div className="mb-3 pb-3 border-b border-gray-100">
+                    <div className="flex items-start gap-2">
+                        {Icons.MapIcon && <div className="mt-0.5 text-[#9d2449]"><Icons.MapIcon className="h-3.5 w-3.5" /></div>}
+                        <div>
+                            <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                                Dirección Aproximada (Orientativa)
+                            </div>
+                            <div className="text-xs font-semibold text-gray-800 leading-snug">
+                                {approximateAddress}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="flex flex-wrap items-center gap-2 mb-2">
-                {/* Badge Suelo Base (Filled, no shadow) */}
-                {/* Badge Suelo Base (Filled, no shadow) - Hidden if Outside */}
+                {/* Badge Suelo Base */}
                 {status !== 'OUTSIDE_CDMX' && (
                     <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
@@ -288,7 +303,7 @@ const LocationSummary = ({ analysis }) => {
                     </span>
                 )}
 
-                {/* Badge Zonificación SHORT (Filled) */}
+                {/* Badge Zonificación */}
                 {zoningBadgeLabel && (
                     <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
@@ -301,7 +316,7 @@ const LocationSummary = ({ analysis }) => {
                     </span>
                 )}
 
-                {/* Badge ANP (Filled) */}
+                {/* Badge ANP */}
                 {analysis.isANP && (
                     <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none bg-[#9333ea] text-white"
@@ -570,7 +585,7 @@ const MobileActionButtons = ({ analysis, onExportPDF, isExporting, exportProgres
     );
 };
 
-const PrimaryActionHeader = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
+const PrimaryActionHeader = ({ analysis, approximateAddress, onExportPDF, isExporting, exportProgress }) => {
     // Visible on Desktop only, static at top.
     const Icons = getIcons();
     if (!analysis?.coordinate) return null;
@@ -778,28 +793,26 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
     );
 };
 
-const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
-    if (!analysis) return null;
-
+const ResultsContent = ({ analysis, approximateAddress, onExportPDF, isExporting, exportProgress }) => {
     const [showNotes, setShowNotes] = useState(false);
-
-    // Globals access for Main Component
     const Icons = getIcons();
     const COLORS = getConstants().COLORS || {};
-    const Constants = getConstants();
 
+    if (!analysis) return null;
+
+    const { status, zoningKey, isANP, zoningName, polygonData } = analysis;
     const zoningDisplay = getZoningDisplay(analysis);
-    const { status, zoningKey, isANP } = analysis;
+    const isUrban = status === 'URBAN_SOIL';
 
     return (
         <div className="space-y-3 animate-in pb-4">
 
 
             {/* 1. Location and basic context */}
-            <LocationSummary analysis={analysis} />
+            <LocationSummary analysis={analysis} approximateAddress={approximateAddress} />
 
             {/* 1.A Primary Actions (Desktop Static) */}
-            <PrimaryActionHeader analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+            <PrimaryActionHeader analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
 
 
 
