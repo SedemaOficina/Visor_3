@@ -59,7 +59,6 @@
         const StepIcon = currentStep.icon;
 
         return (
-        return (
             <div className="fixed inset-0 z-[9999] flex items-end sm:items-end justify-center sm:justify-end pointer-events-none p-4 sm:p-8">
 
                 <div className="
@@ -123,8 +122,7 @@
                 </div>
             </div>
         );
-        );
-};
+    };
 
-window.App.Components.OnboardingTour = OnboardingTour;
-}) ();
+    window.App.Components.OnboardingTour = OnboardingTour;
+})();
