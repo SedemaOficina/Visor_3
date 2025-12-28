@@ -962,6 +962,8 @@
                     const doc = new jsPDF('p', 'mm', 'a4');
                     const pdfW = doc.internal.pageSize.getWidth();
                     const pdfH = doc.internal.pageSize.getHeight();
+
+                    const M = 15; // Global Margin
                     const hasAutoTable = !!doc.autoTable;
 
                     // --- HYBRID STRATEGY ---
@@ -994,7 +996,6 @@
                         const addHeader = (pdfDoc, pageNumber) => {
                             if (headersDrawn[pageNumber]) return 15 + 35; // Already drawn
 
-                            const M = 15;
                             let y = M;
                             if (logoDataUrl) {
                                 // FIX LOGO ASPECT RATIO
@@ -1058,8 +1059,8 @@
                         const isANP = analysis.isANP || analysis.zoningKey === 'ANP';
                         const hasActivities = isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog;
 
+
                         if (hasActivities) {
-                            const M = 15;
                             const gap = 8;
                             const colW = (pdfW - (2 * M) - gap) / 2;
 

@@ -135,6 +135,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                             <ul className="list-disc list-inside space-y-0.5 text-[11px] opacity-90">
                                 <li><strong>Dirección:</strong> "Calle 5 de Mayo, Centro"</li>
                                 <li><strong>Coordenadas:</strong> "19.4326, -99.1332"</li>
+                                <li><strong>Coordenadas DMS:</strong> "19°22'18.8"N 99°04'25.8"W"</li>
                                 <li><strong>Colonias:</strong> "Polanco, Miguel Hidalgo"</li>
                             </ul>
                         </div>
