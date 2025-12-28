@@ -57,6 +57,26 @@ Mejoras que sugiero para elevar la calidad, rendimiento y usabilidad del Visor.
 *   **Impacto**: Alto
 *   **Descripción**: Que al seleccionar una Alcaldía, se "apague" visualmente todo lo que está fuera de ella, para limpiar el mapa. Requiere operaciones geométricas complejas en el cliente.
 
+### 5. Botón "Compartir Ubicación" (Share URL)
+*   **Dificultad**: 🟡 **Medio**
+*   **Impacto**: Alto (Viralidad)
+*   **Descripción**: Generar una URL única (ej. `?lat=19.4&lng=-99.1`) que al abrirla cargue el visor directamente en ese punto y con el análisis abierto. Ideal para que vecinos se pasen la info por WhatsApp.
+
+### 6. Herramienta de Medición (Regla)
+*   **Dificultad**: 🟡 **Medio**
+*   **Impacto**: Medio (Utilidad Técnica)
+*   **Descripción**: Un botón para medir distancias lineales (ej. "A cuántos metros estoy de la barranca"). Mapbox tiene plugins para esto (`mapbox-gl-draw` o similar), pero hay que integrarlo con cuidado en la UI móvil.
+
+### 7. Tutorial Guiado (Onboarding)
+*   **Dificultad**: 🟢 **Fácil** / 🟡 **Medio** (Depende de la librería)
+*   **Impacto**: Alto (Reducción de soporte)
+*   **Descripción**: Cuando un usuario entra por primera vez, mostrar 3 pasos flotantes: "1. Busca aquí", "2. Toca el mapa", "3. Descarga tu ficha PDF". Se puede usar `driver.js`.
+
+### 8. Reporte de Errores en Datos
+*   **Dificultad**: 🟢 **Fácil** (Link a Google Forms) / 🔴 **Difícil** (Formulario integrado)
+*   **Impacto**: Medio (Calidad de datos)
+*   **Descripción**: Si un vecino ve que su calle está mal zonificada, un botón discretito "¿Ves un error?" que abra un Google Form prellenado con la coordenada. Es la forma más barata de limpiar tus datos.
+
 ---
 
 ## 🛠️ Deuda Técnica y Mantenimiento

@@ -251,6 +251,32 @@
             verticalAlign: 'top'
         });
 
+        // --- CITIZEN SUMMARY LOGIC ---
+        const getExplanation = () => {
+            const { status, zoningKey, isANP, alcaldia } = analysis;
+            if (status === 'OUTSIDE_CDMX') {
+                return `Estás consultando una ubicación fuera de la Ciudad de México. Aquí no aplican las regulaciones de la SEDEMA CDMX. Te sugerimos contactar a las autoridades locales de ${analysis.outsideContext || 'la entidad vecina'}.`;
+            }
+            if (status === 'URBAN_SOIL') {
+                if (isANP) return `Aunque es zona urbana, este predio está dentro de una Área Natural Protegida. Esto significa que la prioridad es el medio ambiente y aplican reglas especiales de conservación por encima de las normas urbanas comunes.`;
+                return `Te encuentras en Suelo Urbano. Aquí predominan las actividades residenciales, comerciales y de servicios. Las reglas de construcción dependen de la SEDUVI y del Plan de Desarrollo Urbano de ${alcaldia || 'la alcaldía'}.`;
+            }
+            if (status === 'CONSERVATION_SOIL') {
+                if (isANP) return `¡Estás en una zona muy importante! Este predio es parte de una Área Natural Protegida (ANP). Su objetivo principal es preservar la biodiversidad. Aquí las construcciones están muy restringidas y se sigue un Plan de Manejo específico.`;
+                switch (zoningKey) {
+                    case 'RE': return `Estás en una zona de Rescate Ecológico. Estas áreas han sido afectadas por actividades humanas pero buscamos restaurarlas. La prioridad es reforestar y evitar que la mancha urbana crezca más.`;
+                    case 'FC': case 'FCE': case 'FP': case 'FPE': return `Estás en una zona Forestal. Es el pulmón de la ciudad. Aquí la prioridad absoluta es mantener el bosque sano. Prácticamente no se permite construir viviendas ni comercios para proteger el agua y el aire de todos.`;
+                    case 'PR': case 'PRA': return `Estás en una zona de Producción Rural. Aquí se fomenta la agricultura y la agroindustria tradicional. Se permiten actividades del campo, pero no fraccionamientos residenciales urbanos.`;
+                    case 'AE': case 'AEE': case 'AF': case 'AFE': return `Estás en una zona Agroecológica. Se busca un equilibrio entre la agricultura tradicional y el cuidado de la naturaleza. Puedes cultivar la tierra, siempre y cuando uses técnicas amigables con el medio ambiente.`;
+                    case 'PDU_ER': return `Estás en una zona de Equipamiento Rural. Aquí se permiten instalaciones necesarias para la comunidad rural, como escuelas, centros de salud o deportivos, siempre bajo reglas estrictas.`;
+                    case 'PDU_PR': return `Estás en un Poblado Rural. Es una comunidad histórica dentro del suelo de conservación. Tienen reglas especiales que permiten vivienda y comercio local, pero siempre limitando el crecimiento hacia el bosque.`;
+                    default: return `Te encuentras en Suelo de Conservación. Es la reserva ecológica de la ciudad (bosques, humedales, zonas agrícolas). Aquí no aplican las normas urbanas comunes y el objetivo es evitar la urbanización para proteger los servicios ambientales.`;
+                }
+            }
+            return null;
+        };
+        const summaryText = getExplanation();
+
         return (
             <div
                 ref={ref}
@@ -446,6 +472,23 @@
                                             </div>
                                         </div>
                                     )}
+                                </div>
+                            </div>
+                        )}
+
+                        {/* --- RESUMEN NORMATIVO (CITIZEN SUMMARY) --- */}
+                        {summaryText && !isOutside && (
+                            <div style={{ marginBottom: '15px', background: 'linear-gradient(to bottom right, #eff6ff, #ffffff)', padding: '16px', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', gap: '12px' }}>
+                                <div style={{ flexShrink: 0, width: '24px', height: '24px', background: '#dbeafe', borderRadius: '50%', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>
+                                    i
+                                </div>
+                                <div>
+                                    <div style={{ fontSize: '11px', fontWeight: 800, color: '#2563eb', textTransform: 'uppercase', marginBottom: '4px' }}>
+                                        Resumen Normativo
+                                    </div>
+                                    <div style={{ fontSize: '12px', color: '#1e3a8a', lineHeight: 1.5, fontWeight: 500 }}>
+                                        {summaryText}
+                                    </div>
                                 </div>
                             </div>
                         )}
