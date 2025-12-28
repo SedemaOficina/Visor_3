@@ -1243,43 +1243,33 @@
                 reject(error);
             }
         });
-    }
+    }, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom]);
 
-} catch (e) {
-    console.error("PDF Fail", e);
-    alert("Error al generar PDF.");
-    setMapImage(null);
-    setIncludeActivities(true);
-    resolve(); // Resolve even on error to stop spinner
-}
-    });
-}, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom]);
+    const requestExportPDF = React.useCallback(async (e) => {
+        if (!e || !e.isTrusted) return;
+        exportArmedRef.current = true;
+        return await handleExportPDF(); // Forward promise
+    }, [handleExportPDF]);
 
-const requestExportPDF = React.useCallback(async (e) => {
-    if (!e || !e.isTrusted) return;
-    exportArmedRef.current = true;
-    return await handleExportPDF(); // Forward promise
-}, [handleExportPDF]);
+    useEffect(() => {
+        if (!onExportReady) return;
+        onExportReady(() => requestExportPDF);
+        return () => onExportReady(null);
+    }, [onExportReady, requestExportPDF]);
 
-useEffect(() => {
-    if (!onExportReady) return;
-    onExportReady(() => requestExportPDF);
-    return () => onExportReady(null);
-}, [onExportReady, requestExportPDF]);
+    if (!analysis) return null;
 
-if (!analysis) return null;
-
-return (
-    <>
-        <div id="export-map" style={{ width: '900px', height: '520px', position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -1 }}></div>
-        <div style={{ position: 'absolute', top: -9999, left: -9999, width: '794px', zIndex: -1 }}>
-            <div style={{ background: '#ffffff' }}>
-                {/* Include Activities controlled by State */}
-                <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} includeActivities={includeActivities} />
+    return (
+        <>
+            <div id="export-map" style={{ width: '900px', height: '520px', position: 'absolute', top: '-9999px', left: '-9999px', zIndex: -1 }}></div>
+            <div style={{ position: 'absolute', top: -9999, left: -9999, width: '794px', zIndex: -1 }}>
+                <div style={{ background: '#ffffff' }}>
+                    {/* Include Activities controlled by State */}
+                    <PdfFicha ref={pdfRef} analysis={analysis} mapImage={mapImage} includeActivities={includeActivities} />
+                </div>
             </div>
-        </div>
-    </>
-);
+        </>
+    );
 };
 
 window.App.Components.PdfExportController = PdfExportController;
