@@ -420,11 +420,7 @@ const GroupedActivities = ({ title, activities, icon, headerClass, bgClass, acce
                     return (
                         <div key={i} className="mb-2 rounded overflow-hidden border border-gray-100">
                             <div
-                                className="px-3 py-1.5 font-bold text-[10px] uppercase tracking-wide border-l-4 bg-gray-50"
-                                style={{
-                                    borderLeftColor: st.border,
-                                    color: '#374151'
-                                }}
+                                className="px-3 py-1.5 font-bold text-[10px] uppercase tracking-wide bg-gray-50 border-b border-gray-100 text-gray-500"
                             >
                                 {sector}
                             </div>
@@ -858,9 +854,9 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                                     <button
                                         key={sec}
                                         onClick={() => toggleSector(sec)}
-                                        className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all active:scale-95 text-left ${isSelected
+                                        className={`px-2 py-0.5 rounded-md text-[9px] font-bold border transition-all active:scale-95 text-left ${isSelected
                                             ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                                            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                                            : 'bg-white border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {sec}
