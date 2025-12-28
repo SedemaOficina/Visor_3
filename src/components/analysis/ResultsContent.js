@@ -157,7 +157,7 @@ const ZoningResultCard = ({ analysis, zoningDisplay }) => {
     const { status, zoningKey } = analysis;
     const isSC = status === 'CONSERVATION_SOIL';
 
-    if (!isSC || !zoningKey || zoningKey === 'NODATA' || zoningKey === 'ANP') return null;
+    if (!isSC || !zoningKey || zoningKey === 'NODATA' || zoningKey === 'ANP' || status === 'OUTSIDE_CDMX') return null;
 
     let zoningColor = '#9ca3af';
     if (analysis.zoningKey && getZoningColor) {
@@ -276,15 +276,18 @@ const LocationSummary = ({ analysis }) => {
         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-4 shadow-none animate-slide-up">
             <div className="flex flex-wrap items-center gap-2 mb-2">
                 {/* Badge Suelo Base (Filled, no shadow) */}
-                <span
-                    className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
-                    style={{
-                        backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
-                        color: '#ffffff'
-                    }}
-                >
-                    {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
-                </span>
+                {/* Badge Suelo Base (Filled, no shadow) - Hidden if Outside */}
+                {status !== 'OUTSIDE_CDMX' && (
+                    <span
+                        className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
+                        style={{
+                            backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
+                            color: '#ffffff'
+                        }}
+                    >
+                        {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
+                    </span>
+                )}
 
                 {/* Badge Zonificación SHORT (Filled) */}
                 {zoningBadgeLabel && (
@@ -309,13 +312,19 @@ const LocationSummary = ({ analysis }) => {
                 )}
             </div>
 
-            <div>
+        </div>
+
+            {
+        status !== 'OUTSIDE_CDMX' && (
+            <div className="mt-2 pt-2 border-t border-gray-100">
                 <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-0.5">Alcaldía</div>
                 <div className="text-lg font-bold text-gray-900 leading-tight">
                     {analysis.alcaldia || 'Ciudad de México'}
                 </div>
             </div>
-        </div>
+        )
+    }
+        </div >
     );
 };
 
