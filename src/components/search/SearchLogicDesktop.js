@@ -104,36 +104,47 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                     <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider mb-1 block">
                         Buscar por dirección
                     </label>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            ref={localInputRef}
-                            placeholder="Ej: Calle 5 de Mayo, Centro..."
-                            className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#9d2148] focus:border-transparent transition-all"
-                            value={query}
-                            onChange={handleChange}
-                            onKeyDown={(e) => {
-                                if (e.key === 'Enter') {
-                                    handleSubmit(e);
-                                    // Close suggestions on Enter
-                                    setSuggestions([]);
-                                }
-                            }}
-                            onFocus={() => {
-                                // Show history if query is empty
-                                if (!query.trim()) {
-                                    const history = JSON.parse(localStorage.getItem('search_history') || '[]');
-                                    if (history.length) setSuggestions(history.map(x => ({ ...x, _isHistory: true })));
-                                }
-                            }}
-                        />
-                        <Icons.Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
+                    <div className="flex gap-2">
+                        <div className="relative w-full">
+                            <input
+                                type="text"
+                                ref={localInputRef}
+                                placeholder="Ej: Calle 5 de Mayo, Centro..."
+                                className="w-full h-11 pl-10 pr-4 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[#9d2148] focus:border-transparent transition-all"
+                                value={query}
+                                onChange={handleChange}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') {
+                                        handleSubmit(e);
+                                        // Close suggestions on Enter
+                                        setSuggestions([]);
+                                    }
+                                }}
+                                onFocus={() => {
+                                    // Show history if query is empty
+                                    if (!query.trim()) {
+                                        const history = JSON.parse(localStorage.getItem('search_history') || '[]');
+                                        if (history.length) setSuggestions(history.map(x => ({ ...x, _isHistory: true })));
+                                    }
+                                }}
+                            />
+                            <Icons.Search className="absolute left-3 top-3 h-5 w-5 text-gray-400" />
 
-                        {isSearching && (
-                            <div className="absolute right-3 top-3">
-                                <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2148] rounded-full animate-spin"></div>
-                            </div>
-                        )}
+                            {isSearching && (
+                                <div className="absolute right-3 top-3">
+                                    <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2148] rounded-full animate-spin"></div>
+                                </div>
+                            )}
+                        </div>
+
+                        <button
+                            type="button"
+                            onClick={handleSubmit}
+                            className="h-11 px-4 bg-gray-100 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-200 hover:border-gray-300 font-bold text-xs uppercase tracking-wide transition-colors"
+                            title="Buscar"
+                        >
+                            Buscar
+                        </button>
                     </div>
 
                     {/* Sugerencias y Recientes */}

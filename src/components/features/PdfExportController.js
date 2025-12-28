@@ -394,7 +394,7 @@
                                 {/* COL 2: ZONIFICACION / ANP */}
                                 {/* COL 2: ZONIFICACION / ANP (STACKED IF BOTH EXIST) */}
                                 <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-                                    
+
                                     {/* 1. ZONIFICATION SPECIFIC (Show if exists and is NOT just the ANP fallback) */}
                                     {analysis.zoningKey && analysis.zoningKey !== 'ANP' && (
                                         <div style={{ background: C.panel, padding: '12px', borderRadius: '4px', border: `1px solid ${C.hair}` }}>
@@ -447,6 +447,7 @@
                                         </div>
                                     )}
                                 </div>
+                            </div>
                         )}
 
 
