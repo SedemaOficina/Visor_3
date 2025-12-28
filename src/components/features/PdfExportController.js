@@ -930,6 +930,9 @@
                 const { jsPDF } = window.jspdf;
 
                 try {
+                    // 0. Prepare Constants
+                    const folio = `F-${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14)}`;
+
                     // 1. Prepare Map Image
                     const hasActiveLayers = visibleMapLayers?.sc || (visibleMapLayers?.zoning && dataCache?.zoning) || visibleMapLayers?.anp || visibleMapLayers?.alcaldias;
                     let img = null;
