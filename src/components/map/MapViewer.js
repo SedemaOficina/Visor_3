@@ -25,7 +25,9 @@ const MapViewer = ({
     dataCache,
     onZoomChange,
     globalOpacity = 0.7,
-    setGlobalOpacity
+    setGlobalOpacity,
+    zoomInRef,
+    zoomOutRef
 }) => {
     // Access Constants lazily
     const Constants = getConstants();
@@ -151,9 +153,6 @@ const MapViewer = ({
         if (zoomOutRef) zoomOutRef.current = () => map.zoomOut();
 
         // ✅ Exponer invalidateSize a App
-        // Bind Zoom Refs
-        if (zoomInRef) zoomInRef.current = () => mapInstance.current?.zoomIn();
-        if (zoomOutRef) zoomOutRef.current = () => mapInstance.current?.zoomOut();
 
         if (invalidateMapRef) {
             invalidateMapRef.current = () => {
@@ -576,10 +575,6 @@ const MapViewer = ({
             )}
 
         </div>
-    );
-};
-
-        </div >
     );
 };
 

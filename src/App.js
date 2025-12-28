@@ -15,6 +15,10 @@ const PdfExportController = window.App.Components.PdfExportController;
 const OnboardingTour = window.App.Components.OnboardingTour;
 const InstitutionalHeader = window.App.Components.InstitutionalHeader;
 const SidebarDesktop = window.App.Components.SidebarDesktop;
+import { getReverseGeocoding } from './utils/geocodingService';
+
+// --- CONFIGURATION ---
+const MAPBOX_ACCESS_TOKEN = ""; // ⚠️ PASTE YOUR MAPBOX KEY HERE (e.g. pk.eyJ1...)
 
 /* ------------------------------------------------ */
 /* 5. COMPONENTES UI COMPARTIDOS */
@@ -365,12 +369,24 @@ const VisorApp = () => {
     if (Number.isNaN(lat) || Number.isNaN(lng)) return;
 
     const coord = { lat, lng };
-    const text = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+    let displayText = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
 
+    // 1. Update Input URLs immediately with coords
     setLocation(coord);
+    desktopSearchInputRef.current?.(displayText);
+    mobileSearchInputRef.current?.(displayText);
 
-    desktopSearchInputRef.current?.(text);
-    mobileSearchInputRef.current?.(text);
+    // 2. Try Reverse Geocoding (if Key exists)
+    if (MAPBOX_ACCESS_TOKEN) {
+      getReverseGeocoding(lat, lng, MAPBOX_ACCESS_TOKEN).then(address => {
+        if (address) {
+          displayText = address;
+          desktopSearchInputRef.current?.(displayText);
+          mobileSearchInputRef.current?.(displayText);
+          addToast('📍 Dirección aproximada encontrada', 'success');
+        }
+      });
+    }
 
     setAnalyzing(true);
 
