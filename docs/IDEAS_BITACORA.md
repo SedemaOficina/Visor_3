@@ -96,34 +96,64 @@ Cosas que "funcionan" pero podrían estar mejor estructuradas.
 ## ✅ Implementado / Resuelto
 
 *   **Resumen Ciudadano (Versión Normativa)**: Se implementó una versión basada en reglas (sin AI costosa) que traduce las claves (RE, FC) a explicaciones claras.
+*   **Diseño UI/UX (Glassmorphism)**: Se aplicaron paneles semitransparentes (`.glass-panel`) en Sidebar, Leyenda y Modales para modernizar la interfaz.
+*   **Motion Design (Animaciones Orgánicas)**: Se suavizaron las entradas de modales y botones con efectos de resorte (`spring physics`) y escala.
+*   **Lenguaje Humano**: Se reescribieron los mensajes de error y estado para ser más amables y menos técnicos.
+*   **Paleta de Colores Natural**: Se integró un fondo con degradado suave (`--bg-soft-gradient`) y se ajustaron los tonos institucionales para reducir la fatiga visual.
 
 ---
 
-## 🎨 Experiencia de Usuario y Diseño Visual (Naturalidad y Fluidez)
+## 🔮 Nuevas Propuestas de Innovación (Fase 2)
 
-Ideas enfocadas en mejorar la *comodidad* visual, la *naturalidad* de uso y la percepción de calidad gráfica.
+Ideas para llevar el Visor al siguiente nivel de **interactividad** y **utilidad**.
 
-### 1. Sistema de "Glassmorphism" y Capas Visuales
-*   **Dificultad**: 🟡 **Medio**
-*   **Impacto**: Muy Alto (Modernidad)
-*   **Descripción**: Actualizar los paneles sólidos (blancos) por superficies semitransparentes con desenfoque (`backdrop-filter: blur(12px)`). Esto da contexto visual manteniendo la legibilidad, haciendo que la interfaz se sienta "flotando" sobre el mapa de forma natural.
+### 1. Búsqueda por Voz (Dictado) 🎤
+*   **Dificultad**: 🟢 **Fácil** (Web Speech API nativa)
+*   **Impacto**: Alto (Accesibilidad)
+*   **Descripción**: Agregar un icono de micrófono en la barra de búsqueda. Al tocarlo, el usuario dicta "Calle Reforma 222" y el sistema transcribe y busca.
 
-### 2. Transiciones Orgánicas (Motion Design)
-*   **Dificultad**: 🟡 **Medio**
-*   **Impacto**: Alto (Fluidez)
-*   **Descripción**: Suavizar todas las interacciones. Que los modales no "aparezcan" de golpe, sino que surjan (slide-up) con curvas de animación naturales (spring physics). Que los botones tengan efectos de "prensa" al tocarlos.
+### 2. Guardar "Mis Puntos Favoritos" ⭐
+*   **Dificultad**: 🟡 **Medio** (LocalStorage)
+*   **Impacto**: Alto (Retención)
+*   **Descripción**: Permitir marcar ubicaciones con una estrella. Estos puntos se guardan localmente para acceso rápido ("Casa", "Oficina").
 
-### 3. Micro-interacciones de Retroalimentación
+### 3. Modo de Comparación (A/B) ⚖️
+*   **Dificultad**: 🔴 **Difícil** (Lógica UI compleja)
+*   **Impacto**: Muy Alto (Utilidad Profesional)
+*   **Descripción**: Pantalla dividida para seleccionar dos puntos en el mapa y comparar sus fichas normativas lado a lado.
+
+### 4. Capa de "Edificios 3D" (Visualización) 🏢
+*   **Dificultad**: 🟡 **Medio** (Plugin Leaflet/OSM)
+*   **Impacto**: Medio (Estética)
+*   **Descripción**: Usar una capa de vector tiles para levantar volúmenes simples en el mapa al hacer zoom máximo.
+
+### 5. Generador de "Share Card" para Redes 📱
+*   **Dificultad**: 🟡 **Medio** (html2canvas)
+*   **Impacto**: Alto (Viralidad)
+*   **Descripción**: Generar una imagen cuadrada atractiva con el mapa y el resumen, lista para compartir en WhatsApp.
+
+---
+
+## 🏛️ Diseño Web Institucional 2.0 (Premium & Authority)
+
+Mejoras visuales enfocadas específicamente en elevar la **seriedad**, **confianza** y **modernidad** institucional.
+
+### 1. Tipografía "Serif" para Autoridad
 *   **Dificultad**: 🟢 **Fácil**
-*   **Impacto**: Medio (Satisfacción)
-*   **Descripción**: Pequeños detalles que dan vida. Un "pulso" sutil en el punto seleccionado en el mapa. Un check animado al copiar un enlace. Hacen que el sistema se sienta vivo y responsivo.
+*   **Descripción**: Introducir una tipografía Serif moderna (ej. *Merriweather* o *Playfair Display*) exclusivamente para Títulos y Encabezados grandes. Esto connota tradición y seriedad legal, contrastando elegantemente con la *Roboto* (sans-serif) del cuerpo técnico.
 
-### 4. Lenguaje "Humano" en Interfaz
+### 2. Micro-Patrones de Textura (Identidad Territorial)
+*   **Dificultad**: 🟡 **Medio**
+*   **Descripción**: Reemplazar fondos planos por sutiles patrones SVG de curvas de nivel (topografía) o tramas abstractas al 2% de opacidad. Refuerza que es una herramienta de *territorio* sin ensuciar la vista.
+
+### 3. Visualización de Datos "Hero" (Dashboard)
+*   **Dificultad**: 🟡 **Medio**
+*   **Descripción**: Rediseñar la Ficha Técnica para que los datos clave (Zonificación, Metros Cuadrados) se vean como "KPIs" financieros grandes y limpios, en lugar de tablas aburridas. Estilo "Dashboard Ejecutivo".
+
+### 4. Sello de Verificación Animado
 *   **Dificultad**: 🟢 **Fácil**
-*   **Impacto**: Alto (Cercanía)
-*   **Descripción**: Revisar todos los textos de error ("Error 404", "No Data") y cambiarlos por frases amables ("No encontramos información de este punto, ¿quizás está muy cerca del borde?"). Eliminar tecnicismos innecesarios en la vista principal.
+*   **Descripción**: Al terminar el análisis, mostrar una animación sutil de un "Sello Oficial" o "Check Verificado" que se estampa. Da una sensación psicológica de validez y certeza jurídica al usuario.
 
-### 5. Paleta de Colores Inspirada en Naturaleza
-*   **Dificultad**: 🟡 **Medio** (Requiere Diseño)
-*   **Impacto**: Medio (Identidad)
-*   **Descripción**: Ajustar los tonos institucionales duros (guinda/oro) con matices más suaves para fondos y acentos, reduciendo la fatiga visual. Usar degradados sutiles que evoquen el entorno (Suelo de Conservación) sin perder la identidad oficial.
+### 5. Header "App-Like" (Transiciones)
+*   **Dificultad**: 🟡 **Medio**
+*   **Descripción**: Que el encabezado superior sea transparente al inicio (mostrando el mapa completo) y se vuelva sólido/glass al hacer scroll o interactuar. Maximiza el área visible del mapa.

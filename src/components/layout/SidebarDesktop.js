@@ -21,9 +21,9 @@ const SidebarDesktop = ({
         <div
             id="sidebar-desktop"
             className={`
-                flex flex-col h-full 
+                flex flex-col h-[calc(100%-6rem)] 
                 transition-all duration-300 ease-out
-                glass-panel border-r-0 rounded-r-2xl mr-4 my-4
+                glass-panel border-r-0 rounded-r-2xl mr-4 my-4 mt-24
                 ${isOpen ? 'w-[360px]' : 'w-0 border-none opacity-0'}
             `}
         >
@@ -134,7 +134,7 @@ const SidebarDesktop = ({
         <button
             onClick={onToggle}
             className="
-                absolute top-24 left-full
+                absolute top-4 left-full
                 transform -translate-x-0 z-[1030]
                 w-8 h-12 
                 bg-[#9d2148] text-white 

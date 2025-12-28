@@ -28,7 +28,7 @@ const HelpModal = ({ isOpen, onClose }) => {
 
     return (
         <div
-            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-fade-in"
+            className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-300"
             style={{ pointerEvents: 'auto' }}
         >
             <div
