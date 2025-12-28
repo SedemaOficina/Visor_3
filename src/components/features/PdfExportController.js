@@ -471,6 +471,14 @@
                                             </div>
                                         </div>
 
+                                        {/* MANAGEMENT PROGRAM LINK */}
+                                        <div style={{ marginTop: '8px', borderTop: '1px solid #E9D5FF', paddingTop: '6px' }}>
+                                            <div style={{ fontSize: '8px', fontWeight: 700, color: C.sub, textTransform: 'uppercase' }}>Programa de Manejo</div>
+                                            <div style={{ fontSize: '9px', color: '#2563EB', wordBreak: 'break-all' }}>
+                                                {analysis.anpUrl ? analysis.anpUrl : 'Consulte en: sedema.cdmx.gob.mx/programas'}
+                                            </div>
+                                        </div>
+
                                         <div style={{ fontSize: '10px', color: '#7E22CE', fontStyle: 'italic', lineHeight: 1.3, fontWeight: 500 }}>
                                             Área Natural Protegida: Este punto se encuentra dentro de un ANP y se rige por su Programa de Manejo.
                                         </div>

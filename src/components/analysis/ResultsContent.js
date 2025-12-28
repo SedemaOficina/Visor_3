@@ -81,66 +81,72 @@ const NormativeInstrumentCard = ({ analysis }) => {
 
     if (!isSC && !isUrban) return null;
 
+    // --- REFACTOR: Reduced visual weight (Support/Reference style) ---
+    const Container = ({ children }) => (
+        <div className="bg-gray-50/50 rounded-lg p-3 mb-4 border border-gray-100/50">
+            <div className="flex items-start gap-3 opacity-80 hover:opacity-100 transition-opacity">
+                <div className="shrink-0 mt-0.5 text-gray-400">
+                    {Icons.BookOpen ? <Icons.BookOpen className="h-4 w-4" /> : <span>📖</span>}
+                </div>
+                <div className="flex-1">
+                    {children}
+                </div>
+            </div>
+        </div>
+    );
+
     if (isSC) {
         return (
-            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
-                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">
-                    Instrumento Rector
+            <Container>
+                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                    Fuente Normativa
                 </div>
-                <div className="text-sm font-bold text-gray-800 mb-1">
-                    Ordenamiento Ecológico del Distrito Federal (PGOEDF)
+                <div className="text-xs font-semibold text-gray-700 mb-1">
+                    PGOEDF (Ordenamiento Ecológico)
                 </div>
-                <p className="text-[11px] text-gray-600 leading-snug mb-2">
-                    Regula los usos del suelo en el Suelo de Conservación para preservar su valor ambiental.
-                </p>
                 <a
                     href="https://paot.org.mx/centro/programas/pgoedf.pdf"
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                    className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
                 >
-                    {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
-                    Consulta el documento oficial (PDF)
+                    Ver documento oficial
+                    {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
                 </a>
-            </div>
+            </Container>
         );
     }
 
     if (isUrban) {
         return (
-            <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
-                <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1">
-                    Instrumento Rector
+            <Container>
+                <div className="text-[10px] text-gray-400 font-bold uppercase tracking-wider mb-0.5">
+                    Fuente Normativa
                 </div>
-                <div className="text-sm font-bold text-gray-800 mb-1">
-                    {hasSpecificPDU ? 'Programa Parcial de Desarrollo Urbano' : 'Programa Delegacional de Desarrollo Urbano'}
+                <div className="text-xs font-semibold text-gray-700 mb-1">
+                    {hasSpecificPDU ? 'Programa Parcial (PPDU)' : 'Programa Delegacional (PDDU)'}
                 </div>
-                <p className="text-[11px] text-gray-600 leading-snug mb-2">
-                    Instrumento de planeación urbana que establece los usos, reservas y destinos del suelo.
-                </p>
-
-                <div className="grid grid-cols-1 gap-1.5 mt-2">
+                <div className="flex flex-wrap gap-x-3 gap-y-1">
                     <a
                         href="https://metropolis.cdmx.gob.mx/programas-delegacionales-de-desarrollo-urbano"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                        className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
                     >
-                        {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
-                        Ver Programas Delegacionales
+                        Programas Delegacionales
+                        {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
                     </a>
-
                     <a
                         href="https://metropolis.cdmx.gob.mx/programas-parciales-de-desarrollo-urbano"
                         target="_blank"
                         rel="noreferrer"
-                        className="inline-flex items-center gap-1.5 text-[11px] text-blue-600 hover:text-blue-800 font-medium hover:underline transition-colors"
+                        className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
                     >
-                        {Icons.ExternalLink && <Icons.ExternalLink className="h-3 w-3" />}
-                        Ver Programas Parciales (Zonas Especiales)
+                        Programas Parciales
+                        {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
                     </a>
                 </div>
-            </div>
+            </Container>
         );
     }
 
@@ -492,44 +498,38 @@ const CitizenSummaryCard = ({ analysis }) => {
     );
 };
 
-const ActionButtons = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
+const MobileActionButtons = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
+    // Only visible on mobile/tablet. Hidden on MD+.
+    // Keeps functionality intact as requested.
     const Icons = getIcons();
-    // MOBILE FIX: Hidden on mobile (default), visible as grid on md screens
-    const btnClass = "flex flex-col items-center justify-center p-3 bg-white border border-gray-200 rounded-lg text-gray-700 transition-all active:scale-[0.98] hover:border-gray-300 hover:bg-gray-50";
-
     return (
-        <div className="hidden md:grid grid-cols-2 gap-3 w-full mt-2">
-            {/* Google Maps */}
+        <div className="md:hidden mt-4 space-y-3">
             {analysis?.coordinate && (
                 <a
                     href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
                     target="_blank"
                     rel="noreferrer"
-                    className={btnClass}
-                    title="Ver en Google Maps"
+                    className="w-full flex items-center justify-center gap-2 p-3 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm active:bg-gray-50"
                 >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-5 w-5 mb-1.5 text-blue-600" />}
-                    <span className="text-[11px] font-bold">Google Maps</span>
+                    {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4" />}
+                    Ver en Google Maps
                 </a>
             )}
-
-            {/* Exportar PDF */}
             <button
                 type="button"
                 onClick={(e) => !isExporting && onExportPDF?.(e)}
                 disabled={isExporting}
-                className={`${btnClass} ${isExporting ? 'opacity-75 cursor-not-allowed bg-gray-50' : ''}`}
-                title="Generar Ficha PDF"
+                className="w-full flex items-center justify-center gap-2 p-3 bg-[#9d2449] text-white rounded-lg font-bold text-xs shadow-sm active:bg-[#801d3a] disabled:opacity-75"
             >
                 {isExporting ? (
                     <>
-                        {Icons.Loader2 ? <Icons.Loader2 className="h-5 w-5 mb-1.5 text-[#9d2449] animate-spin" /> : <span className="h-5 w-5 mb-1.5 block rounded-full border-2 border-t-[#9d2449] animate-spin" />}
-                        <span className="text-[11px] font-bold text-[#9d2449]">Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
+                        {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <span>...</span>}
+                        <span>Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
                     </>
                 ) : (
                     <>
-                        {Icons.Pdf && <Icons.Pdf className="h-5 w-5 mb-1.5 text-[#9d2449]" />}
-                        <span className="text-[11px] font-bold">Descargar Ficha</span>
+                        {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
+                        <span>Descargar Ficha PDF</span>
                     </>
                 )}
             </button>
@@ -537,11 +537,219 @@ const ActionButtons = ({ analysis, onExportPDF, isExporting, exportProgress }) =
     );
 };
 
+const DesktopStickyActionBar = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
+    // Visible only on Desktop (md+). Sticky/Fixed bottom centered.
+    const Icons = getIcons();
+    if (!analysis) return null;
+
+    return (
+        <div className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/95 backdrop-blur-sm border border-gray-200/80 rounded-full shadow-xl px-2 py-2 gap-2 items-center animate-in slide-in-from-bottom-4 items-center">
+            {analysis?.coordinate && (
+                <a
+                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-full transition-colors text-gray-700 font-semibold text-xs whitespace-nowrap"
+                    title="Ver ubicación en Google Maps"
+                >
+                    {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-gray-500" />}
+                    Google Maps
+                </a>
+            )}
+
+            <div className="w-px h-6 bg-gray-200 mx-1"></div>
+
+            <button
+                type="button"
+                onClick={(e) => !isExporting && onExportPDF?.(e)}
+                disabled={isExporting}
+                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs text-white shadow-sm transition-transform active:scale-95 whitespace-nowrap
+                    ${isExporting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9d2449] hover:bg-[#8a1f40]'}`}
+            >
+                {isExporting ? (
+                    <div className="flex items-center gap-2">
+                        {Icons.Loader2 && <Icons.Loader2 className="h-4 w-4 animate-spin" />}
+                        <span>{exportProgress ? `${exportProgress}%` : 'Generando...'}</span>
+                    </div>
+                ) : (
+                    <div className="flex items-center gap-2">
+                        {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
+                        <span className="tracking-wide">Descargar Ficha</span>
+                    </div>
+                )}
+            </button>
+        </div>
+    );
+};
+
+// --- NEW CATALOG CONTROLLER ---
+const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
+    const [activeTab, setActiveTab] = useState('prohibidas');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedSectors, setSelectedSectors] = useState(new Set());
+    const [showCatalog, setShowCatalog] = useState(true);
+
+    // 1. Data Source
+    const sourceList = activeTab === 'prohibidas' ? (analysis.prohibitedActivities || []) : (analysis.allowedActivities || []);
+
+    // 2. Extract Sectors (from current list)
+    const allSectors = Array.from(new Set(sourceList.map(item => item.sector))).sort();
+
+    // 3. Filter
+    const filteredList = sourceList.filter(item => {
+        const s = searchTerm.toLowerCase();
+        const matchSearch = !s ||
+            item.general.toLowerCase().includes(s) ||
+            item.specific.toLowerCase().includes(s) ||
+            item.sector.toLowerCase().includes(s);
+
+        const matchSector = selectedSectors.size === 0 || selectedSectors.has(item.sector);
+        return matchSearch && matchSector;
+    });
+
+    // Handlers
+    const toggleSector = (sec) => {
+        const next = new Set(selectedSectors);
+        if (next.has(sec)) next.delete(sec);
+        else next.add(sec);
+        setSelectedSectors(next);
+    };
+
+    const clearFilters = () => {
+        setSearchTerm('');
+        setSelectedSectors(new Set());
+    };
+
+    return (
+        <div className="mt-8 mb-6">
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                    <div className="p-1.5 bg-gray-100 rounded-md text-gray-500">
+                        {Icons.List ? <Icons.List className="h-4 w-4" /> : <span>=</span>}
+                    </div>
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">Catálogo de Actividades</h3>
+                        <p className="text-[10px] text-gray-400">Consulta los usos permitidos y prohibidos</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Controls Container */}
+            <div className="bg-white border border-gray-100 rounded-xl shadow-sm p-4 mb-4">
+
+                {/* Search & Tabs Row */}
+                <div className="flex flex-col md:flex-row gap-4 mb-4">
+                    {/* Search Input */}
+                    <div className="relative flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
+                            {Icons.Search ? <Icons.Search className="h-4 w-4" /> : <span>🔍</span>}
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Buscar actividad (ej. Vivienda, Comercio...)"
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                            className="w-full pl-9 pr-4 py-2 text-xs bg-gray-50 border border-gray-200 rounded-lg focus:ring-2 focus:ring-blue-100 focus:border-blue-400 outline-none transition-all placeholder:text-gray-400"
+                        />
+                        {searchTerm && (
+                            <button onClick={() => setSearchTerm('')} className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                {Icons.X ? <Icons.X className="h-3 w-3" /> : <span>x</span>}
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Tabs */}
+                    <div className="flex p-1 bg-gray-100 rounded-lg shrink-0">
+                        <button
+                            onClick={() => setActiveTab('prohibidas')}
+                            className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'prohibidas'
+                                    ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Prohibidas ({analysis.prohibitedActivities?.length || 0})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab('permitidas')}
+                            className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'permitidas'
+                                    ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
+                                    : 'text-gray-500 hover:text-gray-700'
+                                }`}
+                        >
+                            Permitidas ({analysis.allowedActivities?.length || 0})
+                        </button>
+                    </div>
+                </div>
+
+                {/* Sector Chips & Mobile Index */}
+                {allSectors.length > 0 && (
+                    <div className="space-y-2">
+                        <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Filtrar por Sector</span>
+                            {(selectedSectors.size > 0 || searchTerm) && (
+                                <button onClick={clearFilters} className="text-[10px] text-blue-500 hover:text-blue-700 font-medium hover:underline">
+                                    Limpiar filtros
+                                </button>
+                            )}
+                        </div>
+                        <div className="flex flex-wrap gap-2 max-h-[120px] overflow-y-auto custom-scrollbar">
+                            {allSectors.map(sec => {
+                                const isSelected = selectedSectors.has(sec);
+                                return (
+                                    <button
+                                        key={sec}
+                                        onClick={() => toggleSector(sec)}
+                                        className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all active:scale-95 text-left ${isSelected
+                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                                : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                                            }`}
+                                    >
+                                        {sec}
+                                    </button>
+                                )
+                            })}
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            {/* Results List */}
+            <div className="animate-in fade-in slide-in-from-bottom-2">
+                <div className="text-[10px] text-gray-400 font-medium mb-2 text-right">
+                    Mostrando {filteredList.length} de {sourceList.length} resultados
+                </div>
+
+                {filteredList.length === 0 ? (
+                    <div className="p-8 text-center bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                        <div className="text-2xl mb-2 opacity-20">🔍</div>
+                        <div className="text-sm font-semibold text-gray-500">No se encontraron actividades</div>
+                        <div className="text-xs text-gray-400">Intenta ajustar tu búsqueda o los filtros de sector</div>
+                        <button onClick={clearFilters} className="mt-4 px-4 py-2 bg-white border border-gray-200 shadow-sm rounded-lg text-xs font-bold text-gray-600 hover:text-blue-600">
+                            Ver todo
+                        </button>
+                    </div>
+                ) : (
+                    <GroupedActivities
+                        title={activeTab === 'prohibidas' ? "Listado de Prohibiciones" : "Listado de Usos Permitidos"}
+                        activities={filteredList}
+                        icon={activeTab === 'prohibidas'
+                            ? (Icons.XCircle ? <Icons.XCircle className="h-4 w-4" /> : null)
+                            : (Icons.CheckCircle ? <Icons.CheckCircle className="h-4 w-4" /> : null)
+                        }
+                        headerClass={activeTab === 'prohibidas' ? "text-red-800" : "text-green-800"}
+                        bgClass="bg-white shadow-sm hover:shadow-md transition-shadow"
+                        accentColor={activeTab === 'prohibidas' ? COLORS.error : COLORS.success}
+                    />
+                )}
+            </div>
+        </div>
+    );
+};
+
 const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
     if (!analysis) return null;
 
-    const [activeTab, setActiveTab] = useState('prohibidas');
-    const [showDetails, setShowDetails] = useState(true);
     const [showNotes, setShowNotes] = useState(false);
 
     // Globals access for Main Component
@@ -582,7 +790,11 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
                 </InlineAlert>
             )}
 
-            {/* 3. Instrumento Rector */}
+            {/* 3. Instrumento Rector (Moved to bottom/support, but per request "Reubicarlo visualmente dentro de un bloque de soporte", 
+               usually support is near the end, but logic flow suggests it is associated with zoning. 
+               The prompt says "Reducir peso visual... evitar que compita".
+               I will keep it here but the new component style handles the "Support" look.
+            */}
             <NormativeInstrumentCard analysis={analysis} />
 
             {/* 4. Zonificación PGOEDF (Solo SC) */}
@@ -592,85 +804,32 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
             <AnpGeneralCard analysis={analysis} />
             <AnpInternalCard analysis={analysis} />
 
-            {/* 6. Catálogo de Actividades (Solo SC, no PDU) */}
+            {/* 6. Catálogo de Actividades (Solo SC, no PDU) - REFACTORED */}
             {analysis.status === 'CONSERVATION_SOIL' &&
                 !analysis.isPDU &&
                 !analysis.noActivitiesCatalog && (
-                    <div className="mt-4">
-                        <div className="flex items-center justify-between mb-2 px-1">
-                            <div className="text-[10px] font-bold text-gray-500 uppercase tracking-wide">
-                                Catálogo de Actividades
-                            </div>
-                        </div>
-
-                        {showDetails && (
-                            <div className="animate-in slide-in-from-top-2 duration-300">
-                                <div className="flex gap-4 border-b border-gray-200 mb-3">
-                                    <button
-                                        onClick={() => setActiveTab('prohibidas')}
-                                        className={`flex-1 pb-2 text-[10px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'prohibidas'
-                                            ? 'border-red-500 text-red-700'
-                                            : 'border-transparent text-gray-400 hover:text-gray-600'
-                                            }`}
-                                    >
-                                        Prohibidas ({analysis.prohibitedActivities?.length || 0})
-                                    </button>
-                                    <button
-                                        onClick={() => setActiveTab('permitidas')}
-                                        className={`flex-1 pb-2 text-[10px] font-bold uppercase tracking-wide border-b-2 transition-colors ${activeTab === 'permitidas'
-                                            ? 'border-green-500 text-green-700'
-                                            : 'border-transparent text-gray-400 hover:text-gray-600'
-                                            }`}
-                                    >
-                                        Permitidas ({analysis.allowedActivities?.length || 0})
-                                    </button>
-                                </div>
-
-                                {activeTab === 'prohibidas' && (
-                                    <GroupedActivities
-                                        title="ACTIVIDADES PROHIBIDAS"
-                                        activities={analysis.prohibitedActivities}
-                                        icon={Icons.XCircle ? <Icons.XCircle className="h-4 w-4" /> : null}
-                                        headerClass="text-red-900 bg-red-50"
-                                        bgClass="bg-white"
-                                        accentColor={COLORS.error}
-                                    />
-                                )}
-
-                                {activeTab === 'permitidas' && (
-                                    <GroupedActivities
-                                        title="ACTIVIDADES PERMITIDAS"
-                                        activities={analysis.allowedActivities}
-                                        icon={Icons.CheckCircle ? <Icons.CheckCircle className="h-4 w-4" /> : null}
-                                        headerClass="text-green-900 bg-green-50"
-                                        bgClass="bg-white"
-                                        accentColor={COLORS.success}
-                                    />
-                                )}
-                            </div>
-                        )}
-                    </div>
+                    <ActivityCatalogController analysis={analysis} Icons={Icons} COLORS={COLORS} />
                 )}
 
             {/* 7. Notas Normativas (Solo si hay zonificación PGOEDF válida) */}
             {status === 'CONSERVATION_SOIL' && zoningKey && zoningKey !== 'NODATA' && zoningKey !== 'ANP' && (
-                <div className="mt-3 border border-gray-200 rounded-lg bg-gray-50 overflow-hidden">
+                <div className="mt-4 mb-4">
+                    {/* Reduced visual weight for Notes */}
                     <button
                         onClick={() => setShowNotes(!showNotes)}
-                        className="w-full flex items-center justify-between p-3 hover:bg-gray-100 transition-colors text-left"
+                        className="w-full flex items-center gap-2 p-2 hover:bg-gray-50 rounded transition-colors text-left group"
                     >
-                        <span className="text-[10px] font-bold text-gray-600 uppercase tracking-wide flex items-center gap-2">
-                            {Icons.Info ? <Icons.Info className="h-3 w-3 text-gray-400" /> : <span>i</span>}
-                            Notas Normativas Importantes
+                        <div className="p-1 bg-gray-100 rounded text-gray-500 group-hover:text-gray-700">
+                            {showNotes ? (Icons.ChevronUp ? <Icons.ChevronUp className="h-3 w-3" /> : <span>-</span>) : (Icons.ChevronDown ? <Icons.ChevronDown className="h-3 w-3" /> : <span>+</span>)}
+                        </div>
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wide group-hover:text-gray-600">
+                            Notas Normativas y Criterios
                         </span>
-                        {showNotes ?
-                            (Icons.ChevronUp ? <Icons.ChevronUp className="h-4 w-4 text-gray-400" /> : <span>-</span>) :
-                            (Icons.ChevronDown ? <Icons.ChevronDown className="h-4 w-4 text-gray-400" /> : <span>+</span>)}
                     </button>
 
                     {showNotes && (
-                        <div className="p-4 bg-white border-t border-gray-200">
-                            <ul className="space-y-3">
+                        <div className="pl-8 pr-2 py-2 animate-in slide-in-from-top-1 fade-in">
+                            <ul className="space-y-2">
                                 {[
                                     "Adicionalmente a lo dispuesto en la tabla de usos del suelo, para cualquier obra o actividad que se pretenda desarrollar se deberán contemplar los criterios y lineamientos señalados en el programa de Ordenamiento Ecológico, así como cumplir con los permisos y autorizaciones en materia ambiental del Distrito Federal.",
                                     "Los usos del suelo no identificados en esta tabla deberán cumplir con los permisos y autorizaciones en materia urbana y ambiental aplicables en Suelo de Conservación.",
@@ -680,9 +839,9 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
                                     "El Suelo de Conservación definido por las barrancas estará regulado por la zonificación Forestal de Conservación FC, conforme a los límites establecidos por la Norma de Ordenación N° 21, señalada en los Programas de Desarrollo Urbano.",
                                     "* Se instrumentará un programa de reconversión de esta actividad por la producción de composta. Para ello, se elaborará un padrón de los productores y diseñar y ejecutar un programa de capacitación y proponer paquetes tecnológicos para transferencia y el desarrollo de estudios de mercado para la sustitución progresiva del producto y la reducción de la extracción directa."
                                 ].map((note, idx) => (
-                                    <li key={idx} className="flex gap-2 text-[11px] text-gray-600 leading-relaxed text-justify border-l-2 border-gray-200 pl-2">
-                                        <span className="text-[#9d2449] font-bold">•</span>
-                                        <span>{note}</span>
+                                    <li key={idx} className="text-[10px] text-gray-500 leading-relaxed text-justify relative">
+                                        <span className="absolute -left-3 top-1 w-1 h-1 rounded-full bg-gray-300"></span>
+                                        {note}
                                     </li>
                                 ))}
                             </ul>
@@ -691,8 +850,9 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
                 </div>
             )}
 
-            {/* 8. Action Buttons (Mobile & Desktop) */}
-            <ActionButtons analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
+            {/* 8. Action Buttons (Refactored) */}
+            <MobileActionButtons analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+            <DesktopStickyActionBar analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
 
             {/* 9. Disclaimer */}
             <LegalDisclaimer />
