@@ -304,7 +304,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
 /* 9. APLICACIÓN PRINCIPAL */
 /* ------------------------------------------------ */
 
-const App = () => {
+const VisorApp = () => {
   // 1. DATA HOOK Integration
   // Access global directly to avoid reference issues
   const useAppData = window.App?.Hooks?.useAppData;
