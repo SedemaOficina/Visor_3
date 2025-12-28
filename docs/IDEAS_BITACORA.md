@@ -6,8 +6,6 @@ Este documento sirve como un espacio centralizado para registrar ideas, mejoras 
 
 ## 💡 Ideas Nuevas
 
-
-
 ### Enlace a Programas de Manejo ANP (PDF)
 - **Descripción:** El recuadro de "Régimen ANP" en el PDF (específicamente para Suelo Urbano Estándar dentro de ANP) debe incluir un enlace clicable y visible a los Programas de Manejo.
 - **Contexto:** Requisito legal/informativo.
@@ -56,8 +54,19 @@ Este documento sirve como un espacio centralizado para registrar ideas, mejoras 
 > *Agrega tus mejoras técnicas aquí...*
 
 ---
+## 3. "Resumen Ciudadano" (Generador de Explicaciones)
+**El Problema:** La ficha técnica es árida y administrativa.
+**La Solución AI:**
+- Generar un párrafo de "lenguaje claro" al inicio de la ficha.
+- **Prompt:** "Toma estos datos JSON (`status: CONSERVATION`, `zoning: RE`) y explícalos a un niño de 10 años."
+- **Resultado en Visor:** *"Estás en una zona ecológica importante llamada **Rescate Ecológico**. Esto significa que la prioridad aquí es recuperar el bosque. Por eso, no está permitido construir nuevas casas ni calles, pero sí puedes plantar árboles o tener cultivos que ayuden al suelo."*
+
+
 
 ## 🎨 Mejoras de UI/UX
+
+En desktop agregar un poton de buscar como que ahora la unica opcion es darle enter si copio y pego coordenada .
+
 
 
 > *Agrega tus mejoras de diseño aquí...*
