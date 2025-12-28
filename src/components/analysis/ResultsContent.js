@@ -132,15 +132,17 @@ const NormativeInstrumentCard = ({ analysis }) => {
                 <div className="text-xs font-semibold text-gray-700 mb-1">
                     PGOEDF (Ordenamiento Ecológico)
                 </div>
-                <a
-                    href="https://paot.org.mx/centro/programas/pgoedf.pdf"
-                    target="_blank"
-                    rel="noreferrer"
-                    className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
-                >
-                    Ver documento oficial
-                    {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
-                </a>
+                <Tooltip content="Consultar documento oficial en nueva pestaña">
+                    <a
+                        href="https://paot.org.mx/centro/programas/pgoedf.pdf"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
+                    >
+                        Ver documento oficial
+                        {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
+                    </a>
+                </Tooltip>
             </Container>
         );
     }
@@ -155,24 +157,28 @@ const NormativeInstrumentCard = ({ analysis }) => {
                     {hasSpecificPDU ? 'Programa Parcial (PPDU)' : 'Programa Delegacional (PDDU)'}
                 </div>
                 <div className="flex flex-wrap gap-x-3 gap-y-1">
-                    <a
-                        href="https://metropolis.cdmx.gob.mx/programas-delegacionales-de-desarrollo-urbano"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
-                    >
-                        Programas Delegacionales
-                        {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
-                    </a>
-                    <a
-                        href="https://metropolis.cdmx.gob.mx/programas-parciales-de-desarrollo-urbano"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
-                    >
-                        Programas Parciales
-                        {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
-                    </a>
+                    <Tooltip content="Ir a sitio de SEDUVI - Delegacionales">
+                        <a
+                            href="https://metropolis.cdmx.gob.mx/programas-delegacionales-de-desarrollo-urbano"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
+                        >
+                            Programas Delegacionales
+                            {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
+                        </a>
+                    </Tooltip>
+                    <Tooltip content="Ir a sitio de SEDUVI - Parciales">
+                        <a
+                            href="https://metropolis.cdmx.gob.mx/programas-parciales-de-desarrollo-urbano"
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1 text-[10px] text-blue-500 hover:text-blue-700 hover:underline"
+                        >
+                            Programas Parciales
+                            {Icons.ExternalLink && <Icons.ExternalLink className="h-2.5 w-2.5" />}
+                        </a>
+                    </Tooltip>
                 </div>
             </Container>
         );
@@ -584,34 +590,38 @@ const MobileActionButtons = ({ analysis, onExportPDF, isExporting, exportProgres
     return (
         <div className="hidden">
             {analysis?.coordinate && (
-                <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-full flex items-center justify-center gap-2 p-3 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm active:bg-gray-50"
-                >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4" />}
-                    Ver en Google Maps
-                </a>
+                <Tooltip content="Abrir ubicación en Google Maps">
+                    <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="w-full flex items-center justify-center gap-2 p-3 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm active:bg-gray-50"
+                    >
+                        {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4" />}
+                        Ver en Google Maps
+                    </a>
+                </Tooltip>
             )}
-            <button
-                type="button"
-                onClick={(e) => !isExporting && onExportPDF?.(e)}
-                disabled={isExporting}
-                className="w-full flex items-center justify-center gap-2 p-3 bg-[#9d2449] text-white rounded-lg font-bold text-xs shadow-sm active:bg-[#801d3a] disabled:opacity-75"
-            >
-                {isExporting ? (
-                    <>
-                        {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <span>...</span>}
-                        <span>Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
-                    </>
-                ) : (
-                    <>
-                        {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
-                        <span>Descargar Ficha PDF</span>
-                    </>
-                )}
-            </button>
+            <Tooltip content="Guardar reporte oficial en PDF">
+                <button
+                    type="button"
+                    onClick={(e) => !isExporting && onExportPDF?.(e)}
+                    disabled={isExporting}
+                    className="w-full flex items-center justify-center gap-2 p-3 bg-[#9d2449] text-white rounded-lg font-bold text-xs shadow-sm active:bg-[#801d3a] disabled:opacity-75"
+                >
+                    {isExporting ? (
+                        <>
+                            {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <span>...</span>}
+                            <span>Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
+                        </>
+                    ) : (
+                        <>
+                            {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
+                            <span>Descargar Ficha PDF</span>
+                        </>
+                    )}
+                </button>
+            </Tooltip>
         </div>
     );
 };
@@ -628,7 +638,6 @@ const PrimaryActionHeader = ({ analysis, approximateAddress, onExportPDF, isExpo
                 target="_blank"
                 rel="noreferrer"
                 className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm hover:bg-gray-50 transition-colors"
-                title="Ver ubicación en Google Maps"
             >
                 {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-blue-500" />}
                 <Tooltip content="Abrir ubicación exacta en Google Maps">
@@ -789,12 +798,14 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                         {searchTerm && (
-                            <button
-                                onClick={() => setSearchTerm('')}
-                                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                            >
-                                ✕
-                            </button>
+                            <Tooltip content="Limpiar búsqueda">
+                                <button
+                                    onClick={() => setSearchTerm('')}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                                >
+                                    ✕
+                                </button>
+                            </Tooltip>
                         )}
                     </div>
 
@@ -997,20 +1008,22 @@ const ResultsContent = ({ analysis, approximateAddress, onExportPDF, isExporting
                 {/* 7. NOTAS moved here logic wise for grouping */}
                 {status === 'CONSERVATION_SOIL' && zoningKey && zoningKey !== 'NODATA' && zoningKey !== 'ANP' && (
                     <div className="mt-4 mb-4 border border-gray-100 rounded-lg overflow-hidden">
-                        <button
-                            type="button"
-                            aria-expanded={showNotes}
-                            aria-controls="notes-panel"
-                            onClick={() => setShowNotes(!showNotes)}
-                            className="w-full flex items-center gap-2 p-3 bg-white hover:bg-gray-50 transition-colors text-left group focus:outline-none focus:bg-gray-50"
-                        >
-                            <div className="p-1 bg-gray-100 rounded text-gray-500 group-hover:text-gray-700 transition-colors">
-                                {showNotes ? (Icons.ChevronUp ? <Icons.ChevronUp className="h-3 w-3" /> : <span>-</span>) : (Icons.ChevronDown ? <Icons.ChevronDown className="h-3 w-3" /> : <span>+</span>)}
-                            </div>
-                            <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide group-hover:text-gray-700">
-                                Notas Normativas y Criterios
-                            </span>
-                        </button>
+                        <Tooltip content="Ver detalles y excepciones normativas">
+                            <button
+                                type="button"
+                                aria-expanded={showNotes}
+                                aria-controls="notes-panel"
+                                onClick={() => setShowNotes(!showNotes)}
+                                className="w-full flex items-center gap-2 p-3 bg-white hover:bg-gray-50 transition-colors text-left group focus:outline-none focus:bg-gray-50"
+                            >
+                                <div className="p-1 bg-gray-100 rounded text-gray-500 group-hover:text-gray-700 transition-colors">
+                                    {showNotes ? (Icons.ChevronUp ? <Icons.ChevronUp className="h-3 w-3" /> : <span>-</span>) : (Icons.ChevronDown ? <Icons.ChevronDown className="h-3 w-3" /> : <span>+</span>)}
+                                </div>
+                                <span className="text-[10px] font-bold text-gray-500 uppercase tracking-wide group-hover:text-gray-700">
+                                    Notas Normativas y Criterios
+                                </span>
+                            </button>
+                        </Tooltip>
 
                         <div
                             id="notes-panel"
