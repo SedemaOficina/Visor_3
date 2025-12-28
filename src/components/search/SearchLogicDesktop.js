@@ -117,7 +117,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                 <div className="relative mb-3">
                     <div className="flex items-center justify-between mb-1">
                         <label className="text-[11px] font-bold text-gray-500 uppercase tracking-wider block">
-                            Buscar por dirección
+                            Buscar por dirección o coordenadas
                         </label>
                         <button
                             type="button"
@@ -125,7 +125,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                             className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors"
                         >
                             <Icons.Info className="h-3 w-3" />
-                            <span>Ayuda</span>
+                            <span>¿Cómo buscar?</span>
                         </button>
                     </div>
 

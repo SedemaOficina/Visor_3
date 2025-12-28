@@ -326,7 +326,7 @@ const VisorApp = () => {
   const [isLegendOpen, setIsLegendOpen] = useState(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [activeBaseLayer, setActiveBaseLayer] = useState('SATELLITE');
-  const [globalOpacity, setGlobalOpacity] = useState(0.5); // Global Opacity State (Default 0.5)
+  const [globalOpacity, setGlobalOpacity] = useState(0.25); // Global Opacity State (Default 25%)
   const [approximateAddress, setApproximateAddress] = useState(null);
   const [mobileSheetState, setMobileSheetState] = useState('collapsed');
 
@@ -630,14 +630,14 @@ const VisorApp = () => {
 
             {/* 5. Opacity Slider */}
             <div className="hidden md:flex bg-white rounded-md shadow-md border border-gray-200 p-1 flex-col items-center gap-1 w-8 h-28 opacity-90 hover:opacity-100 transition-opacity" title="Control de Opacidad">
-              <div className="text-[9px] text-gray-700 font-bold select-none">{Math.round((globalOpacity || 0.5) * 100)}%</div>
+              <div className="text-[9px] text-gray-700 font-bold select-none">{Math.round((globalOpacity || 0.25) * 100)}%</div>
               <div className="flex-1 flex items-center justify-center w-full">
                 <input
                   type="range"
                   min="0.1"
                   max="0.5"
                   step="0.05"
-                  value={globalOpacity || 0.5}
+                  value={globalOpacity || 0.25}
                   onChange={(e) => setGlobalOpacity && setGlobalOpacity(parseFloat(e.target.value))}
                   className="w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
                   style={{
