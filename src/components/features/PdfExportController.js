@@ -421,9 +421,6 @@
                                                     {zoningDisplay}
                                                 </div>
                                             </div>
-                                            <div style={{ fontSize: '10px', color: C.sub, marginTop: '4px', fontWeight: 600, paddingLeft: '20px' }}>
-                                                CLAVE: {analysis.zoningKey || '—'}
-                                            </div>
                                         </div>
                                     )}
 
@@ -477,7 +474,7 @@
                         {/* --- RESUMEN NORMATIVO (CITIZEN SUMMARY) --- */}
                         {summaryText && !isOutside && (
                             <div style={{ marginBottom: '15px', background: 'linear-gradient(to bottom right, #eff6ff, #ffffff)', padding: '16px', borderRadius: '8px', border: '1px solid #bfdbfe', display: 'flex', gap: '12px' }}>
-                                <div style={{ flexShrink: 0, width: '24px', height: '24px', background: '#dbeafe', borderRadius: '50%', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '14px', fontWeight: 'bold' }}>
+                                <div style={{ flexShrink: 0, width: '24px', height: '24px', background: '#dbeafe', borderRadius: '50%', color: '#2563eb', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'serif', fontSize: '14px', fontWeight: 'bold', lineHeight: 1 }}>
                                     i
                                 </div>
                                 <div>

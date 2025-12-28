@@ -537,33 +537,29 @@ const MobileActionButtons = ({ analysis, onExportPDF, isExporting, exportProgres
     );
 };
 
-const DesktopStickyActionBar = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
-    // Visible only on Desktop (md+). Sticky/Fixed bottom centered.
+const PrimaryActionHeader = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
+    // Visible on Desktop only, static at top.
     const Icons = getIcons();
-    if (!analysis) return null;
+    if (!analysis?.coordinate) return null;
 
     return (
-        <div className="hidden md:flex fixed bottom-6 left-1/2 -translate-x-1/2 z-50 bg-white/95 backdrop-blur-sm border border-gray-200/80 rounded-full shadow-xl px-2 py-2 gap-2 items-center animate-in slide-in-from-bottom-4 items-center">
-            {analysis?.coordinate && (
-                <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex items-center gap-2 px-4 py-2 hover:bg-gray-50 rounded-full transition-colors text-gray-700 font-semibold text-xs whitespace-nowrap"
-                    title="Ver ubicación en Google Maps"
-                >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-gray-500" />}
-                    Google Maps
-                </a>
-            )}
-
-            <div className="w-px h-6 bg-gray-200 mx-1"></div>
+        <div className="hidden md:flex gap-3 mb-4">
+            <a
+                href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                target="_blank"
+                rel="noreferrer"
+                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm hover:bg-gray-50 transition-colors"
+                title="Ver ubicación en Google Maps"
+            >
+                {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-blue-500" />}
+                Google Maps
+            </a>
 
             <button
                 type="button"
                 onClick={(e) => !isExporting && onExportPDF?.(e)}
                 disabled={isExporting}
-                className={`flex items-center gap-2 px-5 py-2.5 rounded-full font-bold text-xs text-white shadow-sm transition-transform active:scale-95 whitespace-nowrap
+                className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-bold text-xs text-white shadow-sm transition-all active:scale-95
                     ${isExporting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9d2449] hover:bg-[#8a1f40]'}`}
             >
                 {isExporting ? (
@@ -574,7 +570,7 @@ const DesktopStickyActionBar = ({ analysis, onExportPDF, isExporting, exportProg
                 ) : (
                     <div className="flex items-center gap-2">
                         {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
-                        <span className="tracking-wide">Descargar Ficha</span>
+                        <span>Descargar Ficha</span>
                     </div>
                 )}
             </button>
@@ -664,8 +660,8 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                         <button
                             onClick={() => setActiveTab('prohibidas')}
                             className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'prohibidas'
-                                    ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-red-700 shadow-sm ring-1 ring-black/5'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Prohibidas ({analysis.prohibitedActivities?.length || 0})
@@ -673,8 +669,8 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                         <button
                             onClick={() => setActiveTab('permitidas')}
                             className={`flex-1 md:flex-none px-4 py-1.5 text-[10px] font-bold uppercase tracking-wide rounded-md transition-all ${activeTab === 'permitidas'
-                                    ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-green-700 shadow-sm ring-1 ring-black/5'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             Permitidas ({analysis.allowedActivities?.length || 0})
@@ -701,8 +697,8 @@ const ActivityCatalogController = ({ analysis, Icons, COLORS }) => {
                                         key={sec}
                                         onClick={() => toggleSector(sec)}
                                         className={`px-2.5 py-1 rounded-full text-[10px] font-semibold border transition-all active:scale-95 text-left ${isSelected
-                                                ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
-                                                : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
+                                            ? 'bg-blue-600 border-blue-600 text-white shadow-sm'
+                                            : 'bg-white border-gray-200 text-gray-600 hover:border-gray-300 hover:bg-gray-50'
                                             }`}
                                     >
                                         {sec}
@@ -763,8 +759,14 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
     return (
         <div className="space-y-3 animate-in pb-4">
 
+
             {/* 1. Location and basic context */}
             <LocationSummary analysis={analysis} />
+
+            {/* 1.A Primary Actions (Desktop Static) */}
+            <PrimaryActionHeader analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+
+            {/* 1.B Citizen Summary (Rule Based) */}
 
             {/* 1.B Citizen Summary (Rule Based) */}
             <CitizenSummaryCard analysis={analysis} />
@@ -852,7 +854,7 @@ const ResultsContent = ({ analysis, onExportPDF, isExporting, exportProgress }) 
 
             {/* 8. Action Buttons (Refactored) */}
             <MobileActionButtons analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
-            <DesktopStickyActionBar analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+
 
             {/* 9. Disclaimer */}
             <LegalDisclaimer />
