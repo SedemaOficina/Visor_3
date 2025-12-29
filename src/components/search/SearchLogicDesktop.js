@@ -24,7 +24,7 @@ const Tooltip = ({ content, children, placement = 'top' }) => {
     }, [content, placement]);
 
     return (
-        <span ref={triggerRef} className="">
+        <span ref={triggerRef} className="flex-1">
             {children}
         </span>
     );
@@ -300,7 +300,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                                 )
                             }
                             className="
-          flex-1 h-11 bg-[#9d2148] text-white rounded-lg
+          flex-1 w-full h-11 bg-[#9d2148] text-white rounded-lg
           text-[14px] font-semibold flex items-center justify-center gap-2
           shadow-sm hover:bg-[#7d1d3a]
         "

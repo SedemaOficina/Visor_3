@@ -48,13 +48,13 @@ const SidebarDesktop = ({
             id="sidebar-desktop"
             className={`
                 flex flex-col
-                fixed top-[68px] bottom-4 left-0
+                fixed top-[84px] bottom-4 left-0
                 transition-all duration-300 ease-out
                 glass-panel border-l-0 rounded-r-2xl mr-4
                 z-[1020]
                 ${isOpen ? 'w-[420px]' : 'w-0 border-none opacity-0'}
             `}
-            style={{ height: 'calc(100vh - 68px - 16px)' }}
+            style={{ height: 'calc(100vh - 84px - 16px)' }}
         >
             <div
                 className={`
