@@ -105,4 +105,17 @@ Las fichas soportan la visualización simultánea de múltiples etiquetas para r
 | **Mapa Interactivo** | `src/components/map/MapViewer.js` | Controla capas, marcadores, eventos y estilo dinámico. |
 | **Resultados** | `src/components/analysis/ResultsContent.js` | Renderiza la ficha, badges y lógica visual de datos. |
 | **Exportación** | `src/components/features/PdfExportController.js` | Genera el PDF replicando estilos y prioridades del mapa. |
-| **Búsqueda** | `src/components/search/MobileSearchBar.js` | Componente de búsqueda optimizado para móviles. |
+| **Búsqueda** | `src/components/search/SearchLogicDesktop.js` | Lógica de búsqueda, autocompletado y gestión de historial. |
+| **Interacciones** | `src/App.js` | Integra controles de mapa, tooltips globales y estructura layout. |
+
+---
+
+## 6. Tecnologías UX y Accesibilidad (Nuevas)
+
+Se han integrado librerías ligeras (via CDN) para mejorar la experiencia sin aumentar significativamente la carga:
+
+*   **Tippy.js**: Sistema de tooltips unificado para botones de mapa, buscador y ayudas contextuales. Reemplaza los atributos `title` nativos.
+*   **Fuse.js**: Búsqueda difusa (fuzzy search) en tiempo real para el Catálogo de Actividades (Permitidas/Prohibidas).
+*   **Headless UI**: Patrones accesibles para Acordeones y Pestañas (Tabs) en la ficha de resultados.
+*   **React Intersection Observer**: "Scroll Spy" en la ficha de resultados para actualizar el índice de navegación.
+*   **React Sticky Box**: Fija los botones de acción (Descargar/Compartir) en la parte superior al hacer scroll.

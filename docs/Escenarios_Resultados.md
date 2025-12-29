@@ -133,10 +133,20 @@ Se detona cuando el punto intersecta la capa de Suelo de Conservación. Aquí ap
 
 
 ### D. Interfaz y Herramientas (Nuevas)
-Adicionalmente a los resultados, la interfaz cuenta con:
+Adicionalmente a los resultados, la interfaz cuenta con un stack de controles optimizado:
 
-*   **Control de Opacidad**: Slider en Leyendas para ajustar transparencia de zonificación.
-*   **Ayuda de Búsqueda**: Tooltip interactivo con ejemplos de formatos (Coords, DMS, Dirección).
+1.  **Controles de Mapa (Derecha)**:
+    *   **Ayuda (?)**: Tutorial rápido.
+    *   **Ubicación**: Centra el mapa en la posición del usuario.
+    *   **Recargar**: Restablece la vista original.
+    *   **Capas**: Abre el panel lateral de capas.
+    *   **Opacidad**: Slider vertical *global* para ajustar transparencia de todas las capas activas (0-100%).
+    *   **Zoom (+/-)**: Acercar y alejar.
+
+2.  **Barra de Búsqueda (Superior)**:
+    *   **Tooltips Interactivos**: Ayudas visuales en botones "Buscar", "Limpiar" y "Mi ubicación".
+    *   **Tooltip de Ayuda**: Explica formatos válidos (Coordenadas decimales, DMS, dirección).
+    *   **Historial**: Sugiere búsquedas recientes almacenadas localmente.
 
 
 ---
