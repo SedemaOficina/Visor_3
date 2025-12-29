@@ -565,11 +565,7 @@ const CitizenSummaryCard = ({ analysis }) => {
                     {isOutside && Icons.AlertTriangle ? <Icons.AlertTriangle className="h-4 w-4" /> : (Icons.Info ? <Icons.Info className="h-4 w-4" /> : <span>i</span>)}
                 </div>
                 <div>
-                    {!isOutside && (
-                        <div className={titleClasses}>
-                            Resumen Normativo
-                        </div>
-                    )}
+
                     <p className={textClasses}>
                         <span dangerouslySetInnerHTML={{ __html: text.replace(/\*\*(.*?)\*\*/g, '<strong class="font-bold">$1</strong>') }} />
                     </p>

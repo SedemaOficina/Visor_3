@@ -65,17 +65,21 @@ const SidebarDesktop = ({
             >
 
 
-                {/* Contenido Scrollable */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar p-4 space-y-4">
+                {/* Fixed Search Section */}
+                <div className="p-4 pb-2 z-20 relative">
                     <SearchLogicDesktop
                         onLocationSelect={onLocationSelect}
                         onReset={onReset}
                         setInputRef={desktopSearchSetRef}
                         initialValue={analysis?.coordinate ? `${analysis.coordinate.lat.toFixed(6)}, ${analysis.coordinate.lng.toFixed(6)}` : ''}
                     />
+                </div>
+
+                {/* Contenido Scrollable */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-4 pb-4 space-y-4 relative">
 
                     {!analysis && !isLoading && (
-                        <div className="flex flex-col items-center justify-center text-center py-6 px-4 animate-in fade-in zoom-in duration-500 select-none opacity-80 mt-8">
+                        <div className="flex flex-col items-center justify-center text-center py-6 px-4 animate-in fade-in zoom-in duration-500 select-none opacity-80 mt-4">
                             {/* Ilustración Hero Compacta */}
                             <div className="relative mb-3 group">
                                 <div className="absolute inset-0 bg-[#9d2148] rounded-full blur-xl opacity-5 group-hover:opacity-10 transition-opacity duration-700"></div>
@@ -102,7 +106,6 @@ const SidebarDesktop = ({
                                     <Icons.ChartBar className="h-4 w-4" />
                                     Resultados del Análisis
                                 </span>
-                                {/* Optional: Add collapse/expand icon here if needed later */}
                             </div>
                             <ResultsContent analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
                         </>
@@ -116,17 +119,18 @@ const SidebarDesktop = ({
         <Tooltip content={isOpen ? 'Ocultar panel lateral' : 'Mostrar panel lateral'}>
             <button
                 onClick={onToggle}
-                className="
-                    absolute top-6 left-full
-                    transform translate-x-[1px] z-[1030]
+                className={`
+                    fixed top-24
+                    ${isOpen ? 'left-[420px]' : 'left-0'}
+                    z-[1030]
                     w-6 h-12
                     bg-[#9d2148] text-white 
                     shadow-md rounded-r-lg
                     flex items-center justify-center 
                     hover:bg-[#8a1c3b]
                     focus:outline-none focus:ring-2 focus:ring-[#9d2148] focus:ring-offset-2
-                    transition-all duration-200
-                "
+                    transition-all duration-300 ease-out
+                `}
                 aria-label={isOpen ? 'Ocultar panel' : 'Mostrar panel'}
             >
                 <span className="text-xs font-bold leading-none">{isOpen ? '«' : '»'}</span>

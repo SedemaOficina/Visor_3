@@ -583,7 +583,7 @@ const VisorApp = () => {
             setActiveBaseLayer={setActiveBaseLayer}
             globalOpacity={globalOpacity}
             setGlobalOpacity={setGlobalOpacity}
-            setGlobalOpacity={setGlobalOpacity}
+
             invalidateMapRef={invalidateMapRef}
             resetMapViewRef={resetMapViewRef}
             zoomInRef={zoomInRef}

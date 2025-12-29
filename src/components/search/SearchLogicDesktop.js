@@ -149,33 +149,36 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                         <button
                             type="button"
                             onClick={() => setShowInfo(!showInfo)}
-                            className="text-[10px] bg-gray-100 hover:bg-gray-200 text-gray-600 px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors"
+                            className="text-[10px] bg-white border border-gray-200 hover:bg-gray-50 text-[#9d2449] px-2 py-0.5 rounded-full flex items-center gap-1 transition-colors shadow-sm"
                         >
                             <Icons.Info className="h-3 w-3" />
-                            <span>¿Cómo buscar?</span>
+                            <span className="font-bold">Ayuda</span>
                         </button>
                     </div>
 
                     {showInfo && (
-                        <div className="mb-3 p-3 bg-blue-50 border border-blue-100 rounded-lg text-xs text-blue-800 animate-in fade-in slide-in-from-top-1">
-                            <div className="font-bold mb-2">¿Cómo realizar una búsqueda?</div>
+                        <div className="mb-3 p-3 bg-gray-50 border border-gray-200 rounded-lg text-xs text-gray-800 animate-in fade-in slide-in-from-top-1 shadow-sm">
+                            <div className="font-bold mb-2 text-[#9d2449] flex items-center gap-2">
+                                <Icons.Info className="h-3 w-3" />
+                                ¿Cómo realizar una búsqueda?
+                            </div>
                             <p className="mb-2 opacity-90">Puedes ingresar la ubicación de cualquiera de las siguientes formas:</p>
                             <ul className="space-y-2 text-[11px] opacity-90">
-                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
-                                    <strong className="block text-blue-900 mb-0.5">Dirección</strong>
-                                    <span className="text-blue-700/80">Ejemplo: Calle 5 de Mayo, Centro</span>
+                                <li className="bg-white p-1.5 rounded border border-gray-200">
+                                    <strong className="block text-gray-900 mb-0.5">Dirección</strong>
+                                    <span className="text-gray-500">Ejemplo: Calle 5 de Mayo, Centro</span>
                                 </li>
-                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
-                                    <strong className="block text-blue-900 mb-0.5">Coordenadas (latitud, longitud)</strong>
-                                    <span className="font-mono text-[10px] text-blue-700/80">Ejemplo: 19.4326, -99.1332</span>
+                                <li className="bg-white p-1.5 rounded border border-gray-200">
+                                    <strong className="block text-gray-900 mb-0.5">Coordenadas (latitud, longitud)</strong>
+                                    <span className="font-mono text-[10px] text-gray-500">Ejemplo: 19.4326, -99.1332</span>
                                 </li>
-                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
-                                    <strong className="block text-blue-900 mb-0.5">Coordenadas DMS (Grados, Minutos, Segundos)</strong>
-                                    <span className="font-mono text-[10px] text-blue-700/80">Ejemplo: 19°22'18.8"N 99°04'25.8"W</span>
+                                <li className="bg-white p-1.5 rounded border border-gray-200">
+                                    <strong className="block text-gray-900 mb-0.5">Coordenadas DMS</strong>
+                                    <span className="font-mono text-[10px] text-gray-500">Ejemplo: 19°22'18.8"N 99°04'25.8"W</span>
                                 </li>
-                                <li className="bg-white/50 p-1.5 rounded border border-blue-100/50">
-                                    <strong className="block text-blue-900 mb-0.5">Colonia y alcaldía</strong>
-                                    <span className="text-blue-700/80">Ejemplo: Polanco, Miguel Hidalgo</span>
+                                <li className="bg-white p-1.5 rounded border border-gray-200">
+                                    <strong className="block text-gray-900 mb-0.5">Colonia y alcaldía</strong>
+                                    <span className="text-gray-500">Ejemplo: Polanco, Miguel Hidalgo</span>
                                 </li>
                             </ul>
                         </div>
