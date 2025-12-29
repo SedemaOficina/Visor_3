@@ -370,7 +370,26 @@ const VisorApp = () => {
   };
 
   // Wrapper for Export to use local state
+  const handleExportClick = React.useCallback(async (e) => {
+    const exportFn = getExportHandler();
+    if (typeof exportFn === 'function') {
+      if (isExporting) return; // Prevent double click
 
+      updateState({ isExporting: true });
+
+      try {
+        await exportFn(e);
+        addToast('Documento PDF generado exitosamente', 'success');
+      } catch (err) {
+        console.error("Export Error", err);
+        addToast('Error al generar PDF', 'error');
+      } finally {
+        updateState({ isExporting: false, exportProgress: 0 });
+      }
+    } else {
+      alert('Aún no se puede exportar. Intenta recargar la página.');
+    }
+  }, [getExportHandler, isExporting, addToast, updateState]);
 
 
   const handleUserLocation = () => {
@@ -594,7 +613,7 @@ const VisorApp = () => {
                     max="0.5"
                     step="0.05"
                     value={globalOpacity || 0.25}
-                    onChange={(e) => setGlobalOpacity && setGlobalOpacity(parseFloat(e.target.value))}
+                    onChange={(e) => updateState({ globalOpacity: parseFloat(e.target.value) })}
                     className="w-16 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
                   />
                 </div>
@@ -661,14 +680,14 @@ const VisorApp = () => {
 
         <HelpModal
           isOpen={isHelpOpen}
-          onClose={() => setIsHelpOpen(false)}
+          onClose={() => updateState({ isHelpOpen: false })}
         />
 
         {/* --- CONTROLLER: PDF EXPORT --- */}
         <PdfExportController
           analysis={analysis}
           onExportReady={setExportHandler}
-          onProgress={setExportProgress}
+          onProgress={(val) => updateState({ exportProgress: val })}
           dataCache={dataCache}
           visibleMapLayers={visibleMapLayers}
           activeBaseLayer={activeBaseLayer}
