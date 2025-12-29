@@ -97,29 +97,7 @@ const ToastContainer = () => {
 /* ------------------------------------------------ */
 
 // --- SHARED TOOLTIP COMPONENT ---
-const Tooltip = ({ content, children, placement = 'left' }) => {
-  const triggerRef = React.useRef(null);
-  const { useEffect } = React;
-
-  useEffect(() => {
-    if (triggerRef.current && window.tippy && content) {
-      const instance = window.tippy(triggerRef.current, {
-        content: content,
-        placement: placement,
-        animation: 'scale',
-        arrow: true,
-        theme: 'light-border',
-      });
-      return () => instance.destroy();
-    }
-  }, [content, placement]);
-
-  return (
-    <span ref={triggerRef} className="inline-block">
-      {children}
-    </span>
-  );
-};
+const Tooltip = window.App?.Components?.Tooltip || (({ children }) => children);
 
 /* 7.3 Bottom Sheet Móvil */
 /* ------------------------------------------------ */

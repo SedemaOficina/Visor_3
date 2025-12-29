@@ -3,30 +3,7 @@ const SearchLogicDesktop = window.App?.Components?.SearchLogicDesktop || (() => 
 const SkeletonAnalysis = window.App?.Components?.SkeletonAnalysis || (() => null);
 const ResultsContent = window.App?.Components?.ResultsContent || (() => null);
 
-// --- SHARED TOOLTIP COMPONENT ---
-const Tooltip = ({ content, children, placement = 'right' }) => {
-    const triggerRef = React.useRef(null);
-    const { useEffect } = React;
-
-    useEffect(() => {
-        if (triggerRef.current && window.tippy && content) {
-            const instance = window.tippy(triggerRef.current, {
-                content: content,
-                placement: placement,
-                animation: 'scale',
-                arrow: true,
-                theme: 'light-border',
-            });
-            return () => instance.destroy();
-        }
-    }, [content, placement]);
-
-    return (
-        <span ref={triggerRef} className="">
-            {children}
-        </span>
-    );
-};
+const Tooltip = window.App?.Components?.Tooltip || (({ children }) => children);
 
 const SidebarDesktop = ({
     analysis,
