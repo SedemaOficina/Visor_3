@@ -23,6 +23,7 @@ const MobileSearchBar = safeComponent(window.App?.Components?.MobileSearchBar);
 const MapViewer = safeComponent(window.App?.Components?.MapViewer);
 const Legend = safeComponent(window.App?.Components?.Legend);
 const ResultsContent = safeComponent(window.App?.Components?.ResultsContent);
+const HelpModal = safeComponent(window.App?.Components?.HelpModal);
 
 // Safe Icon Proxy: Traps any access to undefined icons and returns a Null Component
 const RealIcons = window.App?.Components?.Icons || {};
@@ -369,27 +370,7 @@ const VisorApp = () => {
   };
 
   // Wrapper for Export to use local state
-  const handleExportClick = React.useCallback(async (e) => {
-    const exportFn = getExportHandler();
-    if (typeof exportFn === 'function') {
-      if (isExporting) return; // Prevent double click
 
-      updateState({ isExporting: true });
-      // addToast('Generando documento PDF, por favor espere...', 'info'); // Handled by button state now
-
-      try {
-        await exportFn(e);
-        addToast('Documento PDF generado exitosamente', 'success');
-      } catch (err) {
-        console.error("Export Error", err);
-        addToast('Error al generar PDF', 'error');
-      } finally {
-        updateState({ isExporting: false, exportProgress: 0 });
-      }
-    } else {
-      alert('Aún no se puede exportar. Intenta recargar la página.');
-    }
-  }, [getExportHandler, isExporting, addToast, updateState]);
 
 
   const handleUserLocation = () => {
@@ -410,25 +391,7 @@ const VisorApp = () => {
     toggleLayer('zoning');
   }, [toggleLayer]);
 
-  const handleExportClick = React.useCallback(async (e) => {
-    const handler = getExportHandler();
-    if (typeof handler === 'function') {
-      if (state.isExporting) return;
-      updateState({ isExporting: true });
 
-      try {
-        await handler(e);
-        addToast('Documento PDF generado exitosamente', 'success');
-      } catch (err) {
-        console.error("Export Error", err);
-        addToast('Error al generar PDF', 'error');
-      } finally {
-        updateState({ isExporting: false, exportProgress: 0 });
-      }
-    } else {
-      alert('Aún no se puede exportar. Intenta recargar la página.');
-    }
-  }, [getExportHandler, state.isExporting, addToast, updateState]);
 
 
   // Initialization Effect: Parse URL Params
@@ -518,7 +481,7 @@ const VisorApp = () => {
 
           isExporting={isExporting}
           exportProgress={exportProgress}
-          onOpenHelp={() => setIsHelpOpen(true)}
+          onOpenHelp={() => updateState({ isHelpOpen: true })}
         />
 
         <div className="relative flex-1 h-full w-full">
@@ -561,7 +524,7 @@ const VisorApp = () => {
             visibleMapLayers={visibleMapLayers}
             toggleLayer={toggleLayer}
             isOpen={isLegendOpen}
-            setIsOpen={setIsLegendOpen}
+            setIsOpen={(val) => updateState({ isLegendOpen: val })}
             visibleZoningCats={visibleZoningCats}
             toggleZoningGroup={toggleZoningGroup}
             setVisibleZoningCats={setVisibleZoningCats}
