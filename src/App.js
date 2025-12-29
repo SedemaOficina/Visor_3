@@ -662,13 +662,13 @@ const VisorApp = () => {
           </div>
 
           {/* ZOOM CONTROLS (Bottom Right) */}
-          <div className="absolute bottom-10 right-6 flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 select-none z-[1100]">
+          <div className="absolute bottom-36 md:bottom-10 right-4 flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 select-none z-[1100]">
             <Tooltip content="Acercar" placement="left">
               <button
                 onClick={() => zoomInRef.current?.()}
-                className="w-9 h-9 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+                className="w-7 h-7 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="12" y1="5" x2="12" y2="19"></line>
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
@@ -678,9 +678,9 @@ const VisorApp = () => {
             <Tooltip content="Alejar" placement="left">
               <button
                 onClick={() => zoomOutRef.current?.()}
-                className="w-9 h-9 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+                className="w-7 h-7 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                   <line x1="5" y1="12" x2="19" y2="12"></line>
                 </svg>
               </button>

@@ -286,6 +286,35 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                     )}
                 </div>
 
+                {/* BOTÓN MI UBICACIÓN */}
+                <button
+                    type="button"
+                    onClick={() => {
+                        if (!navigator.geolocation) {
+                            alert("Tu navegador no soporta geolocalización.");
+                            return;
+                        }
+                        navigator.geolocation.getCurrentPosition(
+                            (pos) => {
+                                const { latitude, longitude } = pos.coords;
+                                // Actualizar el input con las coordenadas
+                                setQuery(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
+                                // Disparar la selección de ubicación
+                                onLocationSelect({ lat: latitude, lng: longitude });
+                            },
+                            (err) => {
+                                console.error(err);
+                                alert("No pudimos obtener tu ubicación. Verifica los permisos de tu navegador.");
+                            },
+                            { enableHighAccuracy: true }
+                        );
+                    }}
+                    className="w-full mt-2 bg-white border border-gray-200 text-[#9d2449] hover:bg-gray-50 font-bold py-2 rounded-lg text-xs shadow-sm flex items-center justify-center gap-2 transition-colors"
+                >
+                    <Icons.Navigation className="h-4 w-4" />
+                    Usar mi ubicación actual
+                </button>
+
 
 
             </div>
