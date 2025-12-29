@@ -3,6 +3,29 @@ const { useState, useEffect, useRef } = window.React;
 // Safe Lazy Access implementation
 const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
 
+const SearchLogicDesktop = window.App?.Components?.SearchLogicDesktop || (() => null);
+
+// --- SHARED TOOLTIP COMPONENT ---
+const Tooltip = ({ content, children, placement = 'top' }) => {
+    const triggerRef = window.React.useRef(null);
+    const { useEffect } = window.React;
+
+    useEffect(() => {
+        if (triggerRef.current && window.tippy && content) {
+            const instance = window.tippy(triggerRef.current, {
+                content: content,
+                placement: placement,
+                animation: 'scale',
+                arrow: true,
+                theme: 'light-border',
+            });
+            return () => instance.destroy();
+        }
+    }, [content, placement]);
+
+    return window.React.cloneElement(children, { ref: triggerRef });
+};
+
 const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
     // Safe Lazy Access with Wrappers
     const { searchMapboxPlaces, parseCoordinateInput } = window.App.Utils || {};
@@ -179,35 +202,37 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                             {/* Buttons Container (Right) */}
                             <div className="absolute right-2 flex items-center gap-1">
                                 {query && (
-                                    <button
-                                        type="button"
-                                        onClick={() => {
-                                            setQuery('');
-                                            setSuggestions([]);
-                                            localInputRef.current?.focus();
-                                        }}
-                                        className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
-                                        title="Cerrar"
-                                    >
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                    </button>
+                                    <Tooltip content="Limpiar búsqueda">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setQuery('');
+                                                setSuggestions([]);
+                                                localInputRef.current?.focus();
+                                            }}
+                                            className="p-2 text-gray-400 hover:text-gray-600 rounded-full hover:bg-gray-100 transition-colors"
+                                        >
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                        </button>
+                                    </Tooltip>
                                 )}
 
                                 <div className="h-6 w-px bg-gray-200 mx-1"></div>
 
-                                <button
-                                    type="button"
-                                    onClick={handleSubmit}
-                                    disabled={isSearching}
-                                    className="p-2 text-[#9d2449] hover:text-[#7d1d3a] rounded-full hover:bg-red-50 transition-colors disabled:opacity-50"
-                                    title="Buscar"
-                                >
-                                    {isSearching ? (
-                                        <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2449] rounded-full animate-spin"></div>
-                                    ) : (
-                                        <Icons.Search className="h-5 w-5" />
-                                    )}
-                                </button>
+                                <Tooltip content="Buscar">
+                                    <button
+                                        type="button"
+                                        onClick={handleSubmit}
+                                        disabled={isSearching}
+                                        className="p-2 text-[#9d2449] hover:text-[#7d1d3a] rounded-full hover:bg-red-50 transition-colors disabled:opacity-50"
+                                    >
+                                        {isSearching ? (
+                                            <div className="h-5 w-5 border-2 border-gray-200 border-t-[#9d2449] rounded-full animate-spin"></div>
+                                        ) : (
+                                            <Icons.Search className="h-5 w-5" />
+                                        )}
+                                    </button>
+                                </Tooltip>
                             </div>
                         </div>
                     </div>
@@ -256,26 +281,27 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
 
                 <div className="flex gap-2">
                     {/* Mi ubicación */}
-                    <button
-                        onClick={() =>
-                            navigator.geolocation.getCurrentPosition(
-                                p => {
-                                    const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
-                                    onLocationSelect(coord);
-                                },
-                                () => alert("No se pudo obtener tu ubicación.") // We will upgrade this to Toast later via props in App
-                            )
-                        }
-                        className="
-      flex-1 h-11 bg-[#9d2148] text-white rounded-lg
-      text-[14px] font-semibold flex items-center justify-center gap-2
-      shadow-sm hover:bg-[#7d1d3a]
-    "
-                        title="Usar mi ubicación actual"
-                    >
-                        <Icons.Navigation className="h-4 w-4" />
-                        Mi ubicación
-                    </button>
+                    <Tooltip content="Usar mi ubicación actual">
+                        <button
+                            onClick={() =>
+                                navigator.geolocation.getCurrentPosition(
+                                    p => {
+                                        const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
+                                        onLocationSelect(coord);
+                                    },
+                                    () => alert("No se pudo obtener tu ubicación.") // We will upgrade this to Toast later via props in App
+                                )
+                            }
+                            className="
+          flex-1 h-11 bg-[#9d2148] text-white rounded-lg
+          text-[14px] font-semibold flex items-center justify-center gap-2
+          shadow-sm hover:bg-[#7d1d3a]
+        "
+                        >
+                            <Icons.Navigation className="h-4 w-4" />
+                            Mi ubicación
+                        </button>
+                    </Tooltip>
 
 
                 </div>

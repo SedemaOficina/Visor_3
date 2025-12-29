@@ -251,13 +251,14 @@ const Legend = ({
                                 className="flex items-center justify-between cursor-pointer hover:bg-gray-50 p-1 rounded transition-colors"
                                 onClick={() => handleToggleLayer('selectedAnpZoning')}
                             >
-                                <div
-                                    className="flex items-center gap-2"
-                                    title="Muestra la zonificación interna (sub-zonas) definida en el Programa de Manejo del ANP."
-                                >
-                                    {Icons.Info ? <Icons.Info className="h-3 w-3 text-blue-500" /> : <span>i</span>}
-                                    <span className="text-[10px] font-semibold text-blue-700 select-none">Zonificación Interna ANP</span>
-                                </div>
+                                <Tooltip content="Muestra la zonificación interna (sub-zonas) definida en el Programa de Manejo del ANP.">
+                                    <div
+                                        className="flex items-center gap-2"
+                                    >
+                                        {Icons.Info ? <Icons.Info className="h-3 w-3 text-blue-500" /> : <span>i</span>}
+                                        <span className="text-[10px] font-semibold text-blue-700 select-none">Zonificación Interna ANP</span>
+                                    </div>
+                                </Tooltip>
                                 <div onClick={(e) => e.stopPropagation()}>
                                     <ToggleSwitch
                                         checked={!!visibleMapLayers.selectedAnpZoning}
