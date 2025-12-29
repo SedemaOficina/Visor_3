@@ -188,7 +188,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
       style={{ height: getHeight() }}
     >
       <div
-        className="sheet-header flex-shrink-0 pt-1 pb-2 px-4 cursor-grab active:cursor-grabbing"
+        className="sheet-header flex-shrink-0 pt-1 pb-2 px-4 cursor-grab active:cursor-grabbing bg-white relative z-20 rounded-t-[24px]"
         onTouchStart={handleTouchStart}
         onTouchEnd={handleTouchEnd}
         onClick={analysis ? toggleFromTap : undefined}
@@ -206,7 +206,7 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
                 {/* Decorative Top Accent */}
                 <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-[#9d2148] via-[#bc955c] to-[#9d2148]"></div>
 
-                <div className="flex items-center gap-2 mb-1 mt-1">
+                <div className="flex items-center gap-2 mb-1 mt-1 bg-white/50 backdrop-blur-sm px-2 py-0.5 rounded-full">
                   <div className="w-2 h-2 rounded-full bg-[#9d2148]"></div>
                   <span className="text-[10px] font-black tracking-[0.2em] text-gray-400 uppercase">SEDEMA</span>
                   <div className="w-2 h-2 rounded-full bg-[#9d2148]"></div>
@@ -238,72 +238,79 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
           )}
         </div>
       </div>
-
-      {(sheetState === 'mid' || sheetState === 'full') && (
-        <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-gray-50/50 mobile-upscale">
-          <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
-        </div>
-      )}
-
-      {analysis && (
-        <div className="flex-shrink-0 p-3 bg-white border-t border-gray-200 safe-area-bottom flex gap-3 overflow-x-auto">
-
-          <a
-            href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-            target="_blank"
-            rel="noreferrer"
-            className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#9d2148] text-white py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-[#7d1d3a] transition-colors"
-            title="Ver ubicación en Google Maps"
-          >
-            <Icons.MapIcon className="h-4 w-4" /> Google Maps
-          </a>
-
-          <button
-            onClick={async () => {
-              const url = `${window.location.origin}${window.location.pathname}?lat=${analysis.coordinate.lat}&lng=${analysis.coordinate.lng}&open=1`;
-              if (navigator.share) {
-                try {
-                  await navigator.share({
-                    title: 'Consulta Ciudadana SEDEMA',
-                    text: `Ubicación: ${analysis.alcaldia}`,
-                    url
-                  });
-                } catch { }
-              } else {
-                navigator.clipboard.writeText(url);
-              }
-            }}
-            className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
-            title="Compartir ubicación"
-          >
-            <Icons.Share className="h-4 w-4" /> Compartir
-          </button>
-
-          <button
-            type="button"
-            onClick={(e) => {
-              if (isExporting) return;
-              if (onExportPDF) onExportPDF(e);
-              else alert('No se pudo generar el PDF. Intenta recargar la página.');
-            }}
-            disabled={isExporting}
-            className={`flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50 ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
-            title="Descargar ficha técnica en PDF"
-          >
-            {isExporting ? (
-              <>
-                {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin text-[#9d2148]" /> : <span className="h-4 w-4 rounded-full border-2 border-t-[#9d2148] animate-spin" />}
-                Generando... {exportProgress ? `${exportProgress}%` : ''}
-              </>
-            ) : (
-              <>
-                <Icons.Pdf className="h-4 w-4" /> Exportar PDF
-              </>
-            )}
-          </button>
-        </div>
-      )}
     </div>
+      {/* Spacer to prevent overlap if needed, though z-index on header should work */ }
+  <div className="h-px bg-gray-200 w-full" />
+
+  {
+    (sheetState === 'mid' || sheetState === 'full') && (
+      <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-gray-50/50 mobile-upscale">
+        <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
+      </div>
+    )
+  }
+
+  {
+    analysis && (
+      <div className="flex-shrink-0 p-3 bg-white border-t border-gray-200 safe-area-bottom flex gap-3 overflow-x-auto">
+
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+          target="_blank"
+          rel="noreferrer"
+          className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-[#9d2148] text-white py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-[#7d1d3a] transition-colors"
+          title="Ver ubicación en Google Maps"
+        >
+          <Icons.MapIcon className="h-4 w-4" /> Google Maps
+        </a>
+
+        <button
+          onClick={async () => {
+            const url = `${window.location.origin}${window.location.pathname}?lat=${analysis.coordinate.lat}&lng=${analysis.coordinate.lng}&open=1`;
+            if (navigator.share) {
+              try {
+                await navigator.share({
+                  title: 'Consulta Ciudadana SEDEMA',
+                  text: `Ubicación: ${analysis.alcaldia}`,
+                  url
+                });
+              } catch { }
+            } else {
+              navigator.clipboard.writeText(url);
+            }
+          }}
+          className="flex-1 min-w-[100px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50"
+          title="Compartir ubicación"
+        >
+          <Icons.Share className="h-4 w-4" /> Compartir
+        </button>
+
+        <button
+          type="button"
+          onClick={(e) => {
+            if (isExporting) return;
+            if (onExportPDF) onExportPDF(e);
+            else alert('No se pudo generar el PDF. Intenta recargar la página.');
+          }}
+          disabled={isExporting}
+          className={`flex-1 min-w-[110px] flex items-center justify-center gap-2 bg-white text-gray-700 border border-gray-300 py-2.5 px-4 rounded-full text-xs font-bold shadow-sm hover:bg-gray-50 ${isExporting ? 'opacity-75 cursor-not-allowed' : ''}`}
+          title="Descargar ficha técnica en PDF"
+        >
+          {isExporting ? (
+            <>
+              {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin text-[#9d2148]" /> : <span className="h-4 w-4 rounded-full border-2 border-t-[#9d2148] animate-spin" />}
+              Generando... {exportProgress ? `${exportProgress}%` : ''}
+            </>
+          ) : (
+            <>
+              <Icons.Pdf className="h-4 w-4" /> Exportar PDF
+            </>
+          )}
+        </button>
+      </div>
+    )
+  }
+    </div >
   );
 };
 
@@ -600,9 +607,6 @@ const VisorApp = () => {
                     {Icons.Droplet ? <Icons.Droplet className="h-4 w-4" /> : <div className="h-3 w-3 bg-[#9d2449] rounded-full" />}
                   </div>
 
-                  {/* Max Label */}
-                  <span className="text-[9px] font-bold text-gray-400">45%</span>
-
                   {/* Slider */}
                   <input
                     type="range"
@@ -611,12 +615,9 @@ const VisorApp = () => {
                     step="0.05"
                     value={globalOpacity || 0.20}
                     onChange={(e) => updateState({ globalOpacity: parseFloat(e.target.value) })}
-                    className="w-1 h-24 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449] my-1"
+                    className="w-1 h-16 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449] my-1"
                     style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
                   />
-
-                  {/* Min Label */}
-                  <span className="text-[9px] font-bold text-gray-400">10%</span>
 
                   {/* Current Value */}
                   <div className="mt-1 px-1 py-0.5 bg-gray-100 rounded text-[9px] font-bold text-[#9d2449] w-full text-center">
