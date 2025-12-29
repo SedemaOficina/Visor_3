@@ -286,31 +286,35 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                     )}
                 </div>
 
-                <div className="flex gap-2 relative z-10">
-                    {/* Mi ubicación */}
-                    <Tooltip content="Usar mi ubicación actual">
+                {/* Botón Mi Ubicación - Refactored for Stability */}
+                <div className="relative z-10 mt-3 w-full">
+                    <Tooltip content="Usar mi ubicación actual" placement="bottom">
                         <button
+                            type="button"
                             onClick={() =>
                                 navigator.geolocation.getCurrentPosition(
                                     p => {
                                         const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
                                         onLocationSelect(coord);
                                     },
-                                    () => alert("No se pudo obtener tu ubicación.") // We will upgrade this to Toast later via props in App
+                                    () => alert("No se pudo obtener tu ubicación.")
                                 )
                             }
                             className="
-          flex-1 w-full h-11 bg-[#9d2148] text-white rounded-lg
-          text-[14px] font-semibold flex items-center justify-center gap-2
-          shadow-sm hover:bg-[#7d1d3a]
-        "
+                                w-full h-11 
+                                bg-[#9d2148] text-white 
+                                rounded-lg 
+                                text-sm font-semibold 
+                                flex items-center justify-center gap-2
+                                shadow-md hover:bg-[#7d1d3a] hover:shadow-lg
+                                transition-all duration-200
+                                whitespace-nowrap overflow-hidden
+                            "
                         >
-                            <Icons.Navigation className="h-4 w-4" />
-                            Mi ubicación
+                            <Icons.Navigation className="h-4 w-4 flex-shrink-0" />
+                            <span>Mi ubicación</span>
                         </button>
                     </Tooltip>
-
-
                 </div>
 
             </div>
