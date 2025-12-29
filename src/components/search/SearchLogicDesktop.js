@@ -1,34 +1,9 @@
 const { useState, useEffect, useRef } = window.React;
 // Safe Lazy Access implementation
 // Safe Lazy Access implementation
+// Safe Lazy Access implementation
 const Icons = window.App?.Components?.Icons || new Proxy({}, { get: () => () => null });
-
-
-
-// --- SHARED TOOLTIP COMPONENT ---
-const Tooltip = ({ content, children, placement = 'top' }) => {
-    const triggerRef = window.React.useRef(null);
-    const { useEffect } = window.React;
-
-    useEffect(() => {
-        if (triggerRef.current && window.tippy && content) {
-            const instance = window.tippy(triggerRef.current, {
-                content: content,
-                placement: placement,
-                animation: 'scale',
-                arrow: true,
-                theme: 'light-border',
-            });
-            return () => instance.destroy();
-        }
-    }, [content, placement]);
-
-    return (
-        <div ref={triggerRef} className="flex-1 relative">
-            {children}
-        </div>
-    );
-};
+const Tooltip = window.App?.Components?.Tooltip || (({ children }) => children);
 
 const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
     // Safe Lazy Access with Wrappers

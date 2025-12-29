@@ -73,32 +73,7 @@ const InlineAlert = ({ tone, children }) => {
 };
 
 // --- TOOLTIP COMPONENT (TIPPY.JS WRAPPER) ---
-const Tooltip = ({ content, children, placement = 'top' }) => {
-    const triggerRef = window.React.useRef(null);
-    const { useEffect } = window.React;
-
-    useEffect(() => {
-        if (triggerRef.current && window.tippy && content) {
-            const instance = window.tippy(triggerRef.current, {
-                content: content,
-                placement: placement,
-                animation: 'scale',
-                arrow: true,
-                theme: 'light-border',
-            });
-
-            return () => {
-                instance.destroy();
-            };
-        }
-    }, [content, placement]);
-
-    return (
-        <span ref={triggerRef} className="cursor-help inline-flex items-center">
-            {children}
-        </span>
-    );
-};
+const Tooltip = window.App?.Components?.Tooltip || (({ children }) => children);
 
 const NormativeInstrumentCard = ({ analysis }) => {
     const Icons = getIcons();
@@ -575,56 +550,16 @@ const CitizenSummaryCard = ({ analysis }) => {
     );
 };
 
-const MobileActionButtons = ({ analysis, onExportPDF, isExporting, exportProgress }) => {
-    // Only visible on mobile/tablet. Hidden on MD+.
-    // Keeps functionality intact as requested.
-    const Icons = getIcons();
-    return (
-        <div className="hidden">
-            {analysis?.coordinate && (
-                <Tooltip content="Abrir ubicación en Google Maps">
-                    <a
-                        href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full flex items-center justify-center gap-2 p-3 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm active:bg-gray-50"
-                    >
-                        {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4" />}
-                        Ver en Google Maps
-                    </a>
-                </Tooltip>
-            )}
-            <Tooltip content="Guardar reporte oficial en PDF">
-                <button
-                    type="button"
-                    onClick={(e) => !isExporting && onExportPDF?.(e)}
-                    disabled={isExporting}
-                    className="w-full flex items-center justify-center gap-2 p-3 bg-[#9d2449] text-white rounded-lg font-bold text-xs shadow-sm active:bg-[#801d3a] disabled:opacity-75"
-                >
-                    {isExporting ? (
-                        <>
-                            {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <span>...</span>}
-                            <span>Generando... {exportProgress ? `${exportProgress}%` : ''}</span>
-                        </>
-                    ) : (
-                        <>
-                            {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
-                            <span>Descargar Ficha PDF</span>
-                        </>
-                    )}
-                </button>
-            </Tooltip>
-        </div>
-    );
-};
 
+
+// --- REFACTORED HEADER (Desktop Only) ---
 const PrimaryActionHeader = ({ analysis, approximateAddress, onExportPDF, isExporting, exportProgress }) => {
-    // Visible on Desktop only, static at top.
+    // Visible on Desktop only.
     const Icons = getIcons();
     if (!analysis?.coordinate) return null;
 
     return (
-        <div className="mb-4 bg-white/90 backdrop-blur-sm -mx-1 px-1 pt-2 pb-3 border-b border-gray-50 md:block hidden">
+        <div className="mb-4 bg-white sticky top-0 z-50 pb-3 border-b border-gray-100 md:block hidden animate-in fade-in">
             {/* Address Display (Desktop Sticky) */}
             {approximateAddress && (
                 <div className="mb-3 px-1">
@@ -640,39 +575,42 @@ const PrimaryActionHeader = ({ analysis, approximateAddress, onExportPDF, isExpo
 
             {/* Action Buttons */}
             <div className="flex gap-3">
-                <a
-                    href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm hover:bg-gray-50 transition-colors"
-                >
-                    {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-blue-500" />}
-                    <Tooltip content="Abrir ubicación exacta en Google Maps">
+                <Tooltip content="Ver ubicación exacta en Google Maps">
+                    <a
+                        href={`https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}`}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-xs shadow-sm hover:bg-gray-50 transition-colors"
+                    >
+                        {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-blue-500" />}
                         <span>Google Maps</span>
-                    </Tooltip>
-                </a>
+                    </a>
+                </Tooltip>
 
-                <button
-                    type="button"
-                    onClick={(e) => !isExporting && onExportPDF?.(e)}
-                    disabled={isExporting}
-                    className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-bold text-xs text-white shadow-sm transition-all active:scale-95
-                    ${isExporting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9d2449] hover:bg-[#8a1f40]'}`}
-                >
-                    {isExporting ? (
-                        <div className="flex items-center gap-2">
-                            {Icons.Loader2 && <Icons.Loader2 className="h-4 w-4 animate-spin" />}
-                            <span>{exportProgress ? `${exportProgress}%` : 'Generando...'}</span>
-                        </div>
-                    ) : (
-                        <div className="flex items-center gap-2">
-                            {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
-                            <Tooltip content="Generar ficha PDF con información oficial preliminar">
+                <Tooltip content="Generar ficha PDF con información oficial preliminar">
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.preventDefault();
+                            if (!isExporting && onExportPDF) onExportPDF(e);
+                        }}
+                        disabled={isExporting}
+                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-bold text-xs text-white shadow-sm transition-all active:scale-95
+                        ${isExporting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9d2449] hover:bg-[#8a1f40]'}`}
+                    >
+                        {isExporting ? (
+                            <div className="flex items-center gap-2">
+                                {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <div className="h-3 w-3 rounded-full border-2 border-white/50 border-t-white animate-spin" />}
+                                <span>{exportProgress ? `${exportProgress}%` : 'Generando...'}</span>
+                            </div>
+                        ) : (
+                            <div className="flex items-center gap-2">
+                                {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
                                 <span>Descargar Ficha</span>
-                            </Tooltip>
-                        </div>
-                    )}
-                </button>
+                            </div>
+                        )}
+                    </button>
+                </Tooltip>
             </div>
         </div>
     );
@@ -1055,7 +993,7 @@ const ResultsContent = ({ analysis, approximateAddress, onExportPDF, isExporting
                 )}
 
                 {/* 8. Action Buttons (Refactored) */}
-                <MobileActionButtons analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+
 
                 {/* 9. Disclaimer */}
                 <LegalDisclaimer />
