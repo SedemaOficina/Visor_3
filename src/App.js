@@ -99,11 +99,7 @@ const Tooltip = ({ content, children, placement = 'left' }) => {
     }
   }, [content, placement]);
 
-  return (
-    <span ref={triggerRef} className="contents">
-      {children}
-    </span>
-  );
+  return React.cloneElement(children, { ref: triggerRef });
 };
 
 /* 7.3 Bottom Sheet Móvil */

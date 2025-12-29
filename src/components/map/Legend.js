@@ -24,11 +24,7 @@ const Tooltip = ({ content, children, placement = 'left' }) => {
         }
     }, [content, placement]);
 
-    return (
-        <span ref={triggerRef} className="contents">
-            {children}
-        </span>
-    );
+    return window.React.cloneElement(children, { ref: triggerRef });
 };
 
 const Legend = ({

@@ -21,11 +21,7 @@ const Tooltip = ({ content, children, placement = 'right' }) => {
         }
     }, [content, placement]);
 
-    return (
-        <span ref={triggerRef} className="contents">
-            {children}
-        </span>
-    );
+    return window.React.cloneElement(children, { ref: triggerRef });
 };
 
 const SidebarDesktop = ({
