@@ -620,16 +620,18 @@ const VisorApp = () => {
               <div className={`flex flex-col items-end gap-3 transition-all duration-300 origin-bottom ${isFabOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-8 pointer-events-none absolute bottom-2 right-0'}`}>
 
                 {/* Opacity Slider */}
-                <div className="flex items-center gap-2 bg-white rounded-full shadow-md border border-gray-200 px-3 h-10 animate-fade-in-up">
-                  <span className="text-[10px] font-bold text-gray-500 w-8 text-right pr-1">Opacidad</span>
+                {/* Opacity Slider - Vertical */}
+                <div className="flex flex-col items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 py-3 w-10 h-32 animate-fade-in-up">
+                  <span className="text-[9px] font-bold text-gray-400 rotate-180" style={{ writingMode: 'vertical-rl' }}>Opacidad</span>
                   <input
                     type="range"
                     min="0.1"
-                    max="0.5"
+                    max="0.45"
                     step="0.05"
-                    value={globalOpacity || 0.25}
+                    value={globalOpacity || 0.20}
                     onChange={(e) => updateState({ globalOpacity: parseFloat(e.target.value) })}
-                    className="w-16 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
+                    className="w-1 h-16 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
+                    style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
                   />
                 </div>
 
