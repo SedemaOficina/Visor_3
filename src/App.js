@@ -46,50 +46,10 @@ const MAPBOX_ACCESS_TOKEN = "pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0
 /* ------------------------------------------------ */
 /* NEW COMPONENT: TOAST NOTIFICATIONS */
 /* ------------------------------------------------ */
-const ToastContext = React.createContext(null);
-
-const useToast = () => React.useContext(ToastContext);
-
-const ToastProvider = ({ children }) => {
-  const [toasts, setToasts] = useState([]);
-
-  const addToast = React.useCallback((message, type = 'info') => {
-    const id = Date.now();
-    setToasts(prev => [...prev, { id, message, type }]);
-    setTimeout(() => removeToast(id), 3000);
-  }, []);
-
-  const removeToast = React.useCallback((id) => {
-    setToasts(prev => prev.filter(t => t.id !== id));
-  }, []);
-
-  return (
-    <ToastContext.Provider value={{ addToast, toasts }}>
-      {children}
-    </ToastContext.Provider>
-  );
-};
-
-const ToastContainer = () => {
-  const { toasts } = useToast();
-  return (
-    <div className="absolute md:bottom-24 bottom-auto top-32 md:top-auto left-1/2 transform -translate-x-1/2 z-[5000] flex flex-col gap-2 pointer-events-none w-max max-w-[90%]">
-      {toasts.map(t => (
-        <div
-          key={t.id}
-          className={`
-              pointer-events-auto px-4 py-3 rounded-lg shadow-lg text-sm font-semibold text-white animate-slide-up flex items-center gap-2
-              ${t.type === 'error' ? 'bg-red-600' : t.type === 'success' ? 'bg-green-600' : 'bg-gray-800'}
-            `}
-        >
-          {t.type === 'error' && <Icons.AlertCircle className="h-4 w-4" />}
-          {t.type === 'success' && <Icons.CheckCircle className="h-4 w-4" />}
-          {t.message}
-        </div>
-      ))}
-    </div>
-  );
-};
+// --- IMPORTED COMPONENTS ---
+const ToastProvider = window.App?.Components?.ToastProvider || (({ children }) => children);
+const ToastContainer = window.App?.Components?.ToastContainer || (() => null);
+const useToast = window.App?.Components?.useToast || (() => ({ addToast: () => { } }));
 
 
 
@@ -709,44 +669,8 @@ const VisorApp = () => {
 
 
 // Error Boundary para capturar crashes de React
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false, error: null, errorInfo: null };
-  }
-
-  static getDerivedStateFromError(error) {
-    return { hasError: true };
-  }
-
-  componentDidCatch(error, errorInfo) {
-    console.error("Uncaught Error in Component:", error, errorInfo);
-    this.setState({ error, errorInfo });
-  }
-
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="p-6 bg-red-50 text-red-900 h-screen flex flex-col items-center justify-center">
-          <h1 className="text-2xl font-bold mb-4">Algo salió mal.</h1>
-          <p className="mb-4">Se ha producido un error inesperado en la aplicación.</p>
-          <pre className="bg-red-100 p-4 rounded text-xs overflow-auto max-w-2xl border border-red-200">
-            {this.state.error && this.state.error.toString()}
-            <br />
-            {this.state.errorInfo && this.state.errorInfo.componentStack}
-          </pre>
-          <button
-            onClick={() => window.location.reload()}
-            className="mt-6 px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800"
-          >
-            Recargar Página
-          </button>
-        </div>
-      );
-    }
-    return this.props.children;
-  }
-}
+// --- IMPORTED COMPONENTS ---
+const ErrorBoundary = window.App?.Components?.ErrorBoundary || (({ children }) => children);
 
 // --- HELPER FUNCTIONS ---
 
