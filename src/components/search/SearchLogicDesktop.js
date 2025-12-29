@@ -286,36 +286,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                     )}
                 </div>
 
-                {/* Botón Mi Ubicación - Refactored for Stability */}
-                <div className="relative z-10 mt-3 w-full">
-                    <Tooltip content="Usar mi ubicación actual" placement="bottom">
-                        <button
-                            type="button"
-                            onClick={() =>
-                                navigator.geolocation.getCurrentPosition(
-                                    p => {
-                                        const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
-                                        onLocationSelect(coord);
-                                    },
-                                    () => alert("No se pudo obtener tu ubicación.")
-                                )
-                            }
-                            className="
-                                w-full h-11 
-                                bg-[#9d2148] text-white 
-                                rounded-lg 
-                                text-sm font-semibold 
-                                flex items-center justify-center gap-2
-                                shadow-md hover:bg-[#7d1d3a] hover:shadow-lg
-                                transition-all duration-200
-                                whitespace-nowrap overflow-hidden
-                            "
-                        >
-                            <Icons.Navigation className="h-4 w-4 flex-shrink-0" />
-                            <span>Mi ubicación</span>
-                        </button>
-                    </Tooltip>
-                </div>
+
 
             </div>
         </div>

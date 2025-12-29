@@ -560,10 +560,10 @@ const VisorApp = () => {
           />
 
 
-          {/* CONTROLS STACK */}
-          <div className="absolute top-24 md:top-24 right-4 flex flex-col items-center gap-2 pointer-events-auto z-[1100]">
+          {/* CONTROLS STACK (Top Right) */}
+          <div className="absolute top-20 md:top-20 right-4 flex flex-col items-center gap-2 pointer-events-auto z-[1100]">
 
-            {/* 1. Help (Always visible, Top priority) */}
+            {/* 1. Help (Top priority) */}
             <Tooltip content="Ayuda y Tutorial">
               <button
                 type="button"
@@ -574,7 +574,10 @@ const VisorApp = () => {
               </button>
             </Tooltip>
 
-            {/* 2. LAYERS BUTTON (Moved up) */}
+            {/* Gap */}
+            <div className="h-2"></div>
+
+            {/* 2. LAYERS BUTTON */}
             <Tooltip content="Capas y Simbología">
               <button
                 onClick={() => updateState({ isLegendOpen: !isLegendOpen })}
@@ -584,45 +587,23 @@ const VisorApp = () => {
               </button>
             </Tooltip>
 
-            {/* Gap */}
-            <div className="h-2"></div>
-
-            {/* 3. Zoom Controls (Moved down) */}
-            <div className="flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 select-none mb-4">
-              <Tooltip content="Acercar">
-                <button
-                  onClick={() => zoomInRef.current?.()}
-                  className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                </button>
-              </Tooltip>
-              <div className="h-[1px] bg-gray-200 w-full" />
-              <Tooltip content="Alejar">
-                <button
-                  onClick={() => zoomOutRef.current?.()}
-                  className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                  </svg>
-                </button>
-              </Tooltip>
-            </div>
-
-            {/* 4. OPTIONS FAB (Groups Location, Reset, Opacity) */}
+            {/* 3. OPTIONS FAB (Groups Location, Reset, Opacity) */}
             <div className="relative flex flex-col items-end gap-3">
 
               {/* Expanded Menu Items */}
               <div className={`flex flex-col items-end gap-3 transition-all duration-300 origin-bottom ${isFabOpen ? 'opacity-100 scale-100 translate-y-0' : 'opacity-0 scale-75 translate-y-8 pointer-events-none absolute bottom-2 right-0'}`}>
 
-                {/* Opacity Slider */}
-                {/* Opacity Slider - Vertical */}
-                <div className="flex flex-col items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 py-3 w-10 h-32 animate-fade-in-up">
-                  <span className="text-[9px] font-bold text-gray-400 rotate-180" style={{ writingMode: 'vertical-rl' }}>Opacidad</span>
+                {/* Opacity Slider - Designed with Icon and Labels */}
+                <div className="flex flex-col items-center gap-1 bg-white rounded-full shadow-md border border-gray-200 py-2 w-10 h-auto animate-fade-in-up">
+                  {/* Icon */}
+                  <div className="text-[#9d2449] mb-1">
+                    {Icons.Droplet ? <Icons.Droplet className="h-4 w-4" /> : <span className="text-xs font-bold">Opc</span>}
+                  </div>
+
+                  {/* Max Label */}
+                  <span className="text-[8px] font-bold text-gray-400">45%</span>
+
+                  {/* Slider */}
                   <input
                     type="range"
                     min="0.1"
@@ -630,9 +611,17 @@ const VisorApp = () => {
                     step="0.05"
                     value={globalOpacity || 0.20}
                     onChange={(e) => updateState({ globalOpacity: parseFloat(e.target.value) })}
-                    className="w-1 h-16 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449]"
+                    className="w-1 h-20 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-[#9d2449] my-1"
                     style={{ writingMode: 'vertical-lr', direction: 'rtl' }}
                   />
+
+                  {/* Min Label */}
+                  <span className="text-[8px] font-bold text-gray-400">10%</span>
+
+                  {/* Current Value */}
+                  <div className="mt-1 px-1 py-0.5 bg-gray-100 rounded text-[9px] font-bold text-[#9d2449] w-full text-center">
+                    {Math.round((globalOpacity || 0.20) * 100)}%
+                  </div>
                 </div>
 
                 {/* Reset View */}
@@ -645,7 +634,7 @@ const VisorApp = () => {
                   </button>
                 </Tooltip>
 
-                {/* My Location */}
+                {/* My Location FAB Item */}
                 <Tooltip content="Mi Ubicación" placement="left">
                   <button
                     onClick={() => { handleUserLocation(); setIsFabOpen(false); }}
@@ -669,6 +658,32 @@ const VisorApp = () => {
 
             </div>
 
+          </div>
+
+          {/* ZOOM CONTROLS (Bottom Right) */}
+          <div className="absolute bottom-6 right-4 flex flex-col bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 select-none z-[1100]">
+            <Tooltip content="Acercar" placement="left">
+              <button
+                onClick={() => zoomInRef.current?.()}
+                className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </Tooltip>
+            <div className="h-[1px] bg-gray-200 w-full" />
+            <Tooltip content="Alejar" placement="left">
+              <button
+                onClick={() => zoomOutRef.current?.()}
+                className="w-8 h-8 flex items-center justify-center text-[#9d2148] hover:bg-gray-50 active:bg-gray-100 transition cursor-pointer"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+              </button>
+            </Tooltip>
           </div>
         </div>
 
