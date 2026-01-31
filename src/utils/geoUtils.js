@@ -79,11 +79,53 @@
         return false;
     };
 
+    // OPTIMIZATION: BBox Helper (Lazy Calculation)
+    const getFeatureBounds = (feature) => {
+        if (feature._bbox) return feature._bbox;
+
+        let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+
+        const processRing = (ring) => {
+            for (let i = 0; i < ring.length; i++) {
+                const [x, y] = ring[i];
+                if (x < minX) minX = x;
+                if (x > maxX) maxX = x;
+                if (y < minY) minY = y;
+                if (y > maxY) maxY = y;
+            }
+        };
+
+        const geom = feature.geometry;
+        if (geom.type === 'Polygon') {
+            processRing(geom.coordinates[0]);
+        } else if (geom.type === 'MultiPolygon') {
+            for (let i = 0; i < geom.coordinates.length; i++) {
+                processRing(geom.coordinates[i][0]);
+            }
+        }
+
+        // Cache the result directly on the feature object
+        feature._bbox = { minX, minY, maxX, maxY };
+        return feature._bbox;
+    };
+
     const findFeature = (p, c) => {
         if (!c?.features) return null;
+
+        const x = p.lng;
+        const y = p.lat;
+
         // ✅ Reverse loop: prioritize layers on top (last in array)
         for (let i = c.features.length - 1; i >= 0; i--) {
             const f = c.features[i];
+
+            // 1. FAST CHECK: Bounding Box
+            const bbox = getFeatureBounds(f);
+            if (x < bbox.minX || x > bbox.maxX || y < bbox.minY || y > bbox.maxY) {
+                continue; // Skip complex calculation
+            }
+
+            // 2. SLOW CHECK: Point in Polygon (Only if passed BBox)
             if (isPointInPolygon(p, f)) return f;
         }
         return null;

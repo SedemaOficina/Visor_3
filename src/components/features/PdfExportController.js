@@ -746,12 +746,29 @@
                 let tilesLoaded = false;
                 map.on('load', () => { tilesLoaded = true; });
                 if (map._loaded) tilesLoaded = true;
+
+                // Optimized check loop
+                let attempts = 0;
                 const check = () => {
+                    attempts++;
                     map.invalidateSize(true);
-                    if (tilesLoaded) setTimeout(() => resolve(true), 800);
-                    else setTimeout(check, 200);
+
+                    // If tiles loaded, wait a brief moment for render (300ms vs 800ms)
+                    if (tilesLoaded) {
+                        setTimeout(() => resolve(true), 300);
+                        return;
+                    }
+
+                    // Max waits: 20 attempts * 100ms = 2000ms max
+                    if (attempts > 20) {
+                        resolve(true); // Force proceed
+                        return;
+                    }
+                    setTimeout(check, 100);
                 };
-                setTimeout(() => resolve(true), 4000);
+
+                // Backup safety timer reduced from 4000ms to 2500ms
+                setTimeout(() => resolve(true), 2500);
                 check();
             });
         };
@@ -790,10 +807,6 @@
                     const L = window.L;
                     const leafletImageFn = window.leafletImage || window.leafletImage?.default;
 
-                    if (window.App?.debug) {
-                        // Debug enabled
-                    }
-
                     if (!L || typeof leafletImageFn !== 'function') return resolve(null);
 
                     const el = document.getElementById('export-map');
@@ -805,6 +818,7 @@
                     }
                     el.innerHTML = '';
 
+                    // Create map off-screen
                     const m = L.map(el, {
                         zoomControl: false, attributionControl: false, preferCanvas: true,
                         fadeAnimation: false, zoomAnimation: false, markerZoomAnimation: false
@@ -816,7 +830,14 @@
                         ? getBaseLayerUrl(activeBaseLayer || 'SATELLITE')
                         : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
-                    const base = L.tileLayer(baseLayerUrl, { crossOrigin: 'anonymous', maxZoom: 19 }).addTo(m);
+                    // Force fast loading options
+                    const base = L.tileLayer(baseLayerUrl, {
+                        crossOrigin: 'anonymous',
+                        maxZoom: 19,
+                        updateWhenIdle: false, // Load immediately
+                        updateWhenZooming: false,
+                        keepBuffer: 2
+                    }).addTo(m);
 
                     const createPane = (name, zIndex) => {
                         if (!m.getPane(name)) m.createPane(name);
@@ -909,9 +930,15 @@
                         } catch (err) { done(null); }
                     };
 
-                    const safetyTimeout = setTimeout(() => { capture(); }, 6000);
-                    base.on('load', () => { setTimeout(() => { clearTimeout(safetyTimeout); capture(); }, 1200); });
-                    setTimeout(() => { if (!settled) capture(); }, 3500);
+                    // OPTIMIZED TIMEOUTS
+                    // Reduced safety timeout from 6000ms to 3000ms
+                    const safetyTimeout = setTimeout(() => { capture(); }, 3000);
+
+                    // Reduced active wait from 1200ms to 400ms after load
+                    base.on('load', () => { setTimeout(() => { clearTimeout(safetyTimeout); capture(); }, 400); });
+
+                    // Reduced fallback from 3500ms to 2000ms
+                    setTimeout(() => { if (!settled) capture(); }, 2000);
 
                 } catch (e) { resolve(null); }
             });
