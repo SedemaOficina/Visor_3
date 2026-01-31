@@ -1,94 +1,25 @@
 <!DOCTYPE html>
 <html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>Visor de Consulta Ciudadana | SEDEMA</title>
+    <link rel="icon" type="image/png" href="/assets/logo-sedema.png" />
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet" />
 
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Visor de Consulta Ciudadana | SEDEMA</title>
-  <link rel="icon" type="image/png" href="./assets/logo-sedema.png" />
+    <!-- Leaflet CSS (still needed, or import in main.jsx) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    
+    <!-- Tippy.js CSS handled via import or keep here if convenient, but let's try to import in JS context or styles -->
+    <!-- Ideally we import these in main.jsx/css. For now keeping clean. -->
 
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-
-  <!-- Fonts -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
-    rel="stylesheet" />
-
-  <!-- Leaflet CSS -->
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-
-  <!-- Tus estilos -->
-  <link rel="stylesheet" href="./src/styles/main.css?v=2.4" />
-
-  <!-- Libraries -->
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="https://unpkg.com/leaflet-image@0.4.0/leaflet-image.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/fuse.js@7.0.0/dist/fuse.basic.min.js"></script>
-  <script src="https://unpkg.com/@popperjs/core@2"></script>
-  <script src="https://unpkg.com/tippy.js@6"></script>
-  <link rel="stylesheet" href="https://unpkg.com/tippy.js@6/animations/scale.css" />
-  <script
-    src="https://cdn.jsdelivr.net/npm/react-intersection-observer@9.5.2/react-intersection-observer.umd.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/react-sticky-box@1.0.2/dist/react-sticky-box.min.js"></script>
-  <script src="https://unpkg.com/clsx@latest/dist/clsx.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/dayjs@1/dayjs.min.js"></script>
-
-  <!-- React & Babel -->
-  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-
-  <!-- jsPDF + html2canvas + QR -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.8.4/dist/jspdf.plugin.autotable.min.js"></script>
-</head>
-
-<body>
-  <div id="root"></div>
-
-  <!-- ✅ CONFIG & UTILS -->
-  <!-- 1. DATA/CONFIG HOOK (Provides Global Constants) - MUST LOAD FIRST -->
-  <script src="./src/hooks/useAppData.js?v=3.2"></script>
-  <script src="./src/hooks/useVisorState.js?v=1.0"></script>
-
-  <!-- 2. UTILS (Depends on Constants) -->
-  <script src="./src/utils/geoUtils.js?v=3.2"></script>
-  <script src="./src/utils/dateUtils.js?v=1.0"></script>
-  <script src="./src/utils/analysisEngine.js?v=3.1"></script>
-
-  <!-- DEBUG: Verify App Globals before React loads -->
-  <script>
-    console.log("DEBUG [index.html]: window.App state before components:", window.App);
-    console.log("DEBUG [index.html]: Constants loaded?", !!window.App?.Constants?.DATA_FILES);
-    console.log("DEBUG [index.html]: Utils loaded?", !!window.App?.Utils?.getBaseLayerUrl);
-  </script>
-
-  <!-- ✅ COMPONENTS -->
-  <script src="./src/components/ui/Icons.js?v=3.2" type="text/babel"></script>
-  <script src="./src/components/ui/Tooltip.js?v=3.2" type="text/babel"></script>
-  <script src="./src/components/ui/ToastSystem.js?v=1.0" type="text/babel"></script>
-  <script src="./src/components/ui/ErrorBoundary.js?v=1.0" type="text/babel"></script>
-  <script src="./src/components/layout/InstitutionalHeader.js?v=3.2" type="text/babel"></script>
-  <script src="./src/components/ui/ToggleSwitch.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/map/Legend.js?v=3.2" type="text/babel"></script>
-  <script src="./src/components/map/MapViewer.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/search/MobileSearchBar.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/modals/HelpModal.js?v=3.4" type="text/babel"></script>
-  <script src="./src/components/ui/SkeletonAnalysis.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/analysis/ResultsContent.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/features/PdfExportController.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/search/SearchLogicDesktop.js?v=3.1" type="text/babel"></script>
-  <script src="./src/components/layout/SidebarDesktop.js?v=3.2" type="text/babel"></script>
-  <script src="./src/components/features/OnboardingTour.js?v=3.2" type="text/babel"></script>
-
-  <!-- ✅ TU APP (JSX) -->
-  <script src="./src/App.js?v=3.2" type="text/babel"></script>
-</body>
-
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
 </html>

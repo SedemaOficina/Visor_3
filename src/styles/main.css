@@ -1,3 +1,7 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
 :root {
   /* --- PALETA INSTITUCIONAL (2024-2030) --- */
   --color-primary: #9d2148;
