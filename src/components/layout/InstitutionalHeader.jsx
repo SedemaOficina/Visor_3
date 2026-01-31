@@ -9,7 +9,7 @@ const InstitutionalHeader = () => (
                 {/* Logo Container */}
                 <div className="bg-white/95 rounded px-2 py-0.5 shadow-sm backdrop-blur-sm">
                     <img
-                        src="/assets/logo-sedema.png"
+                        src={`${import.meta.env.BASE_URL}assets/logo-sedema.png`}
                         alt="Gobierno de la Ciudad de México - SEDEMA"
                         className="h-8 w-auto object-contain"
                         loading="eager"

@@ -1,3 +1,11 @@
+// Helper to handle base path for assets
+const BASE_URL = import.meta.env.BASE_URL;
+const resolvePath = (path) => {
+    // Remove leading './' or '/' if present to avoid double slashes with BASE_URL which ends in /
+    const cleanPath = path.replace(/^(\.\/|\/)/, '');
+    return `${BASE_URL}${cleanPath}`;
+};
+
 export const CONSTANTS = {
     COLORS: {
         primary: '#9d2148',
@@ -42,23 +50,23 @@ export const CONSTANTS = {
         morelos: { color: '#B8A1FF', label: 'Estado de Morelos' }
     },
     DATA_FILES: {
-        LIMITES_CDMX: './data/cdmx.geojson',
-        LIMITES_ALCALDIAS: './data/alcaldias.geojson',
-        LIMITES_EDOMEX: './data/edomex.geojson',
-        LIMITES_MORELOS: './data/morelos.geojson',
-        SUELO_CONSERVACION: './data/suelo-de-conservacion-2020.geojson',
-        ZONIFICACION_MAIN: './data/zoonificacion_pgoedf_2000_sin_anp.geojson',
+        LIMITES_CDMX: resolvePath('data/cdmx.geojson'),
+        LIMITES_ALCALDIAS: resolvePath('data/alcaldias.geojson'),
+        LIMITES_EDOMEX: resolvePath('data/edomex.geojson'),
+        LIMITES_MORELOS: resolvePath('data/morelos.geojson'),
+        SUELO_CONSERVACION: resolvePath('data/suelo-de-conservacion-2020.geojson'),
+        ZONIFICACION_MAIN: resolvePath('data/zoonificacion_pgoedf_2000_sin_anp.geojson'),
         ZONIFICACION_FILES: [
-            './data/Zon_Bosque_de_Tlalpan.geojson',
-            './data/Zon_Cerro_de_la_Estrella.geojson',
-            './data/Zon_Desierto_de_los_Leones.geojson',
-            './data/Zon_Ejidos_de_Xochimilco.geojson',
-            './data/Zon_La_Loma.geojson',
-            './data/Zon_Sierra_de_Guadalupe.geojson',
-            './data/Zon_Sierra_de_Santa_Catarina.geojson'
+            resolvePath('data/Zon_Bosque_de_Tlalpan.geojson'),
+            resolvePath('data/Zon_Cerro_de_la_Estrella.geojson'),
+            resolvePath('data/Zon_Desierto_de_los_Leones.geojson'),
+            resolvePath('data/Zon_Ejidos_de_Xochimilco.geojson'),
+            resolvePath('data/Zon_La_Loma.geojson'),
+            resolvePath('data/Zon_Sierra_de_Guadalupe.geojson'),
+            resolvePath('data/Zon_Sierra_de_Santa_Catarina.geojson')
         ],
-        USOS_SUELO_CSV: './data/tabla_actividades_pgoedf.csv',
-        ANP: './data/anp_consolidada.geojson'
+        USOS_SUELO_CSV: resolvePath('data/tabla_actividades_pgoedf.csv'),
+        ANP: resolvePath('data/anp_consolidada.geojson')
     },
     MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0b2gzZnB0NnU2a2xwY2oifQ.2BDJUISBBvrm1wM8RwXusg',
     INITIAL_CENTER: [19.34, -99.145],

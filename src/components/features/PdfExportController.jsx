@@ -279,7 +279,7 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
                 {/* --- HEADER --- */}
                 <div id="pdf-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '35px', borderBottom: `2px solid ${C.dorado}`, paddingBottom: '15px' }}>
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
-                        <img src="./assets/logo-sedema.png" alt="SEDEMA" style={{ height: '65px', objectFit: 'contain', display: 'block', marginBottom: '10px' }} />
+                        <img src={`${import.meta.env.BASE_URL}assets/logo-sedema.png`} alt="SEDEMA" style={{ height: '65px', objectFit: 'contain', display: 'block', marginBottom: '10px' }} />
                     </div>
                     <div style={{ textAlign: 'right' }}>
                         <div style={{ fontSize: '18px', fontWeight: 900, color: C.guinda, textTransform: 'uppercase', lineHeight: 1 }}>
@@ -731,7 +731,7 @@ const PdfExportController = ({
                 resolve(c.toDataURL('image/png'));
             };
             img.onerror = () => resolve(null);
-            img.src = './assets/logo-sedema.png'; // Local asset
+            img.src = `${import.meta.env.BASE_URL}assets/logo-sedema.png`; // Local asset
         });
     };
 
