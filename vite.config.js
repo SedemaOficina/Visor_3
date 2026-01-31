@@ -13,7 +13,7 @@ export default defineConfig({
     server: {
         port: 3000,
     },
-    base: './',
+    base: '/Visor_3/',
     build: {
         outDir: 'docs',
     }
