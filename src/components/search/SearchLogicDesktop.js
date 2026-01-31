@@ -16,6 +16,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
     const [suggestions, setSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const [showInfo, setShowInfo] = useState(false); // NEW: Info Tooltip State
+    const [isLocating, setIsLocating] = useState(false); // NEW: Geolocation loading state
     const debounceRef = useRef(null);
     const localInputRef = useRef(null);
 
@@ -262,13 +263,18 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                 {/* BOTÓN MI UBICACIÓN */}
                 <button
                     type="button"
+                    disabled={isLocating}
                     onClick={() => {
                         if (!navigator.geolocation) {
                             alert("Tu navegador no soporta geolocalización.");
                             return;
                         }
+
+                        setIsLocating(true);
+
                         navigator.geolocation.getCurrentPosition(
                             (pos) => {
+                                setIsLocating(false);
                                 const { latitude, longitude } = pos.coords;
                                 // Actualizar el input con las coordenadas
                                 setQuery(`${latitude.toFixed(5)}, ${longitude.toFixed(5)}`);
@@ -276,16 +282,25 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                                 onLocationSelect({ lat: latitude, lng: longitude });
                             },
                             (err) => {
+                                setIsLocating(false);
                                 console.error(err);
-                                alert("No pudimos obtener tu ubicación. Verifica los permisos de tu navegador.");
+                                let msg = "No pudimos obtener tu ubicación.";
+                                if (err.code === 1) msg = "Permiso de ubicación denegado.";
+                                if (err.code === 2) msg = "Ubicación no disponible.";
+                                if (err.code === 3) msg = "Tiempo de espera agotado.";
+                                alert(`${msg} Verifica tu conexión y permisos.`);
                             },
-                            { enableHighAccuracy: true }
+                            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
                         );
                     }}
-                    className="w-full mt-2 bg-white border border-gray-200 text-[#9d2449] hover:bg-gray-50 font-bold py-2 rounded-lg text-xs shadow-sm flex items-center justify-center gap-2 transition-colors"
+                    className="w-full mt-2 bg-white border border-gray-200 text-[#9d2449] hover:bg-gray-50 font-bold py-2 rounded-lg text-xs shadow-sm flex items-center justify-center gap-2 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                 >
-                    <Icons.Navigation className="h-4 w-4" />
-                    Usar mi ubicación actual
+                    {isLocating ? (
+                        <div className="h-4 w-4 border-2 border-gray-200 border-t-[#9d2449] rounded-full animate-spin"></div>
+                    ) : (
+                        <Icons.Navigation className="h-4 w-4" />
+                    )}
+                    {isLocating ? "Obteniendo ubicación..." : "Usar mi ubicación actual"}
                 </button>
 
 

@@ -1321,7 +1321,7 @@
 
         useEffect(() => {
             if (!onExportReady) return;
-            onExportReady(() => requestExportPDF);
+            onExportReady(requestExportPDF);
             return () => onExportReady(null);
         }, [onExportReady, requestExportPDF]);
 
