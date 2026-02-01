@@ -34,7 +34,7 @@ const NormativeInstrumentCard = ({ analysis }) => {
                 <div className="text-xs font-semibold text-gray-700 mb-1">
                     PGOEDF (Ordenamiento Ecológico)
                 </div>
-                <Tooltip content="Consultar documento oficial en nueva pestaña">
+                <Tooltip content="Consultar documento oficial">
                     <a
                         href="https://paot.org.mx/centro/programas/pgoedf.pdf"
                         target="_blank"

@@ -23,7 +23,7 @@ const PrimaryActionHeader = ({ analysis, approximateAddress, onExportPDF, isExpo
                     </a>
                 </Tooltip>
 
-                <Tooltip content="Generar ficha PDF con información oficial preliminar">
+                <Tooltip content="Generar ficha PDF con los resultados de la conuslta">
                     <button
                         type="button"
                         onClick={(e) => {

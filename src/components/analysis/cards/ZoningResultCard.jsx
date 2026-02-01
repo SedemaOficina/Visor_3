@@ -15,7 +15,7 @@ const ZoningResultCard = ({ analysis, zoningDisplay }) => {
         <div className="bg-white border border-gray-200 rounded-lg p-3 mb-3 shadow-sm animate-slide-up">
             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wide mb-1 flex items-center gap-1">
                 Zonificación PGOEDF
-                <Tooltip content="Zonificación impuesta por el Programa General de Ordenamiento Ecológico del DF">
+                <Tooltip content="Zonificación  del Programa General de Ordenamiento Ecológico del DF">
                     <span className="text-gray-300 hover:text-gray-500 transition-colors">ⓘ</span>
                 </Tooltip>
             </div>

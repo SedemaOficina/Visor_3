@@ -93,45 +93,7 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 )}
             </div>
 
-            {/* 4. Botones de Acción (BOTTOM) - Visible only on Mobile to avoid duplication with PrimaryActionHeader */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3 md:hidden">
-                <Tooltip content="Ver ubicación exacta en Google Maps">
-                    <a
-                        href={analysis.coordinate ? `https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}` : '#'}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg text-gray-700 font-bold text-[10px] md:text-xs shadow-sm hover:bg-gray-50 transition-colors"
-                    >
-                        {Icons.MapIcon && <Icons.MapIcon className="h-4 w-4 text-blue-500" />}
-                        <span>Google Maps</span>
-                    </a>
-                </Tooltip>
 
-                <Tooltip content="Generar ficha PDF con información oficial preliminar">
-                    <button
-                        type="button"
-                        onClick={(e) => {
-                            e.preventDefault();
-                            if (!isExporting && onExportPDF) onExportPDF(e);
-                        }}
-                        disabled={isExporting}
-                        className={`flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-lg font-bold text-[10px] md:text-xs text-white shadow-sm transition-all active:scale-95
-                        ${isExporting ? 'bg-gray-400 cursor-not-allowed' : 'bg-[#9d2449] hover:bg-[#8a1f40]'}`}
-                    >
-                        {isExporting ? (
-                            <div className="flex items-center gap-2">
-                                {Icons.Loader2 ? <Icons.Loader2 className="h-4 w-4 animate-spin" /> : <div className="h-3 w-3 rounded-full border-2 border-white/50 border-t-white animate-spin" />}
-                                <span>{exportProgress ? `${exportProgress}%` : 'Generando...'}</span>
-                            </div>
-                        ) : (
-                            <div className="flex items-center gap-2">
-                                {Icons.Pdf && <Icons.Pdf className="h-4 w-4" />}
-                                <span>Descargar Ficha</span>
-                            </div>
-                        )}
-                    </button>
-                </Tooltip>
-            </div>
         </div >
     );
 };

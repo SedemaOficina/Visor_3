@@ -75,7 +75,7 @@ const ActivityCatalogController = ({ analysis, COLORS }) => {
                     <div>
                         <h3 className="text-sm font-bold text-gray-800 uppercase tracking-wide">
                             Catálogo de Actividades
-                            <Tooltip content="Alcance: Estas actividades aplican específicamente a la zonificación PGOEDF del predio consultado.">
+                            <Tooltip content="Estas actividades aplican específicamente a la zonificación PGOEDF del predio consultado.">
                                 <span className="ml-1 text-gray-400 hover:text-gray-600 text-xs cursor-help">ⓘ</span>
                             </Tooltip>
                         </h3>
