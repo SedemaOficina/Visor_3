@@ -1227,7 +1227,8 @@ const PdfExportController = ({
     }, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom]);
 
     const requestExportPDF = useCallback(async (e) => {
-        if (!e || !e.isTrusted) return;
+        // Validation: allow event to proceed even if not 'trusted' (for CustomEvents from mobile)
+        if (!e) return;
         exportArmedRef.current = true;
         return await handleExportPDF(); // Forward promise
     }, [handleExportPDF]);
