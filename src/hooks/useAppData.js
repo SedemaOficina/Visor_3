@@ -2,9 +2,9 @@ import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { CONSTANTS } from '../utils/constants';
 import activitiesCsv from '../data/tabla_actividades_pgoedf.csv?raw';
-import cdmxGeo from '../data/cdmx.geojson';
-import scGeo from '../data/suelo-de-conservacion-2020.geojson';
-import alcaldiasGeo from '../data/alcaldias.geojson';
+import cdmxGeoRaw from '../data/cdmx.geojson?raw';
+import scGeoRaw from '../data/suelo-de-conservacion-2020.geojson?raw';
+import alcaldiasGeoRaw from '../data/alcaldias.geojson?raw';
 
 const useAppData = () => {
     const [loading, setLoading] = useState(true);
@@ -34,11 +34,12 @@ const useAppData = () => {
 
             try {
                 // 1. Critical Data - Imported Statically (Instant Load)
+                // Parse raw JSON strings
                 setDataCache(prev => ({
                     ...prev,
-                    cdmx: cdmxGeo,
-                    alcaldias: alcaldiasGeo,
-                    sc: scGeo
+                    cdmx: JSON.parse(cdmxGeoRaw),
+                    alcaldias: JSON.parse(alcaldiasGeoRaw),
+                    sc: JSON.parse(scGeoRaw)
                 }));
                 setLoading(false);
 
@@ -49,20 +50,34 @@ const useAppData = () => {
                     const rules = rulesParsed?.data || [];
                     if (rulesParsed?.errors?.length) console.warn("CSV Parse Warnings:", rulesParsed.errors);
 
+                    // Dynamic Importer using Vite's import.meta.glob
+                    const geojsonGlobs = import.meta.glob('../data/*.geojson', { query: '?raw', import: 'default' });
+
+                    const loadGeo = async (filename) => {
+                        const path = `../data/${filename}`;
+                        const loader = geojsonGlobs[path];
+                        if (!loader) {
+                            console.warn(`GeoJSON not found: ${filename}`);
+                            return { type: 'FeatureCollection', features: [] };
+                        }
+                        const raw = await loader();
+                        return JSON.parse(raw);
+                    };
+
                     const [mainZoning, anpInternalList, edomex, morelos, anp] = await Promise.all([
-                        import('../data/zoonificacion_pgoedf_2000_sin_anp.geojson').then(m => m.default),
+                        loadGeo('zoonificacion_pgoedf_2000_sin_anp.geojson'),
                         Promise.all([
-                            import('../data/Zon_Bosque_de_Tlalpan.geojson').then(m => m.default),
-                            import('../data/Zon_Cerro_de_la_Estrella.geojson').then(m => m.default),
-                            import('../data/Zon_Desierto_de_los_Leones.geojson').then(m => m.default),
-                            import('../data/Zon_Ejidos_de_Xochimilco.geojson').then(m => m.default),
-                            import('../data/Zon_La_Loma.geojson').then(m => m.default),
-                            import('../data/Zon_Sierra_de_Guadalupe.geojson').then(m => m.default),
-                            import('../data/Zon_Sierra_de_Santa_Catarina.geojson').then(m => m.default)
+                            loadGeo('Zon_Bosque_de_Tlalpan.geojson'),
+                            loadGeo('Zon_Cerro_de_la_Estrella.geojson'),
+                            loadGeo('Zon_Desierto_de_los_Leones.geojson'),
+                            loadGeo('Zon_Ejidos_de_Xochimilco.geojson'),
+                            loadGeo('Zon_La_Loma.geojson'),
+                            loadGeo('Zon_Sierra_de_Guadalupe.geojson'),
+                            loadGeo('Zon_Sierra_de_Santa_Catarina.geojson')
                         ]),
-                        import('../data/edomex.geojson').then(m => m.default),
-                        import('../data/morelos.geojson').then(m => m.default),
-                        import('../data/anp_consolidada.geojson').then(m => m.default)
+                        loadGeo('edomex.geojson'),
+                        loadGeo('morelos.geojson'),
+                        loadGeo('anp_consolidada.geojson')
                     ]);
 
                     setDataCache(prev => ({

@@ -1,4 +1,4 @@
-{
+const o=`{
 "type": "FeatureCollection",
 "name": "Zonificacion La Loma",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
@@ -132,3 +132,4 @@
 { "type": "Feature", "properties": { "ANP_ID": 21, "NOMBRE": "La Loma", "CATEGORIA": "Zona de Conservacion Ecologica", "ZONIFICACION": "Zona de Uso Público Extensivo" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -99.236701442320182, 19.330131733413701, 0.0 ], [ -99.236676028882471, 19.330160415549102, 0.0 ], [ -99.236692765228796, 19.330141297104415, 0.0 ], [ -99.236701442320182, 19.330131733413701, 0.0 ] ] ] ] } }
 ]
 }
+`;export{o as default};

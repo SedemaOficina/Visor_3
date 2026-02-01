@@ -1,4 +1,4 @@
-{
+const e=`{
 "type": "FeatureCollection",
 "name": "Zonificacion Desierto de los Leones",
 "crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
@@ -14,3 +14,4 @@
 { "type": "Feature", "properties": { "ANP_ID": 6, "NOMBRE": "Desierto de los Leones", "CATEGORIA": "Parque Nacional", "ZONIFICACION": "Zona de uso público" }, "geometry": { "type": "MultiPolygon", "coordinates": [ [ [ [ -99.319405868872835, 19.296311529876885 ], [ -99.322429500544686, 19.294131393576876 ], [ -99.322669500386255, 19.295680843644245 ], [ -99.319828112080373, 19.296810750244799 ], [ -99.319405868872835, 19.296311529876885 ] ] ] ] } }
 ]
 }
+`;export{e as default};
