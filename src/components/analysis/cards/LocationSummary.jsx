@@ -57,9 +57,11 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 </div>
             </div>
 
-            {/* 3. Badges (THIRD) */}
-            <div className="flex flex-wrap items-center gap-2 mb-2">
-                {/* Badge Suelo Base */}
+            {/* 3. Zonificación Primaria */}
+            <div className="mb-3 pb-3 border-b border-gray-100">
+                <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                    ZONIFICACIÓN PRIMARIA
+                </div>
                 <span
                     className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
                     style={{
@@ -69,9 +71,14 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 >
                     {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
                 </span>
+            </div>
 
-                {/* Badge Zonificación */}
-                {zoningBadgeLabel && (
+            {/* 4. Zonificación PGOEDF (Only if NOT Urban and has data) */}
+            {!isUrban && zoningBadgeLabel && (
+                <div className="mb-3 pb-3 border-b border-gray-100">
+                    <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-1">
+                        ZONIFICACIÓN PGOEDF
+                    </div>
                     <span
                         className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
                         style={{
@@ -81,7 +88,11 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                     >
                         {zoningBadgeLabel}
                     </span>
-                )}
+                </div>
+            )}
+
+            {/* 5. Other Badges (ANP) */}
+            <div className="flex flex-wrap items-center gap-2 mb-2">
 
                 {/* Badge ANP */}
                 {analysis.isANP && (
