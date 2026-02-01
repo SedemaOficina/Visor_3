@@ -110,33 +110,46 @@ export const analyzeLocation = async (c, dataCache) => {
     }
 
     // 4.1 Cruzar con CSV de actividades
-    if (r.zoningKey && dataCache.rules?.length) {
-        const all = [];
-        const pro = [];
-        const zn = (r.zoningName || '').toString().toUpperCase();
-        r.isPDU = zn.includes('PDU') || zn.includes('POBLAD');
-
-        if (r.zoningKey === 'ANP' || r.zoningKey === 'NODATA' || r.isPDU) {
+    // Rules can be null (error) or empty array (no data)
+    if (r.zoningKey) {
+        if (!dataCache.rules) {
+            // Null indicates loading error
+            r.zoningCatalogError = "Error cargando archivo de reglas (CSV).";
+            r.noActivitiesCatalog = true;
+        } else if (dataCache.rules.length === 0) {
+            // Empty array indicates empty file or parse error treated as empty
+            r.zoningCatalogError = "El archivo de reglas está vacío.";
             r.noActivitiesCatalog = true;
         } else {
-            const hasColumn = Object.prototype.hasOwnProperty.call(dataCache.rules[0], r.zoningKey);
+            // Normal processing ...
+            const all = [];
+            const pro = [];
+            const zn = (r.zoningName || '').toString().toUpperCase();
+            r.isPDU = zn.includes('PDU') || zn.includes('POBLAD');
 
-            if (!hasColumn) {
+            if (r.zoningKey === 'ANP' || r.zoningKey === 'NODATA' || r.isPDU) {
                 r.noActivitiesCatalog = true;
             } else {
-                dataCache.rules.forEach(row => {
-                    const val = (row[r.zoningKey] || '').trim().toUpperCase();
-                    if (!val) return;
-                    const act = {
-                        sector: (row['Sector'] || row['ector'] || '').trim(),
-                        general: (row['Actividad general'] || row['Act_general'] || '').trim(),
-                        specific: (row['Actividad específica'] || row['Actividad especifica'] || '').trim()
-                    };
-                    if (val === 'A') all.push(act);
-                    else if (val === 'P') pro.push(act);
-                });
-                r.allowedActivities = all;
-                r.prohibitedActivities = pro;
+                const hasColumn = Object.prototype.hasOwnProperty.call(dataCache.rules[0], r.zoningKey);
+
+                if (!hasColumn) {
+                    r.zoningCatalogError = `La columa '${r.zoningKey}' no existe en la tabla de actividades.`;
+                    r.noActivitiesCatalog = true;
+                } else {
+                    dataCache.rules.forEach(row => {
+                        const val = (row[r.zoningKey] || '').trim().toUpperCase();
+                        if (!val) return;
+                        const act = {
+                            sector: (row['Sector'] || row['ector'] || '').trim(),
+                            general: (row['Actividad general'] || row['Act_general'] || '').trim(),
+                            specific: (row['Actividad específica'] || row['Actividad especifica'] || '').trim()
+                        };
+                        if (val === 'A') all.push(act);
+                        else if (val === 'P') pro.push(act);
+                    });
+                    r.allowedActivities = all;
+                    r.prohibitedActivities = pro;
+                }
             }
         }
     }

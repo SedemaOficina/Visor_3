@@ -37,12 +37,22 @@ const useAppData = () => {
             const fetchCsv = async (u) =>
                 new Promise((r) => {
                     const cleanPath = u.replace(/^\.\//, '/');
+                    console.log(`[AppData] Loading CSV: ${cleanPath}`);
                     Papa.parse(cleanPath, {
                         download: true,
                         header: true,
                         skipEmptyLines: true,
-                        complete: (res) => r(res.data),
-                        error: () => r([])
+                        complete: (res) => {
+                            console.log(`[AppData] CSV Loaded: ${cleanPath}. Rows: ${res.data?.length}`);
+                            if (res.errors?.length) {
+                                console.warn('[AppData] CSV Parse Warnings:', res.errors);
+                            }
+                            r(res.data);
+                        },
+                        error: (err) => {
+                            console.error('[AppData] CSV Load Error:', err);
+                            r(null); // Return null to indicate failure vs empty
+                        }
                     })
                 });
 

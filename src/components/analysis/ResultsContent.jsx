@@ -109,6 +109,16 @@ const ResultsContent = ({ analysis, approximateAddress, onExportPDF, isExporting
             <AnpInternalCard analysis={analysis} />
 
             {/* 6. Catálogo de Actividades (Solo SC, no PDU) - REFACTORED */}
+
+            {/* Error State for Catalog */}
+            {analysis?.zoningCatalogError && (
+                <div className="mt-6 mb-6">
+                    <InlineAlert tone="error">
+                        <strong>Error en Catálogo:</strong> {analysis.zoningCatalogError}
+                    </InlineAlert>
+                </div>
+            )}
+
             {showCatalog && (
                 <InView as="div" onChange={(inView) => inView && setActiveSection('Catálogo de Actividades')} threshold={0.2} rootMargin="-20% 0px -50% 0px">
                     <SectionErrorBoundary>
