@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
+
 import Icons from '../ui/Icons';
 import Tooltip from '../ui/Tooltip';
 import { searchMapboxPlaces, parseCoordinateInput } from '../../utils/geoUtils';
 
-const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialValue }) => {
+const SearchLogicDesktop = ({ onLocationSelect, setInputRef, initialValue }) => {
     // Direct imports usage
     const safeSearch = async (q) => (typeof searchMapboxPlaces === 'function' ? await searchMapboxPlaces(q) : []);
     const safeParse = (q) => (typeof parseCoordinateInput === 'function' ? parseCoordinateInput(q) : null);
@@ -106,11 +107,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
         onLocationSelect({ lat: s.lat, lng: s.lng });
     };
 
-    const handleResetAll = () => {
-        setQuery('');
-        setSuggestions([]);
-        onReset();
-    };
+
 
     return (
         <div className="space-y-2">

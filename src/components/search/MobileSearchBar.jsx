@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+
 import Icons from '../ui/Icons';
 import { searchMapboxPlaces, parseCoordinateInput } from '../../utils/geoUtils';
 
@@ -11,7 +12,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
     const [suggestions, setSuggestions] = useState([]);
     const [isSearching, setIsSearching] = useState(false);
     const debounceRef = useRef(null);
-    const [flash, setFlash] = useState(false);
+    const [flash] = useState(false);
 
     // ✅ Sync con estado padre
     useEffect(() => {

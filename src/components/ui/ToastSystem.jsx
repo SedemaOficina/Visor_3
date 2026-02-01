@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import useUIStore from '../../stores/useUIStore';
 import { Icons } from './Icons';
 

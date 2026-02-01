@@ -3,7 +3,7 @@ import { analyzeLocation } from '../utils/analysisEngine';
 import { getReverseGeocoding } from '../utils/geoUtils';
 import useUIStore from './useUIStore';
 
-const useAnalysisStore = create((set, get) => ({
+const useAnalysisStore = create((set) => ({
     analysis: null,
     analyzing: false,
     extraDataLoaded: false,

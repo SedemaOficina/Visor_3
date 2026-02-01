@@ -93,8 +93,8 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 )}
             </div>
 
-            {/* 4. Botones de Acción (BOTTOM) */}
-            <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3">
+            {/* 4. Botones de Acción (BOTTOM) - Visible only on Mobile to avoid duplication with PrimaryActionHeader */}
+            <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3 md:hidden">
                 <Tooltip content="Ver ubicación exacta en Google Maps">
                     <a
                         href={analysis.coordinate ? `https://www.google.com/maps/search/?api=1&query=${analysis.coordinate.lat},${analysis.coordinate.lng}` : '#'}

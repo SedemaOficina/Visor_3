@@ -4,7 +4,7 @@ import SkeletonAnalysis from '../ui/SkeletonAnalysis';
 
 const ResultsContent = React.lazy(() => import('../analysis/ResultsContent'));
 
-const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onStateChange, onExportPDF, isExporting, exportProgress }) => {
+const BottomSheetMobile = ({ analysis, onClose, onStateChange, onExportPDF, isExporting, exportProgress }) => {
     const [sheetState, setSheetState] = useState('collapsed'); // 'collapsed' | 'mid' | 'full'
     const sheetRef = useRef(null);
     const startY = useRef(0);

@@ -24,8 +24,6 @@ const useAppData = () => {
             const fetchJson = async (u) => {
                 try {
                     if (!u) return { type: "FeatureCollection", features: [] };
-                    // Resolve path relative to public/root if referenced with ./data
-                    // In Vite, files in public/data are accessible at /data
                     const cleanPath = u.replace(/^\.\//, '/');
                     const res = await fetch(cleanPath, { cache: 'no-store' });
                     if (!res.ok) throw new Error(`HTTP ${res.status} ${cleanPath}`);
@@ -58,30 +56,42 @@ const useAppData = () => {
             };
 
             try {
-                const [cdmx, alcaldias, sc, mainZoning, anpInternalList, rules, edomex, morelos, anp] = await Promise.all([
+                // 1. Critical Data (Map Boundaries & Context) - Blocking Initial Render
+                const [cdmx, alcaldias, sc] = await Promise.all([
                     fetchJson(DATA_FILES.LIMITES_CDMX),
                     fetchJson(DATA_FILES.LIMITES_ALCALDIAS),
-                    fetchJson(DATA_FILES.SUELO_CONSERVACION),
-                    fetchJson(DATA_FILES.ZONIFICACION_MAIN),
-                    Promise.all((DATA_FILES.ZONIFICACION_FILES || []).map(fetchJson)),
-                    fetchCsv(DATA_FILES.USOS_SUELO_CSV),
-                    fetchJson(DATA_FILES.LIMITES_EDOMEX),
-                    fetchJson(DATA_FILES.LIMITES_MORELOS),
-                    fetchJson(DATA_FILES.ANP)
+                    fetchJson(DATA_FILES.SUELO_CONSERVACION)
                 ]);
 
-                setDataCache({
-                    cdmx,
-                    alcaldias,
-                    sc,
-                    zoning: mainZoning,
-                    anpInternal: mergeFeatures(anpInternalList),
-                    rules,
-                    edomex,
-                    morelos,
-                    anp
-                });
+                // Render Map ASAP
+                setDataCache(prev => ({ ...prev, cdmx, alcaldias, sc }));
                 setLoading(false);
+
+                // 2. Background Data (Heavy Layers & Analysis Data) - Lazy Loaded
+                try {
+                    const [mainZoning, anpInternalList, rules, edomex, morelos, anp] = await Promise.all([
+                        fetchJson(DATA_FILES.ZONIFICACION_MAIN),
+                        Promise.all((DATA_FILES.ZONIFICACION_FILES || []).map(fetchJson)),
+                        fetchCsv(DATA_FILES.USOS_SUELO_CSV),
+                        fetchJson(DATA_FILES.LIMITES_EDOMEX),
+                        fetchJson(DATA_FILES.LIMITES_MORELOS),
+                        fetchJson(DATA_FILES.ANP)
+                    ]);
+
+                    setDataCache(prev => ({
+                        ...prev,
+                        zoning: mainZoning,
+                        anpInternal: mergeFeatures(anpInternalList),
+                        rules,
+                        edomex,
+                        morelos,
+                        anp
+                    }));
+                } catch (bgErr) {
+                    console.error("Secondary Data Load Error:", bgErr);
+                    // Don't block app, just log
+                }
+
             } catch (err) {
                 console.error("Critical Data Load Error:", err);
                 setError(err.message);
