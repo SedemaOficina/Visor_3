@@ -42,7 +42,7 @@ const SidebarDesktop = ({
 
 
                 {/* Fixed Search Section */}
-                <div className="p-3 pb-2 z-20 relative">
+                <div className="p-3 pb-2 z-50 relative">
                     <SearchLogicDesktop
                         onLocationSelect={onLocationSelect}
                         onReset={onReset}
