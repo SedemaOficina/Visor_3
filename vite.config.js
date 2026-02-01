@@ -16,5 +16,10 @@ export default defineConfig({
     base: '/Visor_3/',
     build: {
         outDir: 'docs',
+    },
+    test: {
+        globals: true,
+        environment: 'jsdom',
+        setupFiles: './src/test/setup.js',
     }
 })

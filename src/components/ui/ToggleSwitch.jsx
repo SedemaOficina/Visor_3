@@ -1,4 +1,4 @@
-import React from 'react';
+/* React removed */
 
 const ToggleSwitch = ({ checked, onChange, disabled, activeColor, title }) => (
     <div

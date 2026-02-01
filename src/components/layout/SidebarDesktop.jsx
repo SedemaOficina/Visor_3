@@ -1,4 +1,4 @@
-import React from 'react';
+/* React removed */
 import clsx from 'clsx';
 import { Icons } from '../ui/Icons';
 import Tooltip from '../ui/Tooltip';
@@ -7,6 +7,7 @@ import SkeletonAnalysis from '../ui/SkeletonAnalysis';
 // We assume they will export default.
 import SearchLogicDesktop from '../search/SearchLogicDesktop';
 import ResultsContent from '../analysis/ResultsContent';
+import ErrorBoundary from '../ui/ErrorBoundary';
 
 const SidebarDesktop = ({
     analysis,
@@ -52,7 +53,7 @@ const SidebarDesktop = ({
                 </div>
 
                 {/* Contenido Scrollable */}
-                <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pb-3 space-y-3 relative">
+                <div className="flex-1 overflow-y-auto custom-scrollbar px-3 pb-3 space-y-3 relative z-0">
 
                     {!analysis && !isLoading && (
                         <div className="flex flex-col items-center justify-center text-center py-4 px-4 animate-in fade-in zoom-in duration-500 select-none opacity-80 mt-2">
@@ -80,7 +81,9 @@ const SidebarDesktop = ({
                                     Resultados del Análisis
                                 </span>
                             </div>
-                            <ResultsContent analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+                            <ErrorBoundary>
+                                <ResultsContent analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+                            </ErrorBoundary>
                         </>
                     )}
                 </div>

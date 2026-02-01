@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import L from 'leaflet';
 import { Icons } from '../ui/Icons';
 import { CONSTANTS } from '../../utils/constants';
@@ -128,7 +128,7 @@ const MapViewer = ({
                 const tmp = L.geoJSON(dataCache.cdmx);
                 cdmxBounds = tmp.getBounds();
             }
-        } catch { }
+        } catch { /* empty */ }
 
         if (resetMapViewRef) {
             resetMapViewRef.current = () => {
@@ -141,7 +141,7 @@ const MapViewer = ({
                     } else {
                         m.setView(INITIAL_CENTER, INITIAL_ZOOM);
                     }
-                } catch { }
+                } catch { /* empty */ }
             };
         }
 
@@ -150,7 +150,7 @@ const MapViewer = ({
 
         if (invalidateMapRef) {
             invalidateMapRef.current = () => {
-                try { mapInstance.current?.invalidateSize(); } catch { }
+                try { mapInstance.current?.invalidateSize(); } catch { /* empty */ }
             };
         }
 
@@ -252,11 +252,11 @@ const MapViewer = ({
         map.on('click', e => onLocationSelect(e.latlng));
 
         setTimeout(() => {
-            try { map.invalidateSize(); } catch { }
+            try { map.invalidateSize(); } catch { /* empty */ }
         }, 200);
 
         return () => {
-            try { map.remove(); } catch { }
+            try { map.remove(); } catch { /* empty */ }
             mapInstance.current = null;
             if (resetMapViewRef) resetMapViewRef.current = null;
             layersRef.current = {};
@@ -427,7 +427,7 @@ const MapViewer = ({
 
     useEffect(() => {
         if (!mapInstance.current || !layersRef.current.base) return;
-        setTilesLoading(true);
+        setTimeout(() => setTilesLoading(true), 0);
         layersRef.current.base.setUrl(getBaseLayerUrl(activeBaseLayer));
 
         if (layersRef.current.alcaldias) {
@@ -448,6 +448,7 @@ const MapViewer = ({
 
             if (layer && visibleMapLayers[k] && layer.setStyle) {
                 if (k === 'alcaldias' || k === 'edomex' || k === 'morelos') {
+                    /* empty */
                 } else {
                     layer.setStyle({ fillOpacity: globalOpacity });
                 }

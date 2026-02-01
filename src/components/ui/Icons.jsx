@@ -1,4 +1,4 @@
-import React from 'react';
+/* React removed */
 
 /* BASE SVG COMPONENT */
 const IconBase = ({ children, className, ...props }) => (

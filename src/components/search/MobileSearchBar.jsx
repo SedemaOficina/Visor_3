@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Icons from '../ui/Icons';
 import { searchMapboxPlaces, parseCoordinateInput } from '../../utils/geoUtils';
 
@@ -15,7 +15,7 @@ const MobileSearchBar = ({ onLocationSelect, onReset, setInputRef, initialValue 
 
     // ✅ Sync con estado padre
     useEffect(() => {
-        setQuery(initialValue || '');
+        setTimeout(() => setQuery(initialValue || ''), 0);
     }, [initialValue]);
 
     // ✅ Setter externo (sin window) - Deprecated but kept for compatibility just in case

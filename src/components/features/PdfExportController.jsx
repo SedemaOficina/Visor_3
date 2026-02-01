@@ -6,7 +6,7 @@ import 'jspdf-autotable';
 import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 
-import Icons from '../ui/Icons';
+
 import { CONSTANTS } from '../../utils/constants';
 import { getBaseLayerUrl, getZoningColor, formatDateTime, generateFolio } from '../../utils/geoUtils';
 
@@ -85,6 +85,101 @@ const QrCodeImg = ({ value, size = 74 }) => {
     );
 };
 
+/* ------------------------------------------------ */
+/* ESTILOS Y COMPONENTES PDF (Module Scope) */
+/* ------------------------------------------------ */
+
+const T = {
+    font: 'Roboto, Arial, sans-serif',
+    mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
+    base: 10,       // Reduced slightly for density
+    small: 8.5,
+    micro: 7.5,
+    h1: 15,         // Larger Header
+    h2: 12,
+    lead: 10,
+    lh: 1.2
+};
+
+const S = {
+    pageW: 794,
+    pagePad: 30,    // Increased margins
+    gap1: 5,
+    gap2: 12,
+    gap3: 20,
+    radius: 4,
+    hair: '1px solid #d1d5db' // Slightly darker hair
+};
+
+// OFFICIAL PALETTE (Based on InstitutionalHeader)
+const C = {
+    ink: '#333333',     // Dark Gray (Gris Oscuro)
+    sub: '#666666',     // Medium Gray
+    guinda: '#9D2449',  // Guinda Oficial
+    dorado: '#D4C19C',  // Dorado Oficial
+    gris: '#B38E5D',    // (Variant, using Dorado/Gris blend usually, adhering to header usage)
+    hair: '#d1d5db',
+    panel: '#f8f9fa',
+    sc: '#3B7D23',
+    su: '#2563EB',      // Brighter Blue for digital
+    red: '#B91C1C',
+    green: '#15803D'
+};
+
+const styleH2 = {
+    fontSize: `${T.h2}px`,
+    fontWeight: 700,
+    color: C.guinda,
+    borderBottom: `2px solid ${C.dorado}`,
+    paddingBottom: '4px',
+    marginBottom: `${S.gap2}px`,
+    textTransform: 'uppercase',
+    letterSpacing: '0.05em'
+};
+
+const styleLabel = {
+    fontSize: `${T.small}px`,
+    color: C.sub,
+    fontWeight: 600,
+    textTransform: 'uppercase',
+    marginBottom: '2px'
+};
+
+const styleValue = {
+    fontSize: `${T.base}px`,
+    color: C.ink,
+    fontWeight: 400
+};
+
+const PdfBox = ({ title, children, style }) => (
+    <div style={{ ...style }}>
+        <div style={styleLabel}>{title}</div>
+        <div style={styleValue}>{children}</div>
+    </div>
+);
+
+// Table Styles
+const tblC = {
+    width: '100%',
+    borderCollapse: 'collapse',
+    fontSize: `${T.small}px`
+};
+const thC = {
+    textAlign: 'left',
+    padding: '6px 8px',
+    borderBottom: `2px solid ${C.dorado}`,
+    color: C.guinda,
+    fontWeight: 700,
+    verticalAlign: 'bottom'
+};
+const tdC = (i) => ({
+    padding: '6px 8px',
+    borderBottom: `1px solid ${C.hair}`,
+    backgroundColor: i % 2 === 0 ? '#fff' : '#f9fafb',
+    color: C.ink,
+    verticalAlign: 'top'
+});
+
 const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = true, approximateAddress }, ref) => {
     if (!analysis) return null;
 
@@ -139,96 +234,7 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
         analysis.zoningKey === 'NODATA' ? 'Información no disponible' :
             friendlyName;
 
-    const T = {
-        font: 'Roboto, Arial, sans-serif',
-        mono: 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace',
-        base: 10,       // Reduced slightly for density
-        small: 8.5,
-        micro: 7.5,
-        h1: 15,         // Larger Header
-        h2: 12,
-        lead: 10,
-        lh: 1.2
-    };
-
-    const S = {
-        pageW: 794,
-        pagePad: 30,    // Increased margins
-        gap1: 5,
-        gap2: 12,
-        gap3: 20,
-        radius: 4,
-        hair: '1px solid #d1d5db' // Slightly darker hair
-    };
-
-    // OFFICIAL PALETTE (Based on InstitutionalHeader)
-    const C = {
-        ink: '#333333',     // Dark Gray (Gris Oscuro)
-        sub: '#666666',     // Medium Gray
-        guinda: '#9D2449',  // Guinda Oficial
-        dorado: '#D4C19C',  // Dorado Oficial
-        gris: '#B38E5D',    // (Variant, using Dorado/Gris blend usually, adhering to header usage)
-        hair: '#d1d5db',
-        panel: '#f8f9fa',
-        sc: '#3B7D23',
-        su: '#2563EB',      // Brighter Blue for digital
-        red: '#B91C1C',
-        green: '#15803D'
-    };
-
-    const styleH2 = {
-        fontSize: `${T.h2}px`,
-        fontWeight: 700,
-        color: C.guinda,
-        borderBottom: `2px solid ${C.dorado}`,
-        paddingBottom: '4px',
-        marginBottom: `${S.gap2}px`,
-        textTransform: 'uppercase',
-        letterSpacing: '0.05em'
-    };
-
-    const styleLabel = {
-        fontSize: `${T.small}px`,
-        color: C.sub,
-        fontWeight: 600,
-        textTransform: 'uppercase',
-        marginBottom: '2px'
-    };
-
-    const styleValue = {
-        fontSize: `${T.base}px`,
-        color: C.ink,
-        fontWeight: 400
-    };
-
-    const Box = ({ title, children, style }) => (
-        <div style={{ ...style }}>
-            <div style={styleLabel}>{title}</div>
-            <div style={styleValue}>{children}</div>
-        </div>
-    );
-
-    // Table Styles
-    const tblC = {
-        width: '100%',
-        borderCollapse: 'collapse',
-        fontSize: `${T.small}px`
-    };
-    const thC = {
-        textAlign: 'left',
-        padding: '6px 8px',
-        borderBottom: `2px solid ${C.dorado}`,
-        color: C.guinda,
-        fontWeight: 700,
-        verticalAlign: 'bottom'
-    };
-    const tdC = (i) => ({
-        padding: '6px 8px',
-        borderBottom: `1px solid ${C.hair}`,
-        backgroundColor: i % 2 === 0 ? '#fff' : '#f9fafb',
-        color: C.ink,
-        verticalAlign: 'top'
-    });
+    /* Styles moved to module scope */
 
     // --- CITIZEN SUMMARY LOGIC ---
     const getExplanation = () => {
@@ -305,16 +311,16 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
                                     {/* Row 1: Entidad & Coordenadas */}
                                     <tr>
                                         <td style={{ verticalAlign: 'top', width: '50%', paddingRight: '15px', paddingBottom: '10px' }}>
-                                            <Box title="Entidad Federativa">
+                                            <PdfBox title="Entidad Federativa">
                                                 {isOutside ? (outsideContextName || 'Otro Estado') : 'Ciudad de México'}
-                                            </Box>
+                                            </PdfBox>
                                         </td>
                                         <td style={{ verticalAlign: 'top', width: '50%', paddingBottom: '10px' }}>
-                                            <Box title="Coordenadas Geográficas">
+                                            <PdfBox title="Coordenadas Geográficas">
                                                 <span style={{ fontFamily: T.mono, fontSize: '11px', background: '#f3f4f6', padding: '4px 8px', borderRadius: '4px', display: 'inline-block' }}>
                                                     {coordText}
                                                 </span>
-                                            </Box>
+                                            </PdfBox>
                                         </td>
                                     </tr>
 
@@ -322,7 +328,7 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
                                     {!isOutside && (
                                         <tr>
                                             <td style={{ verticalAlign: 'top', paddingRight: '15px', paddingBottom: '10px' }}>
-                                                <Box title="Alcaldía">{analysis.alcaldia || 'N/D'}</Box>
+                                                <PdfBox title="Alcaldía">{analysis.alcaldia || 'N/D'}</PdfBox>
                                             </td>
                                             <td style={{ verticalAlign: 'top', paddingBottom: '10px' }}></td>
                                         </tr>
@@ -331,7 +337,7 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
                                     {/* Row 3: Direccion (Full width) */}
                                     <tr>
                                         <td colSpan="2" style={{ verticalAlign: 'top', paddingBottom: '10px' }}>
-                                            <Box title="Dirección Aproximada / Lugar">{direccion}</Box>
+                                            <PdfBox title="Dirección Aproximada / Lugar">{direccion}</PdfBox>
                                         </td>
                                     </tr>
                                 </tbody>
@@ -617,6 +623,8 @@ const PdfFicha = React.forwardRef(({ analysis, mapImage, includeActivities = tru
     );
 });
 
+PdfFicha.displayName = 'PdfFicha';
+
 const PdfExportController = ({
     analysis,
     onExportReady,
@@ -736,101 +744,102 @@ const PdfExportController = ({
     };
 
     const buildExportMapImage = ({ lat, lng, zoom, analysisStatus, isANP }) => {
-        return new Promise(async (resolve) => {
-            try {
-                // L and leafletImage imported
+        return new Promise((resolve) => {
+            (async () => {
+                try {
+                    // L and leafletImage imported
 
-                if (!L || typeof leafletImage !== 'function') return resolve(null);
+                    if (!L || typeof leafletImage !== 'function') return resolve(null);
 
-                const el = document.getElementById('export-map');
-                if (!el) return resolve(null);
+                    const el = document.getElementById('export-map');
+                    if (!el) return resolve(null);
 
-                if (exportMapInstance.current) {
-                    try { exportMapInstance.current.remove(); } catch (e) { }
-                    exportMapInstance.current = null;
-                }
-                el.innerHTML = '';
+                    if (exportMapInstance.current) {
+                        try { exportMapInstance.current.remove(); } catch (e) { /* empty */ }
+                        exportMapInstance.current = null;
+                    }
+                    el.innerHTML = '';
 
-                // Create map off-screen
-                const m = L.map(el, {
-                    zoomControl: false, attributionControl: false, preferCanvas: true,
-                    fadeAnimation: false, zoomAnimation: false, markerZoomAnimation: false
-                }).setView([lat, lng], zoom);
+                    // Create map off-screen
+                    const m = L.map(el, {
+                        zoomControl: false, attributionControl: false, preferCanvas: true,
+                        fadeAnimation: false, zoomAnimation: false, markerZoomAnimation: false
+                    }).setView([lat, lng], zoom);
 
-                exportMapInstance.current = m;
+                    exportMapInstance.current = m;
 
-                const baseLayerUrl = (typeof getBaseLayerUrl === 'function')
-                    ? getBaseLayerUrl(activeBaseLayer || 'SATELLITE')
-                    : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+                    const baseLayerUrl = (typeof getBaseLayerUrl === 'function')
+                        ? getBaseLayerUrl(activeBaseLayer || 'SATELLITE')
+                        : 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
-                // Force fast loading options
-                const base = L.tileLayer(baseLayerUrl, {
-                    crossOrigin: 'anonymous',
-                    maxZoom: 19,
-                    updateWhenIdle: false, // Load immediately
-                    updateWhenZooming: false,
-                    keepBuffer: 2
-                }).addTo(m);
+                    // Force fast loading options
+                    const base = L.tileLayer(baseLayerUrl, {
+                        crossOrigin: 'anonymous',
+                        maxZoom: 19,
+                        updateWhenIdle: false, // Load immediately
+                        updateWhenZooming: false,
+                        keepBuffer: 2
+                    }).addTo(m);
 
-                const createPane = (name, zIndex) => {
-                    if (!m.getPane(name)) m.createPane(name);
-                    m.getPane(name).style.zIndex = zIndex;
-                    return name;
-                };
+                    const createPane = (name, zIndex) => {
+                        if (!m.getPane(name)) m.createPane(name);
+                        m.getPane(name).style.zIndex = zIndex;
+                        return name;
+                    };
 
-                const contextPane = createPane('contextPane', 400);
-                const overlayPane = createPane('overlayPane', 450);
-                const markerPane = createPane('markerPane', 600);
+                    const contextPane = createPane('contextPane', 400);
+                    const overlayPane = createPane('overlayPane', 450);
+                    const markerPane = createPane('markerPane', 600);
 
-                const addGeoJson = (fc, style, pane) => {
-                    try {
-                        if (!fc?.features?.length) return;
-                        L.geoJSON(fc, { pane, style, interactive: false }).addTo(m);
-                    } catch (err) { }
-                };
+                    const addGeoJson = (fc, style, pane) => {
+                        try {
+                            if (!fc?.features?.length) return;
+                            L.geoJSON(fc, { pane, style, interactive: false }).addTo(m);
+                        } catch (err) { /* empty */ }
+                    };
 
-                // --- LAYERS ---
-                if (visibleMapLayers?.alcaldias && dataCache?.alcaldias) {
-                    addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, contextPane);
-                }
-                if (visibleMapLayers?.sc && dataCache?.sc) {
-                    addGeoJson(dataCache.sc, { color: LAYER_STYLES?.sc?.color || 'green', weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES?.sc?.fill, fillOpacity: 0.18 }, overlayPane);
-                }
-                if (visibleMapLayers?.anp && dataCache?.anp) {
-                    addGeoJson(dataCache.anp, { color: LAYER_STYLES?.anp?.color || '#9333ea', weight: 2, opacity: 1, fillColor: LAYER_STYLES?.anp?.fill || '#9333ea', fillOpacity: 0.2 }, overlayPane);
-                }
-                if (visibleMapLayers?.zoning && dataCache?.zoning?.features?.length) {
-                    const byKey = {};
-                    (ZONING_ORDER || []).forEach(k => (byKey[k] = []));
-                    dataCache.zoning.features.forEach(f => {
-                        let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
-                        if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
-                            const desc = (f.properties?.PGOEDF || '').toLowerCase();
-                            if (desc.includes('equipamiento')) k = 'PDU_ER';
-                            else if (desc.includes('parcial')) k = 'PDU_PP';
-                            else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
-                            else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
-                        }
-                        if (byKey[k]) byKey[k].push(f);
-                    });
-                    (ZONING_ORDER || []).forEach((k) => {
-                        const isOn = (visibleZoningCats?.[k] !== false);
-                        if (!isOn) return;
-                        const feats = byKey[k];
-                        if (!feats?.length) return;
-                        const color = ZONING_CAT_INFO?.[k]?.color || '#9ca3af';
-                        addGeoJson({ type: 'FeatureCollection', features: feats }, { color, weight: 1.5, opacity: 0.9, fillColor: color, fillOpacity: 0.2, interactive: false }, overlayPane);
-                    });
-                }
+                    // --- LAYERS ---
+                    if (visibleMapLayers?.alcaldias && dataCache?.alcaldias) {
+                        addGeoJson(dataCache.alcaldias, { color: '#ffffff', weight: 3, dashArray: '8,4', opacity: 0.9, fillOpacity: 0 }, contextPane);
+                    }
+                    if (visibleMapLayers?.sc && dataCache?.sc) {
+                        addGeoJson(dataCache.sc, { color: LAYER_STYLES?.sc?.color || 'green', weight: 1.8, opacity: 0.9, fillColor: LAYER_STYLES?.sc?.fill, fillOpacity: 0.18 }, overlayPane);
+                    }
+                    if (visibleMapLayers?.anp && dataCache?.anp) {
+                        addGeoJson(dataCache.anp, { color: LAYER_STYLES?.anp?.color || '#9333ea', weight: 2, opacity: 1, fillColor: LAYER_STYLES?.anp?.fill || '#9333ea', fillOpacity: 0.2 }, overlayPane);
+                    }
+                    if (visibleMapLayers?.zoning && dataCache?.zoning?.features?.length) {
+                        const byKey = {};
+                        (ZONING_ORDER || []).forEach(k => (byKey[k] = []));
+                        dataCache.zoning.features.forEach(f => {
+                            let k = (f.properties?.CLAVE || '').toString().trim().toUpperCase();
+                            if (k === 'PDU' || k === 'PROGRAMAS' || k === 'ZONA URBANA') {
+                                const desc = (f.properties?.PGOEDF || '').toLowerCase();
+                                if (desc.includes('equipamiento')) k = 'PDU_ER';
+                                else if (desc.includes('parcial')) k = 'PDU_PP';
+                                else if (desc.includes('poblad') || desc.includes('rural') || desc.includes('habitacional')) k = 'PDU_PR';
+                                else if (desc.includes('urbana') || desc.includes('urbano') || desc.includes('barrio')) k = 'PDU_ZU';
+                            }
+                            if (byKey[k]) byKey[k].push(f);
+                        });
+                        (ZONING_ORDER || []).forEach((k) => {
+                            const isOn = (visibleZoningCats?.[k] !== false);
+                            if (!isOn) return;
+                            const feats = byKey[k];
+                            if (!feats?.length) return;
+                            const color = ZONING_CAT_INFO?.[k]?.color || '#9ca3af';
+                            addGeoJson({ type: 'FeatureCollection', features: feats }, { color, weight: 1.5, opacity: 0.9, fillColor: color, fillOpacity: 0.2, interactive: false }, overlayPane);
+                        });
+                    }
 
-                // --- MARKER (SVG Data URI) ---
-                let bgColor = '#6b7280';
-                if (analysisStatus === 'OUTSIDE_CDMX') bgColor = '#ef4444';
-                else if (analysisStatus === 'CONSERVATION_SOIL') bgColor = LAYER_STYLES?.sc?.color || '#16a34a';
-                else if (isANP) bgColor = '#9333ea';
-                else if (analysisStatus === 'URBAN_SOIL') bgColor = '#3b82f6';
+                    // --- MARKER (SVG Data URI) ---
+                    let bgColor = '#6b7280';
+                    if (analysisStatus === 'OUTSIDE_CDMX') bgColor = '#ef4444';
+                    else if (analysisStatus === 'CONSERVATION_SOIL') bgColor = LAYER_STYLES?.sc?.color || '#16a34a';
+                    else if (isANP) bgColor = '#9333ea';
+                    else if (analysisStatus === 'URBAN_SOIL') bgColor = '#3b82f6';
 
-                const svgString = `
+                    const svgString = `
                     <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24">
                         <filter id="shadow" x="-50%" y="-50%" width="200%" height="200%">
                             <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="black" flood-opacity="0.3"/>
@@ -838,42 +847,43 @@ const PdfExportController = ({
                         <circle cx="12" cy="12" r="8" fill="${bgColor}" stroke="white" stroke-width="2.5" filter="url(#shadow)"/>
                     </svg>
                 `.trim();
-                const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
-                const icon = L.icon({ iconUrl, iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -10] });
-                L.marker([lat, lng], { icon, pane: markerPane, interactive: false }).addTo(m);
+                    const iconUrl = 'data:image/svg+xml;base64,' + btoa(svgString);
+                    const icon = L.icon({ iconUrl, iconSize: [40, 40], iconAnchor: [20, 20], popupAnchor: [0, -10] });
+                    L.marker([lat, lng], { icon, pane: markerPane, interactive: false }).addTo(m);
 
-                await waitForMapReady(m);
+                    await waitForMapReady(m);
 
-                let settled = false;
-                const done = (img) => {
-                    if (settled) return; settled = true;
-                    if (exportMapInstance.current === m) {
-                        try { m.remove(); } catch { }
-                        exportMapInstance.current = null;
-                    }
-                    resolve(img || null);
-                };
+                    let settled = false;
+                    const done = (img) => {
+                        if (settled) return; settled = true;
+                        if (exportMapInstance.current === m) {
+                            try { m.remove(); } catch { /* empty */ }
+                            exportMapInstance.current = null;
+                        }
+                        resolve(img || null);
+                    };
 
-                const capture = () => {
-                    try {
-                        leafletImage(m, (err, canvas) => {
-                            if (err || !canvas) return done(null);
-                            done(canvas.toDataURL('image/png'));
-                        });
-                    } catch (err) { done(null); }
-                };
+                    const capture = () => {
+                        try {
+                            leafletImage(m, (err, canvas) => {
+                                if (err || !canvas) return done(null);
+                                done(canvas.toDataURL('image/png'));
+                            });
+                        } catch (err) { done(null); }
+                    };
 
-                // OPTIMIZED TIMEOUTS
-                // Reduced safety timeout from 6000ms to 3000ms
-                const safetyTimeout = setTimeout(() => { capture(); }, 3000);
+                    // OPTIMIZED TIMEOUTS
+                    // Reduced safety timeout from 6000ms to 3000ms
+                    const safetyTimeout = setTimeout(() => { capture(); }, 3000);
 
-                // Reduced active wait from 1200ms to 400ms after load
-                base.on('load', () => { setTimeout(() => { clearTimeout(safetyTimeout); capture(); }, 400); });
+                    // Reduced active wait from 1200ms to 400ms after load
+                    base.on('load', () => { setTimeout(() => { clearTimeout(safetyTimeout); capture(); }, 400); });
 
-                // Reduced fallback from 3500ms to 2000ms
-                setTimeout(() => { if (!settled) capture(); }, 2000);
+                    // Reduced fallback from 3500ms to 2000ms
+                    setTimeout(() => { if (!settled) capture(); }, 2000);
 
-            } catch (e) { resolve(null); }
+                } catch (e) { resolve(null); }
+            })();
         });
     };
 
@@ -882,335 +892,337 @@ const PdfExportController = ({
         exportArmedRef.current = false;
 
         // Return a promise to allow caller to await
-        return new Promise(async (resolve, reject) => {
-            if (onProgress) onProgress(10); // START
+        return new Promise((resolve, reject) => {
+            (async () => {
+                if (onProgress) onProgress(10); // START
 
-            if (!analysis || !pdfRef.current) {
-                reject("No analysis available");
-                if (onProgress) onProgress(0);
-                return;
-            }
-
-            // check imports - they are imported
-            if (!jsPDF || typeof html2canvas !== 'function') {
-                alert('Error: Librería jsPDF/html2canvas no cargada.');
-                reject("Libs missing");
-                return;
-            }
-
-            try {
-                // 0. Prepare Constants
-                const folio = `F-${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14)}`;
-
-                // 1. Prepare Map Image
-                const hasActiveLayers = visibleMapLayers?.sc || (visibleMapLayers?.zoning && dataCache?.zoning) || visibleMapLayers?.anp || visibleMapLayers?.alcaldias;
-                let img = null;
-                let staticUrl = null;
-
-                if (!hasActiveLayers) {
-                    staticUrl = getStaticMapUrl({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: currentZoom });
-                    const staticOk = await preloadImage(staticUrl);
-                    if (staticOk) img = staticUrl;
+                if (!analysis || !pdfRef.current) {
+                    reject("No analysis available");
+                    if (onProgress) onProgress(0);
+                    return;
                 }
-                if (!img) {
-                    img = await buildExportMapImage({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: currentZoom, analysisStatus: analysis.status, isANP: analysis.isANP });
+
+                // check imports - they are imported
+                if (!jsPDF || typeof html2canvas !== 'function') {
+                    alert('Error: Librería jsPDF/html2canvas no cargada.');
+                    reject("Libs missing");
+                    return;
                 }
-                if (onProgress) onProgress(40); // MAP READY
-                setMapImage(img);
 
-                // 2. Prepare View Mode (Hide Activities for Cover)
-                // We force exclude activities in DOM so we capture a clean single-page cover
-                setIncludeActivities(false);
+                try {
+                    // 0. Prepare Constants
+                    const folio = `F-${new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14)}`;
 
-                // Wait for Render
-                await new Promise(r => setTimeout(r, 200));
-                await waitForImgLoaded(pdfRef.current, 'img[alt="Mapa"]');
-                await waitForImgLoaded(pdfRef.current, 'img[alt="QR visor"]');
+                    // 1. Prepare Map Image
+                    const hasActiveLayers = visibleMapLayers?.sc || (visibleMapLayers?.zoning && dataCache?.zoning) || visibleMapLayers?.anp || visibleMapLayers?.alcaldias;
+                    let img = null;
+                    let staticUrl = null;
 
-                const element = pdfRef.current;
-                const doc = new jsPDF('p', 'mm', 'a4');
-                const pdfW = doc.internal.pageSize.getWidth();
-                const pdfH = doc.internal.pageSize.getHeight();
+                    if (!hasActiveLayers) {
+                        staticUrl = getStaticMapUrl({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: currentZoom });
+                        const staticOk = await preloadImage(staticUrl);
+                        if (staticOk) img = staticUrl;
+                    }
+                    if (!img) {
+                        img = await buildExportMapImage({ lat: analysis.coordinate.lat, lng: analysis.coordinate.lng, zoom: currentZoom, analysisStatus: analysis.status, isANP: analysis.isANP });
+                    }
+                    if (onProgress) onProgress(40); // MAP READY
+                    setMapImage(img);
 
-                const M = 15; // Global Margin
-                const hasAutoTable = !!doc.autoTable;
+                    // 2. Prepare View Mode (Hide Activities for Cover)
+                    // We force exclude activities in DOM so we capture a clean single-page cover
+                    setIncludeActivities(false);
 
-                // --- HYBRID STRATEGY ---
-                if (hasAutoTable) {
-                    // STEP A: Capture Cover Page (DOM -> Image)
-                    const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
-                    const scale = isMobile ? 1.5 : 2.0; // Reduced to prevent freeze
+                    // Wait for Render
+                    await new Promise(r => setTimeout(r, 200));
+                    await waitForImgLoaded(pdfRef.current, 'img[alt="Mapa"]');
+                    await waitForImgLoaded(pdfRef.current, 'img[alt="QR visor"]');
 
-                    const canvas = await html2canvas(element, {
-                        scale,
-                        useCORS: true,
-                        backgroundColor: '#ffffff',
-                        logging: false,
-                        onclone: (clonedDoc) => {
-                            const header = clonedDoc.getElementById('pdf-header-row');
-                            if (header) header.style.opacity = '0'; // Hide header in capture to start with whitespace
+                    const element = pdfRef.current;
+                    const doc = new jsPDF('p', 'mm', 'a4');
+                    const pdfW = doc.internal.pageSize.getWidth();
+                    const pdfH = doc.internal.pageSize.getHeight();
+
+                    const M = 15; // Global Margin
+                    const hasAutoTable = !!doc.autoTable;
+
+                    // --- HYBRID STRATEGY ---
+                    if (hasAutoTable) {
+                        // STEP A: Capture Cover Page (DOM -> Image)
+                        const isMobile = window.matchMedia && window.matchMedia('(max-width: 768px)').matches;
+                        const scale = isMobile ? 1.5 : 2.0; // Reduced to prevent freeze
+
+                        const canvas = await html2canvas(element, {
+                            scale,
+                            useCORS: true,
+                            backgroundColor: '#ffffff',
+                            logging: false,
+                            onclone: (clonedDoc) => {
+                                const header = clonedDoc.getElementById('pdf-header-row');
+                                if (header) header.style.opacity = '0'; // Hide header in capture to start with whitespace
+                            }
+                        });
+                        const coverImgData = canvas.toDataURL('image/jpeg', 0.8); // JPEG is faster/smaller than PNG
+                        if (onProgress) onProgress(70); // COVER READY
+
+                        // Yield to UI thread to prevent "Page Unresponsive"
+                        await new Promise(r => setTimeout(r, 100));
+
+                        // Pre-load Logo for headers
+                        const logoDataUrl = await loadLogoData();
+                        const headersDrawn = {};
+
+                        // Helper for Page Header 
+                        const addHeader = (pdfDoc, pageNumber) => {
+                            if (headersDrawn[pageNumber]) return 15 + 35; // Already drawn
+
+                            let y = M;
+                            if (logoDataUrl) {
+                                // FIX LOGO ASPECT RATIO
+                                const logoProps = pdfDoc.getImageProperties(logoDataUrl);
+                                const desiredW = 90; // Increased from 60 for wider logos
+                                const ratio = logoProps.height / logoProps.width;
+                                const desiredH = desiredW * ratio;
+                                pdfDoc.addImage(logoDataUrl, 'PNG', M, y, desiredW, desiredH);
+                            }
+                            pdfDoc.setFontSize(14);
+                            pdfDoc.setFont("helvetica", "bold");
+                            pdfDoc.setTextColor(157, 36, 73); // Guinda
+                            pdfDoc.text("FICHA INFORMATIVA", pdfW - M, y + 8, { align: 'right' });
+
+                            pdfDoc.setFontSize(9);
+                            pdfDoc.setFont("helvetica", "italic");
+                            pdfDoc.setTextColor(100);
+                            pdfDoc.text("Consulta Ciudadana de Zonificación", pdfW - M, y + 12, { align: 'right' });
+
+                            const dateTitle = analysis.timestamp || new Date().toLocaleString();
+                            pdfDoc.setFontSize(8);
+                            pdfDoc.setFont("helvetica", "normal");
+                            pdfDoc.setTextColor(0);
+                            pdfDoc.text(`Folio: ${folio}`, pdfW - M, y + 16, { align: 'right' });
+                            pdfDoc.text(`Fecha: ${dateTitle}`, pdfW - M, y + 20, { align: 'right' });
+
+                            // Golden Line moved BELOW Page Number area (approx y+28)
+                            pdfDoc.setDrawColor(212, 193, 156); // Dorado
+                            pdfDoc.setLineWidth(0.5);
+                            pdfDoc.line(M, y + 28, pdfW - M, y + 28);
+
+                            headersDrawn[pageNumber] = true;
+                            return y + 35; // increased top margin
+                        };
+
+                        // Add Cover with FAST compression
+                        doc.addImage(coverImgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
+
+                        // DRAW HEADER ON PAGE 1 (Standardized Vector Header)
+                        addHeader(doc, 1);
+
+                        // STEP B: Append Native Table Pages (if SC)
+                        const isSC = analysis.status === 'CONSERVATION_SOIL';
+                        const isANP = analysis.isANP || analysis.zoningKey === 'ANP';
+                        const hasActivities = isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog;
+
+
+                        if (hasActivities) {
+                            const gap = 8;
+                            const colW = (pdfW - (2 * M) - gap) / 2;
+
+                            doc.addPage();
+                            const startPage = doc.internal.getCurrentPageInfo().pageNumber;
+                            // Manual header for new page
+                            let startY = addHeader(doc, startPage);
+
+                            // Data Preparation with Grouping
+                            const allowed = processGroupedData(analysis.allowedActivities || []);
+                            const prohibited = processGroupedData(analysis.prohibitedActivities || []);
+
+                            // --- TABLE LEFT (Activities Allowed) ---
+                            let finalYLeft = startY;
+                            let finalPageLeft = startPage;
+
+                            if (allowed.length > 0) {
+                                doc.setFontSize(10);
+                                doc.setTextColor(21, 128, 61); // Green
+                                doc.setFont("helvetica", "bold");
+
+                                doc.text("PERMITIDAS", M, startY);
+                                doc.setFontSize(8);
+                                doc.setTextColor(100);
+                                doc.setFont("helvetica", "normal");
+                                doc.text("Esta tabla detalla las actividades permitidas en la zona, conforme a la normatividad vigente.", M, startY + 4, { maxWidth: colW });
+
+                                const tableStartY = startY + 12;
+
+                                doc.autoTable({
+                                    startY: tableStartY,
+                                    head: [['Actividad', 'Detalle']],
+                                    body: allowed,
+                                    theme: 'plain', // Custom styling
+                                    headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                                    styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                    alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
+                                    columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
+                                    tableWidth: colW,
+                                    margin: { left: M, top: 45 },
+                                    didDrawPage: (data) => {
+                                        addHeader(doc, data.pageNumber);
+                                    }
+                                });
+                                finalYLeft = doc.lastAutoTable.finalY;
+                                finalPageLeft = doc.internal.getCurrentPageInfo().pageNumber;
+                            }
+
+                            // --- TABLE RIGHT (Activities Prohibited) ---
+                            // Reset cursor to start parallel render
+                            doc.setPage(startPage);
+
+                            let finalYRight = startY;
+                            let finalPageRight = startPage;
+
+                            if (prohibited.length > 0) {
+                                const leftM = M + colW + gap;
+                                doc.setFontSize(10);
+                                doc.setTextColor(185, 28, 28); // Red
+                                doc.setFont("helvetica", "bold");
+
+                                doc.text("PROHIBIDAS", leftM, startY);
+                                doc.setFontSize(8);
+                                doc.setTextColor(100);
+                                doc.setFont("helvetica", "normal");
+                                doc.text("Esta tabla detalla las actividades prohibidas.", leftM, startY + 4, { maxWidth: colW });
+
+                                const tableStartY = startY + 12;
+
+                                doc.autoTable({
+                                    startY: tableStartY,
+                                    head: [['Actividad', 'Detalle']],
+                                    body: prohibited,
+                                    theme: 'plain',
+                                    headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
+                                    styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
+                                    alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
+                                    columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
+                                    tableWidth: colW,
+                                    margin: { left: leftM, top: 45 },
+                                    didDrawPage: (data) => {
+                                        addHeader(doc, data.pageNumber);
+                                    }
+                                });
+                                finalYRight = doc.lastAutoTable.finalY;
+                                finalPageRight = doc.internal.getCurrentPageInfo().pageNumber;
+                            }
+
+                            // Sync Doc to Content End (Max of both)
+                            const maxPage = Math.max(finalPageLeft, finalPageRight);
+                            doc.setPage(maxPage);
                         }
-                    });
-                    const coverImgData = canvas.toDataURL('image/jpeg', 0.8); // JPEG is faster/smaller than PNG
-                    if (onProgress) onProgress(70); // COVER READY
 
-                    // Yield to UI thread to prevent "Page Unresponsive"
-                    await new Promise(r => setTimeout(r, 100));
+                        // --- FINAL: ADD PAGE NUMBERS TO ALL PAGES ---
+                        const totalPages = doc.internal.getNumberOfPages();
 
-                    // Pre-load Logo for headers
-                    const logoDataUrl = await loadLogoData();
-                    const headersDrawn = {};
+                        for (let i = 1; i <= totalPages; i++) {
+                            doc.setPage(i);
+                            // Page Number Position
+                            const footerY = 39; // y=15 + 24 = 39. Below Date (35), Above Line (43)
 
-                    // Helper for Page Header 
-                    const addHeader = (pdfDoc, pageNumber) => {
-                        if (headersDrawn[pageNumber]) return 15 + 35; // Already drawn
-
-                        let y = M;
-                        if (logoDataUrl) {
-                            // FIX LOGO ASPECT RATIO
-                            const logoProps = pdfDoc.getImageProperties(logoDataUrl);
-                            const desiredW = 90; // Increased from 60 for wider logos
-                            const ratio = logoProps.height / logoProps.width;
-                            const desiredH = desiredW * ratio;
-                            pdfDoc.addImage(logoDataUrl, 'PNG', M, y, desiredW, desiredH);
+                            doc.setFontSize(8);
+                            doc.setTextColor(100);
+                            doc.setFont("helvetica", "normal");
+                            doc.text(`Página ${i} de ${totalPages}`, pdfW - M, footerY, { align: 'right' });
                         }
-                        pdfDoc.setFontSize(14);
-                        pdfDoc.setFont("helvetica", "bold");
-                        pdfDoc.setTextColor(157, 36, 73); // Guinda
-                        pdfDoc.text("FICHA INFORMATIVA", pdfW - M, y + 8, { align: 'right' });
+                    } else {
+                        // Fallback logic
+                        doc.text("Vista simplificada", 10, 10);
+                    }
+                    // --- WATERMARK FUNCTION ---
+                    const addWatermark = (pdfDoc, pageNum, total) => {
+                        pdfDoc.setPage(pageNum);
+                        pdfDoc.saveGraphicsState();
+                        pdfDoc.setGState(new pdfDoc.GState({ opacity: 0.1 }));
+                        pdfDoc.setFontSize(40);
+                        pdfDoc.setTextColor(150, 150, 150);
+                        pdfDoc.setFont('helvetica', 'bold');
 
-                        pdfDoc.setFontSize(9);
-                        pdfDoc.setFont("helvetica", "italic");
-                        pdfDoc.setTextColor(100);
-                        pdfDoc.text("Consulta Ciudadana de Zonificación", pdfW - M, y + 12, { align: 'right' });
+                        // Rotate 45 degrees around center
+                        // Translate to center first
+                        const cx = pdfW / 2;
+                        const cy = pdfH / 2;
 
-                        const dateTitle = analysis.timestamp || new Date().toLocaleString();
-                        pdfDoc.setFontSize(8);
-                        pdfDoc.setFont("helvetica", "normal");
-                        pdfDoc.setTextColor(0);
-                        pdfDoc.text(`Folio: ${folio}`, pdfW - M, y + 16, { align: 'right' });
-                        pdfDoc.text(`Fecha: ${dateTitle}`, pdfW - M, y + 20, { align: 'right' });
+                        // jsPDF rotation is slightly tricky without advance API, 
+                        // but we can use text rotation parameter.
+                        pdfDoc.text('DOCUMENTO INFORMATIVO', cx, cy, { align: 'center', angle: 45 });
+                        pdfDoc.text('SIN VALIDEZ LEGAL', cx, cy + 15, { align: 'center', angle: 45 });
 
-                        // Golden Line moved BELOW Page Number area (approx y+28)
-                        pdfDoc.setDrawColor(212, 193, 156); // Dorado
-                        pdfDoc.setLineWidth(0.5);
-                        pdfDoc.line(M, y + 28, pdfW - M, y + 28);
-
-                        headersDrawn[pageNumber] = true;
-                        return y + 35; // increased top margin
+                        pdfDoc.restoreGraphicsState();
                     };
 
-                    // Add Cover with FAST compression
-                    doc.addImage(coverImgData, 'JPEG', 0, 0, pdfW, pdfH, undefined, 'FAST');
-
-                    // DRAW HEADER ON PAGE 1 (Standardized Vector Header)
-                    addHeader(doc, 1);
-
-                    // STEP B: Append Native Table Pages (if SC)
-                    const isSC = analysis.status === 'CONSERVATION_SOIL';
-                    const isANP = analysis.isANP || analysis.zoningKey === 'ANP';
-                    const hasActivities = isSC && !isANP && !analysis.isPDU && !analysis.noActivitiesCatalog;
-
-
-                    if (hasActivities) {
-                        const gap = 8;
-                        const colW = (pdfW - (2 * M) - gap) / 2;
-
-                        doc.addPage();
-                        const startPage = doc.internal.getCurrentPageInfo().pageNumber;
-                        // Manual header for new page
-                        let startY = addHeader(doc, startPage);
-
-                        // Data Preparation with Grouping
-                        const allowed = processGroupedData(analysis.allowedActivities || []);
-                        const prohibited = processGroupedData(analysis.prohibitedActivities || []);
-
-                        // --- TABLE LEFT (Activities Allowed) ---
-                        let finalYLeft = startY;
-                        let finalPageLeft = startPage;
-
-                        if (allowed.length > 0) {
-                            doc.setFontSize(10);
-                            doc.setTextColor(21, 128, 61); // Green
-                            doc.setFont("helvetica", "bold");
-
-                            doc.text("PERMITIDAS", M, startY);
-                            doc.setFontSize(8);
-                            doc.setTextColor(100);
-                            doc.setFont("helvetica", "normal");
-                            doc.text("Esta tabla detalla las actividades permitidas en la zona, conforme a la normatividad vigente.", M, startY + 4, { maxWidth: colW });
-
-                            const tableStartY = startY + 12;
-
-                            doc.autoTable({
-                                startY: tableStartY,
-                                head: [['Actividad', 'Detalle']],
-                                body: allowed,
-                                theme: 'plain', // Custom styling
-                                headStyles: { fillColor: [21, 128, 61], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
-                                styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
-                                alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
-                                columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
-                                tableWidth: colW,
-                                margin: { left: M, top: 45 },
-                                didDrawPage: (data) => {
-                                    addHeader(doc, data.pageNumber);
-                                }
-                            });
-                            finalYLeft = doc.lastAutoTable.finalY;
-                            finalPageLeft = doc.internal.getCurrentPageInfo().pageNumber;
-                        }
-
-                        // --- TABLE RIGHT (Activities Prohibited) ---
-                        // Reset cursor to start parallel render
-                        doc.setPage(startPage);
-
-                        let finalYRight = startY;
-                        let finalPageRight = startPage;
-
-                        if (prohibited.length > 0) {
-                            const leftM = M + colW + gap;
-                            doc.setFontSize(10);
-                            doc.setTextColor(185, 28, 28); // Red
-                            doc.setFont("helvetica", "bold");
-
-                            doc.text("PROHIBIDAS", leftM, startY);
-                            doc.setFontSize(8);
-                            doc.setTextColor(100);
-                            doc.setFont("helvetica", "normal");
-                            doc.text("Esta tabla detalla las actividades prohibidas.", leftM, startY + 4, { maxWidth: colW });
-
-                            const tableStartY = startY + 12;
-
-                            doc.autoTable({
-                                startY: tableStartY,
-                                head: [['Actividad', 'Detalle']],
-                                body: prohibited,
-                                theme: 'plain',
-                                headStyles: { fillColor: [185, 28, 28], textColor: 255, fontSize: 8, fontStyle: 'bold', halign: 'center', valign: 'middle' },
-                                styles: { fontSize: 5, cellPadding: 1.5, overflow: 'linebreak', halign: 'left', valign: 'middle', lineColor: [230, 230, 230], lineWidth: 0.1 },
-                                alternateRowStyles: { fillColor: [248, 248, 248] }, // Zebra
-                                columnStyles: { 0: { cellWidth: 25, fontStyle: 'bold' }, 1: { cellWidth: 'auto' } },
-                                tableWidth: colW,
-                                margin: { left: leftM, top: 45 },
-                                didDrawPage: (data) => {
-                                    addHeader(doc, data.pageNumber);
-                                }
-                            });
-                            finalYRight = doc.lastAutoTable.finalY;
-                            finalPageRight = doc.internal.getCurrentPageInfo().pageNumber;
-                        }
-
-                        // Sync Doc to Content End (Max of both)
-                        const maxPage = Math.max(finalPageLeft, finalPageRight);
-                        doc.setPage(maxPage);
-                    }
-
-                    // --- FINAL: ADD PAGE NUMBERS TO ALL PAGES ---
+                    // --- GLOBAL FOOTER: PAGINATION & DISLAIMER ---
                     const totalPages = doc.internal.getNumberOfPages();
-
                     for (let i = 1; i <= totalPages; i++) {
                         doc.setPage(i);
-                        // Page Number Position
-                        const footerY = 39; // y=15 + 24 = 39. Below Date (35), Above Line (43)
 
+                        // Apply Watermark
+                        addWatermark(doc, i, totalPages);
+
+                        // Disclaimer
+                        doc.setFontSize(7);
+                        doc.setTextColor(150);
+                        doc.setFont("helvetica", "italic");
+                        doc.text("Este no es un documento oficial. Consulte la Ventanilla Única de la SEDEMA para trámites oficiales.", pdfW / 2, pdfH - 14, { align: 'center' });
+
+                        // Page Number
                         doc.setFontSize(8);
-                        doc.setTextColor(100);
+                        doc.setTextColor(150);
                         doc.setFont("helvetica", "normal");
-                        doc.text(`Página ${i} de ${totalPages}`, pdfW - M, footerY, { align: 'right' });
+                        const pageText = `Página ${i} de ${totalPages}`;
+                        doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
                     }
-                } else {
-                    // Fallback logic
-                    doc.text("Vista simplificada", 10, 10);
+
+                    if (onProgress) onProgress(90); // TABLES DONE
+
+                    // --- FILENAME GENERATION HELPER ---
+                    const generateDetailedFilename = () => {
+                        const timestamp = new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
+                        const folio = `F${timestamp}`;
+
+                        let type = 'ND'; // No detemined
+                        const { status, zoningKey, isANP, alcaldia, outsideContext } = analysis;
+
+                        if (status === 'OUTSIDE_CDMX') {
+                            type = 'EXTERNO';
+                        } else if (status === 'URBAN_SOIL') {
+                            type = 'SU';
+                            if (isANP) type += '-ANP';
+                        } else if (status === 'CONSERVATION_SOIL') {
+                            type = 'SC';
+                            if (zoningKey) type += `-${zoningKey}`;
+                            if (isANP) type += '-ANP';
+                        }
+
+                        let location = 'CDMX';
+                        if (status === 'OUTSIDE_CDMX') {
+                            location = outsideContext || 'EDOMEX';
+                        } else {
+                            location = alcaldia || 'CDMX';
+                        }
+
+                        // Sanitize
+                        const cleanType = type.replace(/[^a-zA-Z0-9-]/g, '').toUpperCase();
+                        const cleanLoc = location.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
+
+                        return `FICHA_${folio}_${cleanType}_${cleanLoc}.pdf`;
+                    };
+
+                    const filename = generateDetailedFilename();
+                    doc.save(filename);
+
+                    // --- END SAVE ---
+                    resolve();
+                } catch (error) {
+                    console.error("PDF Export failed:", error);
+                    reject(error);
                 }
-                // --- WATERMARK FUNCTION ---
-                const addWatermark = (pdfDoc, pageNum, total) => {
-                    pdfDoc.setPage(pageNum);
-                    pdfDoc.saveGraphicsState();
-                    pdfDoc.setGState(new pdfDoc.GState({ opacity: 0.1 }));
-                    pdfDoc.setFontSize(40);
-                    pdfDoc.setTextColor(150, 150, 150);
-                    pdfDoc.setFont('helvetica', 'bold');
-
-                    // Rotate 45 degrees around center
-                    // Translate to center first
-                    const cx = pdfW / 2;
-                    const cy = pdfH / 2;
-
-                    // jsPDF rotation is slightly tricky without advance API, 
-                    // but we can use text rotation parameter.
-                    pdfDoc.text('DOCUMENTO INFORMATIVO', cx, cy, { align: 'center', angle: 45 });
-                    pdfDoc.text('SIN VALIDEZ LEGAL', cx, cy + 15, { align: 'center', angle: 45 });
-
-                    pdfDoc.restoreGraphicsState();
-                };
-
-                // --- GLOBAL FOOTER: PAGINATION & DISLAIMER ---
-                const totalPages = doc.internal.getNumberOfPages();
-                for (let i = 1; i <= totalPages; i++) {
-                    doc.setPage(i);
-
-                    // Apply Watermark
-                    addWatermark(doc, i, totalPages);
-
-                    // Disclaimer
-                    doc.setFontSize(7);
-                    doc.setTextColor(150);
-                    doc.setFont("helvetica", "italic");
-                    doc.text("Este no es un documento oficial. Consulte la Ventanilla Única de la SEDEMA para trámites oficiales.", pdfW / 2, pdfH - 14, { align: 'center' });
-
-                    // Page Number
-                    doc.setFontSize(8);
-                    doc.setTextColor(150);
-                    doc.setFont("helvetica", "normal");
-                    const pageText = `Página ${i} de ${totalPages}`;
-                    doc.text(pageText, pdfW / 2, pdfH - 10, { align: 'center' });
-                }
-
-                if (onProgress) onProgress(90); // TABLES DONE
-
-                // --- FILENAME GENERATION HELPER ---
-                const generateDetailedFilename = () => {
-                    const timestamp = new Date().toISOString().replace(/[-:T.Z]/g, '').slice(0, 14);
-                    const folio = `F${timestamp}`;
-
-                    let type = 'ND'; // No detemined
-                    const { status, zoningKey, isANP, alcaldia, outsideContext } = analysis;
-
-                    if (status === 'OUTSIDE_CDMX') {
-                        type = 'EXTERNO';
-                    } else if (status === 'URBAN_SOIL') {
-                        type = 'SU';
-                        if (isANP) type += '-ANP';
-                    } else if (status === 'CONSERVATION_SOIL') {
-                        type = 'SC';
-                        if (zoningKey) type += `-${zoningKey}`;
-                        if (isANP) type += '-ANP';
-                    }
-
-                    let location = 'CDMX';
-                    if (status === 'OUTSIDE_CDMX') {
-                        location = outsideContext || 'EDOMEX';
-                    } else {
-                        location = alcaldia || 'CDMX';
-                    }
-
-                    // Sanitize
-                    const cleanType = type.replace(/[^a-zA-Z0-9-]/g, '').toUpperCase();
-                    const cleanLoc = location.replace(/[^a-zA-Z0-9]/g, '_').toUpperCase();
-
-                    return `FICHA_${folio}_${cleanType}_${cleanLoc}.pdf`;
-                };
-
-                const filename = generateDetailedFilename();
-                doc.save(filename);
-
-                // --- END SAVE ---
-                resolve();
-            } catch (error) {
-                console.error("PDF Export failed:", error);
-                reject(error);
-            }
+            })();
         });
     }, [analysis, dataCache, visibleMapLayers, activeBaseLayer, visibleZoningCats, currentZoom]);
 

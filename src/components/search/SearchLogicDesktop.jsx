@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Icons from '../ui/Icons';
 import Tooltip from '../ui/Tooltip';
 import { searchMapboxPlaces, parseCoordinateInput } from '../../utils/geoUtils';
@@ -18,8 +18,10 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
 
     // ✅ Sync con estado padre (Solo al montar o reset explícito)
     useEffect(() => {
-        if (initialValue) setQuery(initialValue);
-    }, []); // Removed [initialValue] to prevent overwriting user input on re-renders
+        setTimeout(() => {
+            if (initialValue) setQuery(initialValue);
+        }, 0);
+    }, [initialValue]);
 
     // ✅ Setter externo
     useEffect(() => {
@@ -144,7 +146,7 @@ const SearchLogicDesktop = ({ onLocationSelect, onReset, setInputRef, initialVal
                                 </li>
                                 <li className="bg-white p-1.5 rounded border border-gray-200">
                                     <strong className="block text-gray-900 mb-0.5">Coordenadas DMS</strong>
-                                    <span className="font-mono text-[10px] text-gray-500">Ejemplo: 19°22'18.8"N 99°04'25.8"W</span>
+                                    <span className="font-mono text-[10px] text-gray-500">Ejemplo: 19&deg;22&apos;18.8&quot;N 99&deg;04&apos;25.8&quot;W</span>
                                 </li>
                                 <li className="bg-white p-1.5 rounded border border-gray-200">
                                     <strong className="block text-gray-900 mb-0.5">Colonia y alcaldía</strong>

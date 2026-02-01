@@ -1,4 +1,4 @@
-import React from 'react';
+/* React removed */
 
 const SkeletonAnalysis = () => (
     <div className="animate-fade-in space-y-4 w-full">

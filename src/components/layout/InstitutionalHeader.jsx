@@ -1,4 +1,4 @@
-import React from 'react';
+/* React removed */
 
 const InstitutionalHeader = () => (
     <header className="hidden md:block fixed top-0 left-0 right-0 z-[1100] bg-[#9d2449] border-b border-[#8a1c3b] shadow-sm">

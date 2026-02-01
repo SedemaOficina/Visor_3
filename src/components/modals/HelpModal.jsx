@@ -1,17 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Icons from '../ui/Icons';
 import { CONSTANTS } from '../../utils/constants';
+
+const FallbackX = () => <span className="text-xl">×</span>;
+const FallbackMapPinned = () => <span>📍</span>;
 
 const HelpModal = ({ isOpen, onClose }) => {
     // Direct Access
     const { CONTACT_INFO } = CONSTANTS || {};
 
-    if (!CONTACT_INFO) return null;
-    if (!isOpen) return null;
 
     // Fallback for missing icon
-    const XIcon = Icons.X || (() => <span className="text-xl">×</span>);
-    const MapPinnedIcon = Icons.MapPinned || (() => <span>📍</span>);
+    const XIcon = Icons.X || FallbackX;
+    const MapPinnedIcon = Icons.MapPinned || FallbackMapPinned;
 
     const [isVisible, setIsVisible] = useState(false);
 
@@ -21,7 +22,7 @@ const HelpModal = ({ isOpen, onClose }) => {
             const timer = setTimeout(() => setIsVisible(true), 50);
             return () => clearTimeout(timer);
         } else {
-            setIsVisible(false);
+            setTimeout(() => setIsVisible(false), 0);
         }
     }, [isOpen]);
 
@@ -35,6 +36,11 @@ const HelpModal = ({ isOpen, onClose }) => {
         }
         return () => window.removeEventListener('keydown', handleKeyDown);
     }, [isOpen, onClose]);
+
+    if (!CONTACT_INFO) return null;
+    if (!isOpen) return null;
+
+
 
     return (
         <div
@@ -84,13 +90,13 @@ const HelpModal = ({ isOpen, onClose }) => {
                                 <li className="flex gap-3 text-sm text-gray-700">
                                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-100 text-gray-600 font-bold flex items-center justify-center text-[10px] border border-gray-200">1</span>
                                     <span>
-                                        <strong>Búsqueda por dirección:</strong> Escribe la calle y número en el buscador lateral (ej. "Av. Insurgentes Sur 100").
+                                        <strong>Búsqueda por dirección:</strong> Escribe la calle y número en el buscador lateral (ej. &quot;Av. Insurgentes Sur 100&quot;).
                                     </span>
                                 </li>
                                 <li className="flex gap-3 text-sm text-gray-700">
                                     <span className="flex-shrink-0 w-5 h-5 rounded-full bg-gray-100 text-gray-600 font-bold flex items-center justify-center text-[10px] border border-gray-200">2</span>
                                     <span>
-                                        <strong>Búsqueda por coordenadas:</strong> Ingresa latitud y longitud (ej. "19.4326, -99.1332").
+                                        <strong>Búsqueda por coordenadas:</strong> Ingresa latitud y longitud (ej. &quot;19.4326, -99.1332&quot;).
                                     </span>
                                 </li>
                                 <li className="flex gap-3 text-sm text-gray-700">

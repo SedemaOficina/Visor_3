@@ -216,8 +216,8 @@ export const parseCoordinateInput = (input) => {
         return d;
     };
 
-    const latMatch = s.match(/(\d+)[°\s]+(\d+)[\'’\s]+(\d+(?:\.\d+)?)[\"\s]*([NnSs])/);
-    const lonMatch = s.match(/(\d+)[°\s]+(\d+)[\'’\s]+(\d+(?:\.\d+)?)[\"\s]*([EeWw])/);
+    const latMatch = s.match(/(\d+)[°\s]+(\d+)['’\s]+(\d+(?:\.\d+)?)["\s]*([NnSs])/);
+    const lonMatch = s.match(/(\d+)[°\s]+(\d+)['’\s]+(\d+(?:\.\d+)?)["\s]*([EeWw])/);
 
     if (latMatch && lonMatch) {
         const lat = dmsToDecimal(latMatch[1], latMatch[2], latMatch[3], latMatch[4]);

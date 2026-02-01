@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Icons } from '../ui/Icons';
 import ToggleSwitch from '../ui/ToggleSwitch';
 import { CONSTANTS } from '../../utils/constants';
