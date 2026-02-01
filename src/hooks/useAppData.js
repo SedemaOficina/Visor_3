@@ -2,6 +2,9 @@ import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { CONSTANTS } from '../utils/constants';
 import activitiesCsv from '../data/tabla_actividades_pgoedf.csv?raw';
+import cdmxGeo from '../data/cdmx.geojson';
+import scGeo from '../data/suelo-de-conservacion-2020.geojson';
+import alcaldiasGeo from '../data/alcaldias.geojson';
 
 const useAppData = () => {
     const [loading, setLoading] = useState(true);
@@ -20,21 +23,6 @@ const useAppData = () => {
 
     useEffect(() => {
         const loadData = async () => {
-            const { DATA_FILES } = CONSTANTS;
-
-            const fetchJson = async (u) => {
-                try {
-                    if (!u) return { type: "FeatureCollection", features: [] };
-                    const cleanPath = u.replace(/^\.\//, '/');
-                    const res = await fetch(cleanPath, { cache: 'no-store' });
-                    if (!res.ok) throw new Error(`HTTP ${res.status} ${cleanPath}`);
-                    return await res.json();
-                } catch (e) {
-                    console.warn('Error loading JSON:', u, e);
-                    return { type: "FeatureCollection", features: [] };
-                }
-            };
-
             // Helper to merge features
             const mergeFeatures = (list) => {
                 const out = { type: 'FeatureCollection', features: [] };
@@ -45,30 +33,36 @@ const useAppData = () => {
             };
 
             try {
-                // 1. Critical Data (Map Boundaries & Context) - Blocking Initial Render
-                const [cdmx, alcaldias, sc] = await Promise.all([
-                    fetchJson(DATA_FILES.LIMITES_CDMX),
-                    fetchJson(DATA_FILES.LIMITES_ALCALDIAS),
-                    fetchJson(DATA_FILES.SUELO_CONSERVACION)
-                ]);
-
-                // Render Map ASAP
-                setDataCache(prev => ({ ...prev, cdmx, alcaldias, sc }));
+                // 1. Critical Data - Imported Statically (Instant Load)
+                setDataCache(prev => ({
+                    ...prev,
+                    cdmx: cdmxGeo,
+                    alcaldias: alcaldiasGeo,
+                    sc: scGeo
+                }));
                 setLoading(false);
 
-                // 2. Background Data (Heavy Layers & Analysis Data) - Lazy Loaded
+                // 2. Background Data - Dynamic Imports (Lazy Loaded Chunks)
                 try {
-                    // Parse Rules Synchronously from imported file
+                    // Parse Rules
                     const rulesParsed = Papa.parse(activitiesCsv, { header: true, skipEmptyLines: true });
                     const rules = rulesParsed?.data || [];
                     if (rulesParsed?.errors?.length) console.warn("CSV Parse Warnings:", rulesParsed.errors);
 
                     const [mainZoning, anpInternalList, edomex, morelos, anp] = await Promise.all([
-                        fetchJson(DATA_FILES.ZONIFICACION_MAIN),
-                        Promise.all((DATA_FILES.ZONIFICACION_FILES || []).map(fetchJson)),
-                        fetchJson(DATA_FILES.LIMITES_EDOMEX),
-                        fetchJson(DATA_FILES.LIMITES_MORELOS),
-                        fetchJson(DATA_FILES.ANP)
+                        import('../data/zoonificacion_pgoedf_2000_sin_anp.geojson').then(m => m.default),
+                        Promise.all([
+                            import('../data/Zon_Bosque_de_Tlalpan.geojson').then(m => m.default),
+                            import('../data/Zon_Cerro_de_la_Estrella.geojson').then(m => m.default),
+                            import('../data/Zon_Desierto_de_los_Leones.geojson').then(m => m.default),
+                            import('../data/Zon_Ejidos_de_Xochimilco.geojson').then(m => m.default),
+                            import('../data/Zon_La_Loma.geojson').then(m => m.default),
+                            import('../data/Zon_Sierra_de_Guadalupe.geojson').then(m => m.default),
+                            import('../data/Zon_Sierra_de_Santa_Catarina.geojson').then(m => m.default)
+                        ]),
+                        import('../data/edomex.geojson').then(m => m.default),
+                        import('../data/morelos.geojson').then(m => m.default),
+                        import('../data/anp_consolidada.geojson').then(m => m.default)
                     ]);
 
                     setDataCache(prev => ({
@@ -82,7 +76,6 @@ const useAppData = () => {
                     }));
                 } catch (bgErr) {
                     console.error("Secondary Data Load Error:", bgErr);
-                    // Don't block app, just log
                 }
 
             } catch (err) {

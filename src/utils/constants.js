@@ -1,10 +1,4 @@
-// Helper to handle base path for assets
-const BASE_URL = import.meta.env.BASE_URL;
-const resolvePath = (path) => {
-    // Remove leading './' or '/' if present to avoid double slashes with BASE_URL which ends in /
-    const cleanPath = path.replace(/^(\.\/|\/)/, '');
-    return `${BASE_URL}${cleanPath}`;
-};
+
 
 export const CONSTANTS = {
     COLORS: {
@@ -50,23 +44,7 @@ export const CONSTANTS = {
         morelos: { color: '#B8A1FF', label: 'Estado de Morelos' }
     },
     DATA_FILES: {
-        LIMITES_CDMX: resolvePath('data/cdmx.geojson'),
-        LIMITES_ALCALDIAS: resolvePath('data/alcaldias.geojson'),
-        LIMITES_EDOMEX: resolvePath('data/edomex.geojson'),
-        LIMITES_MORELOS: resolvePath('data/morelos.geojson'),
-        SUELO_CONSERVACION: resolvePath('data/suelo-de-conservacion-2020.geojson'),
-        ZONIFICACION_MAIN: resolvePath('data/zoonificacion_pgoedf_2000_sin_anp.geojson'),
-        ZONIFICACION_FILES: [
-            resolvePath('data/Zon_Bosque_de_Tlalpan.geojson'),
-            resolvePath('data/Zon_Cerro_de_la_Estrella.geojson'),
-            resolvePath('data/Zon_Desierto_de_los_Leones.geojson'),
-            resolvePath('data/Zon_Ejidos_de_Xochimilco.geojson'),
-            resolvePath('data/Zon_La_Loma.geojson'),
-            resolvePath('data/Zon_Sierra_de_Guadalupe.geojson'),
-            resolvePath('data/Zon_Sierra_de_Santa_Catarina.geojson')
-        ],
-
-        ANP: resolvePath('data/anp_consolidada.geojson')
+        // All data files are now imported directly in useAppData.js
     },
     MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0b2gzZnB0NnU2a2xwY2oifQ.2BDJUISBBvrm1wM8RwXusg',
     INITIAL_CENTER: [19.34, -99.145],
