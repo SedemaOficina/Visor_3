@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import Icons from '../ui/Icons';
-import ResultsContent from '../analysis/ResultsContent';
+import SkeletonAnalysis from '../ui/SkeletonAnalysis';
+
+const ResultsContent = React.lazy(() => import('../analysis/ResultsContent'));
 
 const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onStateChange, onExportPDF, isExporting, exportProgress }) => {
     const [sheetState, setSheetState] = useState('collapsed'); // 'collapsed' | 'mid' | 'full'
@@ -105,7 +107,9 @@ const BottomSheetMobile = ({ analysis, onLocationSelect, onReset, onClose, onSta
             <div className="h-px bg-gray-200 w-full" />
             {(sheetState === 'mid' || sheetState === 'full') && (
                 <div className="flex-1 overflow-y-auto custom-scrollbar p-4 bg-gray-50/50 mobile-upscale">
-                    <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
+                    <Suspense fallback={<SkeletonAnalysis />}>
+                        <ResultsContent analysis={analysis} onExportPDF={onExportPDF} isExporting={isExporting} />
+                    </Suspense>
                 </div>
             )}
             {analysis && (

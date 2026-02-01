@@ -1,4 +1,4 @@
-/* React removed */
+import React, { Suspense } from 'react';
 import clsx from 'clsx';
 import { Icons } from '../ui/Icons';
 import Tooltip from '../ui/Tooltip';
@@ -6,8 +6,9 @@ import SkeletonAnalysis from '../ui/SkeletonAnalysis';
 // Circular dependency risk or just missing: These will be refactored next.
 // We assume they will export default.
 import SearchLogicDesktop from '../search/SearchLogicDesktop';
-import ResultsContent from '../analysis/ResultsContent';
 import ErrorBoundary from '../ui/ErrorBoundary';
+
+const ResultsContent = React.lazy(() => import('../analysis/ResultsContent'));
 
 const SidebarDesktop = ({
     analysis,
@@ -82,7 +83,9 @@ const SidebarDesktop = ({
                                 </span>
                             </div>
                             <ErrorBoundary>
-                                <ResultsContent analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+                                <Suspense fallback={<SkeletonAnalysis />}>
+                                    <ResultsContent analysis={analysis} approximateAddress={approximateAddress} onExportPDF={onExportPDF} isExporting={isExporting} exportProgress={exportProgress} />
+                                </Suspense>
                             </ErrorBoundary>
                         </>
                     )}

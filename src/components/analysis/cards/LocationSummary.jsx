@@ -9,7 +9,6 @@ import { isConservationSoil, isUrbanSoil, isOutsideCDMX, hasZoningData } from '.
 const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExporting, exportProgress }) => {
     const COLORS = CONSTANTS.COLORS || {};
 
-    const { status } = analysis;
     const isSC = isConservationSoil(analysis);
     const isUrban = isUrbanSoil(analysis);
     const isOutside = isOutsideCDMX(analysis);
@@ -33,7 +32,7 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
     return (
         <div className="bg-white border border-gray-100 rounded-xl p-4 mb-4 shadow-none animate-slide-up">
 
-            {/* 1. Dirección Aproximada */}
+            {/* 1. Dirección Aproximada (TOP) */}
             {approximateAddress && (
                 <div className="mb-3 pb-3 border-b border-gray-100">
                     <div className="flex items-start gap-2">
@@ -50,33 +49,26 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 </div>
             )}
 
-            {/* 2. Alcaldía */}
-            {
-                !isOutside && (
-                    <div className="mb-3 pb-3 border-b border-gray-100">
-                        <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-0.5">Alcaldía</div>
-                        <div className="text-lg font-bold text-gray-900 leading-tight">
-                            {analysis.alcaldia || 'Ciudad de México'}
-                        </div>
-                    </div>
-                )
-            }
+            {/* 2. Alcaldía (SECOND) */}
+            <div className="mb-3 pb-3 border-b border-gray-100">
+                <div className="text-[10px] text-gray-500 font-semibold uppercase tracking-wide mb-0.5">Alcaldía</div>
+                <div className="text-lg font-bold text-gray-900 leading-tight">
+                    {analysis.alcaldia || 'Ciudad de México'}
+                </div>
+            </div>
 
-            {/* 3. Badges */}
+            {/* 3. Badges (THIRD) */}
             <div className="flex flex-wrap items-center gap-2 mb-2">
                 {/* Badge Suelo Base */}
-                {
-                    !isOutside && (
-                        <span
-                            className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
-                            style={{
-                                backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
-                                color: '#ffffff'
-                            }}
-                        >
-                            {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
-                        </span>
-                    )}
+                <span
+                    className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-bold uppercase leading-none"
+                    style={{
+                        backgroundColor: isSC ? COLORS.sc : isUrban ? COLORS.su : '#6b7280',
+                        color: '#ffffff'
+                    }}
+                >
+                    {isSC ? 'Suelo de Conservación' : 'Suelo Urbano'}
+                </span>
 
                 {/* Badge Zonificación */}
                 {zoningBadgeLabel && (
@@ -101,7 +93,7 @@ const LocationSummary = ({ analysis, approximateAddress, onExportPDF, isExportin
                 )}
             </div>
 
-            {/* 4. Botones de Acción */}
+            {/* 4. Botones de Acción (BOTTOM) */}
             <div className="mt-4 pt-3 border-t border-gray-100 flex gap-3">
                 <Tooltip content="Ver ubicación exacta en Google Maps">
                     <a

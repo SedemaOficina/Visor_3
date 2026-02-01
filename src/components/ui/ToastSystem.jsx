@@ -1,32 +1,18 @@
-import { useState, createContext, useContext, useCallback } from 'react';
+import useUIStore from '../../stores/useUIStore';
 import { Icons } from './Icons';
 
-const ToastContext = createContext(null);
-
-export const useToast = () => useContext(ToastContext);
-
-export const ToastProvider = ({ children }) => {
-    const [toasts, setToasts] = useState([]);
-
-    const removeToast = useCallback((id) => {
-        setToasts(prev => prev.filter(t => t.id !== id));
-    }, []);
-
-    const addToast = useCallback((message, type = 'info') => {
-        const id = Date.now();
-        setToasts(prev => [...prev, { id, message, type }]);
-        setTimeout(() => removeToast(id), 3000);
-    }, [removeToast]);
-
-    return (
-        <ToastContext.Provider value={{ addToast, toasts }}>
-            {children}
-        </ToastContext.Provider>
-    );
+// Compat hook if components use useToast()
+export const useToast = () => {
+    const addToast = useUIStore(state => state.addToast);
+    return { addToast };
 };
 
+// Deprecated Provider (No-op wrapper to avoid breaking if left in tree temporarily)
+export const ToastProvider = ({ children }) => <>{children}</>;
+
 export const ToastContainer = () => {
-    const { toasts } = useToast();
+    const toasts = useUIStore(state => state.toasts);
+
     return (
         <div className="absolute md:bottom-24 bottom-auto top-32 md:top-auto left-1/2 transform -translate-x-1/2 z-[5000] flex flex-col gap-2 pointer-events-none w-max max-w-[90%]">
             {toasts.map(t => (

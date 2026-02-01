@@ -1,7 +1,10 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useRef, useEffect, useCallback } from 'react';
 
-// --- CUSTOM HOOKS ---
-import useVisorState from './hooks/useVisorState';
+// --- STORES & HOOKS ---
+import useUIStore from './stores/useUIStore';
+import useMapStore from './stores/useMapStore';
+import useAnalysisStore from './stores/useAnalysisStore';
+import useAppData from './hooks/useAppData';
 import { getReverseGeocoding } from './utils/geoUtils';
 
 // --- COMPONENTS ---
@@ -19,31 +22,44 @@ import OnboardingTour from './components/features/OnboardingTour';
 // --- UI COMPONENTS ---
 import Icons from './components/ui/Icons';
 import ErrorBoundary from './components/ui/ErrorBoundary';
-import { ToastProvider, ToastContainer, useToast } from './components/ui/ToastSystem';
-
-
+import { ToastProvider, ToastContainer, useToast } from './components/ui/ToastSystem'; // ToastProvider is now a no-op
 
 /* ------------------------------------------------ */
 /* COMPONENT: VisorApp (Main) */
 /* ------------------------------------------------ */
 const VisorApp = () => {
-    const { state, actions } = useVisorState();
+    // 1. Data Layer
+    const { loading, dataCache, constants, error } = useAppData();
 
-    // Destructure State
+    // 2. UI Store
     const {
-        analyzing, extraDataLoaded, systemError, isHelpOpen, analysis, location,
-        currentZoom, isLegendOpen, isSidebarOpen, activeBaseLayer, globalOpacity,
-        approximateAddress, isExporting, exportProgress,
-        visibleMapLayers, visibleZoningCats, loading, dataCache, constants, error
-    } = state;
+        isSidebarOpen, toggleSidebar,
+        isLegendOpen, setLegendOpen,
+        isHelpOpen, setHelpOpen,
+        mobileSheetState, setMobileSheetState,
+        addToast
+    } = useUIStore();
 
-    // Destructure Actions
+    // 3. Map Store
     const {
-        updateState, handleLocationSelect: handleLocationSelectAction, handleReset: handleResetAction, toggleLayer, toggleZoningCat, addToast,
-        setExportHandler, getExportHandler
-    } = actions;
+        location, setLocation,
+        currentZoom, setZoom,
+        activeBaseLayer, setActiveBaseLayer,
+        globalOpacity, setGlobalOpacity,
+        visibleMapLayers, toggleLayer, setVisibleMapLayers
+    } = useMapStore();
 
-    // Refs
+    // 4. Analysis Store
+    const {
+        analysis, analyzing, extraDataLoaded, setExtraDataLoaded,
+        approximateAddress, setApproximateAddress,
+        visibleZoningCats, toggleZoningCat, setVisibleZoningCats,
+        isExporting, setExporting,
+        exportProgress, setExportProgress,
+        performAnalysis, resetAnalysis
+    } = useAnalysisStore();
+
+    // 5. Refs (kept local as they are imperative handles)
     const invalidateMapRef = useRef(null);
     const resetMapViewRef = useRef(null);
     const zoomInRef = useRef(null);
@@ -54,29 +70,44 @@ const VisorApp = () => {
     // --- HELPER CONSTANTS ---
     const MAPBOX_ACCESS_TOKEN = constants?.MAPBOX_TOKEN;
 
+    // --- ACTIONS ADAPTERS ---
+
     // Wrapper for Location Select to inject Refs and Dependencies
     const onLocationSelect = (coord) => {
-        handleLocationSelectAction(
-            coord,
-            mobileSearchInputRef,
-            desktopSearchInputRef,
-            getReverseGeocoding,
-            MAPBOX_ACCESS_TOKEN
-        );
+        const lat = Number(coord?.lat);
+        const lng = Number(coord?.lng);
+        if (Number.isNaN(lat) || Number.isNaN(lng)) return;
+
+        const c = { lat, lng };
+        const text = `${lat.toFixed(6)}, ${lng.toFixed(6)}`;
+
+        // UI Updates
+        setLocation(c);
+        setApproximateAddress(null);
+        if (desktopSearchInputRef.current) desktopSearchInputRef.current(text);
+        if (mobileSearchInputRef.current) mobileSearchInputRef.current(text);
+
+        // Execute Store Action
+        performAnalysis(c, dataCache, constants);
     };
 
     const handleReset = () => {
-        handleResetAction(resetMapViewRef);
+        setLocation(null);
+        resetAnalysis();
+        setApproximateAddress(null);
+        setMobileSheetState('collapsed');
+        if (resetMapViewRef.current) resetMapViewRef.current();
     };
 
-    // Wrapper for Export to use local state
+    const exportHandlerRef = useRef(null);
+    const setExportHandler = (fn) => (exportHandlerRef.current = fn);
+    const getExportHandler = () => exportHandlerRef.current;
+
     const handleExportClick = useCallback(async (e) => {
         const exportFn = getExportHandler();
         if (typeof exportFn === 'function') {
-            if (isExporting) return; // Prevent double click
-
-            updateState({ isExporting: true });
-
+            if (isExporting) return;
+            setExporting(true);
             try {
                 await exportFn(e);
                 addToast('Documento PDF generado exitosamente', 'success');
@@ -84,22 +115,19 @@ const VisorApp = () => {
                 console.error("Export Error", err);
                 addToast('Error al generar PDF', 'error');
             } finally {
-                updateState({ isExporting: false, exportProgress: 0 });
+                setExporting(false);
+                setExportProgress(0);
             }
         } else {
             alert('Aún no se puede exportar. Intenta recargar la página.');
         }
-    }, [getExportHandler, isExporting, addToast, updateState]);
+    }, [getExportHandler, isExporting, addToast, setExporting, setExportProgress]);
 
     const handleUserLocation = () => {
         navigator.geolocation.getCurrentPosition(
             p => {
                 const coord = { lat: p.coords.latitude, lng: p.coords.longitude };
                 onLocationSelect(coord);
-
-                const text = `${coord.lat.toFixed(6)}, ${coord.lng.toFixed(6)}`;
-                if (desktopSearchInputRef.current) desktopSearchInputRef.current(text);
-                if (mobileSearchInputRef.current) mobileSearchInputRef.current(text);
             },
             (e) => {
                 console.warn(e);
@@ -113,21 +141,24 @@ const VisorApp = () => {
         toggleLayer('zoning');
     }, [toggleLayer]);
 
-    const setVisibleZoningCats = (val) => updateState({ visibleZoningCats: typeof val === 'function' ? val(visibleZoningCats) : val });
-    const setActiveBaseLayer = (val) => updateState({ activeBaseLayer: val });
-    const setMobileSheetState = (val) => updateState({ mobileSheetState: val });
-
     // Initialization Effect: Parse URL Params
     useEffect(() => {
         if (loading) return;
 
-        // Simulate deprecated values for component compat
-        if (!extraDataLoaded) updateState({ extraDataLoaded: true });
-
-        if (error) {
-            updateState({ systemError: `Error cargando datos: ${error}` });
-            return;
+        // Initialize Zoning Cats if needed (move to store later?)
+        if (constants?.ZONING_ORDER && Object.keys(visibleZoningCats).length === 0) {
+            const d = {};
+            constants.ZONING_ORDER.forEach(k => d[k] = true);
+            setVisibleZoningCats(d);
         }
+
+        // Simulate deprecated values for component compat
+        if (!extraDataLoaded) setExtraDataLoaded(true);
+
+        /* 
+           NOTE: systemError handling from useVisorState is removed/simplified here.
+           If `error` from useAppData exists, we show it below.
+        */
 
         const initUrlParams = async () => {
             const params = new URLSearchParams(window.location.search);
@@ -138,20 +169,18 @@ const VisorApp = () => {
             if (hasCoords) onLocationSelect({ lat, lng });
         };
 
+        // Only run once when loaded
         initUrlParams();
-    }, [loading, error, extraDataLoaded, updateState]); // Check deps carefully
+    }, [loading, constants]); // eslint-disable-line react-hooks/exhaustive-deps
 
-    if (systemError) {
+    if (error) {
         return (
             <div className="h-screen w-full flex flex-col items-center justify-center bg-gray-50 text-center p-4">
                 <div className="bg-white p-8 rounded-2xl shadow-xl max-w-md border-l-4 border-red-600">
                     <Icons.AlertCircle className="h-12 w-12 text-red-600 mx-auto mb-4" />
                     <h1 className="text-xl font-bold text-gray-900 mb-2">Error de Inicialización</h1>
-                    <p className="text-sm text-gray-600 mb-6">{systemError}</p>
-                    <button
-                        onClick={() => window.location.reload()}
-                        className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition-colors"
-                    >
+                    <p className="text-sm text-gray-600 mb-6">Error cargando datos: {error}</p>
+                    <button onClick={() => window.location.reload()} className="px-6 py-2 bg-gray-900 text-white rounded-lg hover:bg-black transition-colors">
                         Recargar Página
                     </button>
                 </div>
@@ -170,11 +199,9 @@ const VisorApp = () => {
 
     return (
         <div className={`flex flex-col w-full h-full overflow-hidden ${loading || analyzing ? 'cursor-wait' : ''}`} style={{ background: 'var(--bg-soft-gradient)' }}>
-
             <InstitutionalHeader />
-
             <div className="flex-1 relative flex flex-col md:flex-row overflow-hidden">
-
+                {/* Mobile Search Overlay */}
                 <div className="md:hidden absolute top-4 left-0 right-0 z-[2000] px-4 pointer-events-none flex justify-center">
                     <div className="w-full max-w-lg pointer-events-auto">
                         <MobileSearchBar
@@ -192,13 +219,13 @@ const VisorApp = () => {
                     onLocationSelect={onLocationSelect}
                     onReset={handleReset}
                     isOpen={isSidebarOpen}
-                    onToggle={() => updateState({ isSidebarOpen: !isSidebarOpen })}
+                    onToggle={toggleSidebar}
                     onExportPDF={handleExportClick}
                     desktopSearchSetRef={desktopSearchInputRef}
                     isLoading={analyzing}
                     isExporting={isExporting}
                     exportProgress={exportProgress}
-                    onOpenHelp={() => updateState({ isHelpOpen: true })}
+                    onOpenHelp={() => setHelpOpen(true)}
                 />
 
                 <div className="relative flex-1 h-full w-full">
@@ -208,14 +235,14 @@ const VisorApp = () => {
                         analysisStatus={analysis?.status}
                         isANP={analysis?.isANP}
                         visibleMapLayers={visibleMapLayers}
-                        setVisibleMapLayers={(newVal) => updateState({ visibleMapLayers: typeof newVal === 'function' ? newVal(visibleMapLayers) : newVal })}
+                        setVisibleMapLayers={setVisibleMapLayers}
                         visibleZoningCats={visibleZoningCats}
-                        setVisibleZoningCats={(newVal) => updateState({ visibleZoningCats: typeof newVal === 'function' ? newVal(visibleZoningCats) : newVal })}
+                        setVisibleZoningCats={setVisibleZoningCats}
                         extraDataLoaded={extraDataLoaded}
                         activeBaseLayer={activeBaseLayer}
-                        setActiveBaseLayer={(val) => updateState({ activeBaseLayer: val })}
+                        setActiveBaseLayer={setActiveBaseLayer}
                         globalOpacity={globalOpacity}
-                        setGlobalOpacity={(val) => updateState({ globalOpacity: val })}
+                        setGlobalOpacity={setGlobalOpacity}
 
                         invalidateMapRef={invalidateMapRef}
                         resetMapViewRef={resetMapViewRef}
@@ -223,7 +250,7 @@ const VisorApp = () => {
                         zoomOutRef={zoomOutRef}
                         selectedAnpId={analysis?.anpId}
                         dataCache={dataCache}
-                        onZoomChange={(z) => updateState({ currentZoom: z })}
+                        onZoomChange={setZoom}
                     />
 
                     <ToastContainer />
@@ -241,7 +268,7 @@ const VisorApp = () => {
                         visibleMapLayers={visibleMapLayers}
                         toggleLayer={toggleLayer}
                         isOpen={isLegendOpen}
-                        setIsOpen={(val) => updateState({ isLegendOpen: val })}
+                        setIsOpen={setLegendOpen}
                         visibleZoningCats={visibleZoningCats}
                         toggleZoningGroup={toggleZoningGroup}
                         setVisibleZoningCats={setVisibleZoningCats}
@@ -252,14 +279,12 @@ const VisorApp = () => {
                         anpGeneralVisible={visibleMapLayers.anp}
                     />
 
-
-
                     <MapControls
-                        onOpenHelp={() => updateState({ isHelpOpen: true })}
+                        onOpenHelp={() => setHelpOpen(true)}
                         isLegendOpen={isLegendOpen}
-                        setLegendOpen={(val) => updateState({ isLegendOpen: val })}
+                        setLegendOpen={setLegendOpen}
                         globalOpacity={globalOpacity}
-                        setGlobalOpacity={(val) => updateState({ globalOpacity: val })}
+                        setGlobalOpacity={setGlobalOpacity}
                         onResetView={() => resetMapViewRef.current?.()}
                         onUserLocation={handleUserLocation}
                         onZoomIn={() => zoomInRef.current?.()}
@@ -280,13 +305,13 @@ const VisorApp = () => {
 
                 <HelpModal
                     isOpen={isHelpOpen}
-                    onClose={() => updateState({ isHelpOpen: false })}
+                    onClose={() => setHelpOpen(false)}
                 />
 
                 <PdfExportController
                     analysis={analysis}
                     onExportReady={setExportHandler}
-                    onProgress={(val) => updateState({ exportProgress: val })}
+                    onProgress={setExportProgress}
                     dataCache={dataCache}
                     visibleMapLayers={visibleMapLayers}
                     activeBaseLayer={activeBaseLayer}
@@ -301,9 +326,11 @@ const VisorApp = () => {
     );
 };
 
+// Main App Component with Providers
 const App = () => {
     return (
         <ErrorBoundary>
+            {/* ToastProvider kept for backward compatibility if needed, but VisorApp handles rendering container */}
             <ToastProvider>
                 <VisorApp />
             </ToastProvider>
