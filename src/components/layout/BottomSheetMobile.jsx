@@ -243,7 +243,7 @@ const BottomSheetMobile = () => {
                             } else {
                                 try {
                                     await navigator.clipboard.writeText(url);
-                                    addToast('Enlace copiado al portapapeles', 'success');
+                                    addToast('Enlace copiado (v2)', 'success');
                                 } catch (err) {
                                     console.error('Failed to copy:', err);
                                     addToast('No se pudo copiar el enlace', 'error');
