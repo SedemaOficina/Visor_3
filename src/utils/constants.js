@@ -65,7 +65,7 @@ export const CONSTANTS = {
             resolvePath('data/Zon_Sierra_de_Guadalupe.geojson'),
             resolvePath('data/Zon_Sierra_de_Santa_Catarina.geojson')
         ],
-        USOS_SUELO_CSV: resolvePath('data/tabla_actividades_pgoedf.csv'),
+
         ANP: resolvePath('data/anp_consolidada.geojson')
     },
     MAPBOX_TOKEN: 'pk.eyJ1Ijoiam9yZ2VsaWJlcjI4IiwiYSI6ImNtajA0eHR2eTA0b2gzZnB0NnU2a2xwY2oifQ.2BDJUISBBvrm1wM8RwXusg',

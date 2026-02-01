@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Papa from 'papaparse';
 import { CONSTANTS } from '../utils/constants';
+import activitiesCsv from '../data/tabla_actividades_pgoedf.csv?raw';
 
 const useAppData = () => {
     const [loading, setLoading] = useState(true);
@@ -34,28 +35,6 @@ const useAppData = () => {
                 }
             };
 
-            const fetchCsv = async (u) =>
-                new Promise((r) => {
-                    const cleanPath = u.replace(/^\.\//, '/');
-                    console.log(`[AppData] Loading CSV: ${cleanPath}`);
-                    Papa.parse(cleanPath, {
-                        download: true,
-                        header: true,
-                        skipEmptyLines: true,
-                        complete: (res) => {
-                            console.log(`[AppData] CSV Loaded: ${cleanPath}. Rows: ${res.data?.length}`);
-                            if (res.errors?.length) {
-                                console.warn('[AppData] CSV Parse Warnings:', res.errors);
-                            }
-                            r(res.data);
-                        },
-                        error: (err) => {
-                            console.error('[AppData] CSV Load Error:', err);
-                            r(null); // Return null to indicate failure vs empty
-                        }
-                    })
-                });
-
             // Helper to merge features
             const mergeFeatures = (list) => {
                 const out = { type: 'FeatureCollection', features: [] };
@@ -79,10 +58,14 @@ const useAppData = () => {
 
                 // 2. Background Data (Heavy Layers & Analysis Data) - Lazy Loaded
                 try {
-                    const [mainZoning, anpInternalList, rules, edomex, morelos, anp] = await Promise.all([
+                    // Parse Rules Synchronously from imported file
+                    const rulesParsed = Papa.parse(activitiesCsv, { header: true, skipEmptyLines: true });
+                    const rules = rulesParsed?.data || [];
+                    if (rulesParsed?.errors?.length) console.warn("CSV Parse Warnings:", rulesParsed.errors);
+
+                    const [mainZoning, anpInternalList, edomex, morelos, anp] = await Promise.all([
                         fetchJson(DATA_FILES.ZONIFICACION_MAIN),
                         Promise.all((DATA_FILES.ZONIFICACION_FILES || []).map(fetchJson)),
-                        fetchCsv(DATA_FILES.USOS_SUELO_CSV),
                         fetchJson(DATA_FILES.LIMITES_EDOMEX),
                         fetchJson(DATA_FILES.LIMITES_MORELOS),
                         fetchJson(DATA_FILES.ANP)
