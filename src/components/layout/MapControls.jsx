@@ -41,6 +41,27 @@ const MapControls = ({
                     </button>
                 </Tooltip>
 
+                {/* MOBILE ZOOM CONTROLS (Inside Top Stack) */}
+                <div className="md:hidden flex flex-col gap-3">
+                    <button
+                        onClick={onZoomIn}
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-[#9d2148] hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                    <button
+                        onClick={onZoomOut}
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-white shadow-md border border-gray-200 text-[#9d2148] hover:bg-gray-50 hover:scale-105 active:scale-95 transition-all"
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                    </button>
+                </div>
+
                 {/* 3. OPTIONS FAB */}
                 <div className="relative flex flex-col items-end">
 
@@ -103,8 +124,8 @@ const MapControls = ({
                 </div>
             </div>
 
-            {/* ZOOM CONTROLS (Bottom Right) */}
-            <div className="absolute bottom-36 md:bottom-10 right-4 flex flex-col items-center gap-3 z-[1100]">
+            {/* ZOOM CONTROLS (Bottom Right - Desktop Only) */}
+            <div className="hidden md:flex absolute bottom-36 md:bottom-10 right-4 flex-col items-center gap-3 z-[1100]">
                 <Tooltip content="Acercar" placement="left">
                     <button
                         onClick={onZoomIn}

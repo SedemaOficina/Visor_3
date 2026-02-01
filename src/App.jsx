@@ -141,6 +141,15 @@ const VisorApp = () => {
         toggleLayer('zoning');
     }, [toggleLayer]);
 
+    // Event Listener for Remote PDF Triggers (e.g. from BottomSheetMobile)
+    useEffect(() => {
+        const handleTrigger = (e) => {
+            if (handleExportClick) handleExportClick(e);
+        };
+        window.addEventListener('trigger-pdf-export', handleTrigger);
+        return () => window.removeEventListener('trigger-pdf-export', handleTrigger);
+    }, [handleExportClick]);
+
     // Initialization Effect: Parse URL Params
     useEffect(() => {
         if (loading) return;
@@ -292,17 +301,7 @@ const VisorApp = () => {
                     />
                 </div>
 
-                <BottomSheetMobile
-                    analysis={analysis}
-                    approximateAddress={approximateAddress}
-                    onLocationSelect={onLocationSelect}
-                    onReset={handleReset}
-                    onStateChange={setMobileSheetState}
-                    onClose={handleReset}
-                    onExportPDF={handleExportClick}
-                    isExporting={isExporting}
-                    exportProgress={exportProgress}
-                />
+                <BottomSheetMobile />
 
                 <HelpModal
                     isOpen={isHelpOpen}
