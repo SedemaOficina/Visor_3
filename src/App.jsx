@@ -16,7 +16,7 @@ import Legend from './components/map/Legend';
 import HelpModal from './components/modals/HelpModal';
 import BottomSheetMobile from './components/layout/BottomSheetMobile';
 import MapControls from './components/layout/MapControls';
-import PdfExportController from './components/features/PdfExportController';
+import PdfExportController from './components/analysis/controllers/PdfExportController';
 import OnboardingTour from './components/features/OnboardingTour';
 
 // --- UI COMPONENTS ---

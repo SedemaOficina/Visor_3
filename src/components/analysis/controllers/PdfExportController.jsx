@@ -7,8 +7,8 @@ import html2canvas from 'html2canvas';
 import QRCode from 'qrcode';
 
 
-import { CONSTANTS } from '../../utils/constants';
-import { getBaseLayerUrl, getZoningColor, formatDateTime, generateFolio } from '../../utils/geoUtils';
+import { CONSTANTS } from '../../../utils/constants';
+import { getBaseLayerUrl, getZoningColor, formatDateTime, generateFolio } from '../../../utils/geoUtils';
 
 /* ------------------------------------------------ */
 /* HELPERS INTERNOS */
