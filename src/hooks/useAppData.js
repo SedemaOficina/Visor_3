@@ -5,6 +5,8 @@ import activitiesCsv from '../data/tabla_actividades_pgoedf.csv?raw';
 import cdmxGeoRaw from '../data/cdmx.geojson?raw';
 import scGeoRaw from '../data/suelo-de-conservacion-2020.geojson?raw';
 import alcaldiasGeoRaw from '../data/alcaldias.geojson?raw';
+import MainZoningRaw from '../data/zoonificacion_pgoedf_2000_sin_anp.geojson?raw';
+import LinkMapInternal from '../data/anp_consolidada.geojson?raw';
 
 const useAppData = () => {
     const [loading, setLoading] = useState(true);
@@ -35,21 +37,26 @@ const useAppData = () => {
             try {
                 // 1. Critical Data - Imported Statically (Instant Load)
                 // Parse raw JSON strings
+                // Rules parsing
+                const rulesParsed = Papa.parse(activitiesCsv, { header: true, skipEmptyLines: true });
+                const rules = rulesParsed?.data || [];
+                if (rulesParsed?.errors?.length) console.warn("CSV Parse Warnings:", rulesParsed.errors);
+
                 setDataCache(prev => ({
                     ...prev,
                     cdmx: JSON.parse(cdmxGeoRaw),
                     alcaldias: JSON.parse(alcaldiasGeoRaw),
-                    sc: JSON.parse(scGeoRaw)
+                    sc: JSON.parse(scGeoRaw),
+                    zoning: JSON.parse(MainZoningRaw),
+                    anp: JSON.parse(LinkMapInternal),
+                    rules: rules
                 }));
+
+                // Allow UI to render immediately with critical data
                 setLoading(false);
 
                 // 2. Background Data - Dynamic Imports (Lazy Loaded Chunks)
                 try {
-                    // Parse Rules
-                    const rulesParsed = Papa.parse(activitiesCsv, { header: true, skipEmptyLines: true });
-                    const rules = rulesParsed?.data || [];
-                    if (rulesParsed?.errors?.length) console.warn("CSV Parse Warnings:", rulesParsed.errors);
-
                     // Dynamic Importer using Vite's import.meta.glob
                     const geojsonGlobs = import.meta.glob('../data/*.geojson', { query: '?raw', import: 'default' });
 
@@ -64,8 +71,7 @@ const useAppData = () => {
                         return JSON.parse(raw);
                     };
 
-                    const [mainZoning, anpInternalList, edomex, morelos, anp] = await Promise.all([
-                        loadGeo('zoonificacion_pgoedf_2000_sin_anp.geojson'),
+                    const [anpInternalList, edomex, morelos] = await Promise.all([
                         Promise.all([
                             loadGeo('Zon_Bosque_de_Tlalpan.geojson'),
                             loadGeo('Zon_Cerro_de_la_Estrella.geojson'),
@@ -76,18 +82,14 @@ const useAppData = () => {
                             loadGeo('Zon_Sierra_de_Santa_Catarina.geojson')
                         ]),
                         loadGeo('edomex.geojson'),
-                        loadGeo('morelos.geojson'),
-                        loadGeo('anp_consolidada.geojson')
+                        loadGeo('morelos.geojson')
                     ]);
 
                     setDataCache(prev => ({
                         ...prev,
-                        zoning: mainZoning,
                         anpInternal: mergeFeatures(anpInternalList),
-                        rules,
                         edomex,
-                        morelos,
-                        anp
+                        morelos
                     }));
                 } catch (bgErr) {
                     console.error("Secondary Data Load Error:", bgErr);
